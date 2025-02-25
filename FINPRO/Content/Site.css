@@ -1,0 +1,74 @@
+span.erreur {
+    color: red;
+    font-size: 15px;
+}
+
+th, td {
+    width: calc(var(--char-count, 5) * 1ch);
+    white-space: nowrap;
+}
+
+.tabList thead tr th {
+    background-color: #77B5FE;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.tabList tbody tr td {
+    font-size: 12px;
+}
+
+.tabList thead tr, .tabList tbody tr {
+    line-height: 6px;
+}
+
+    .tabList thead tr th {
+        text-align: center;
+    }
+
+.selected {
+    background-color: #f5d279;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+}
+
+.horizontal-line {
+    border-bottom: 1px solid #0162b0;
+    display: inline-block;
+    width: 55%;
+    font-weight: bold;
+}
+
+.tabList tbody tr:hover.selected td {
+    background-color: #FFEFC6;
+    cursor: pointer;
+}
+
+.tabList tbody tr:hover td {
+    background-color: #FFEFC6;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#fullscreen_popup, #fullscreen_popup_Delete {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#fullscreen_popup {
+    z-index: 1003;
+}
+
+#fullscreen_popup_Delete {
+    z-index: 1004;
+}

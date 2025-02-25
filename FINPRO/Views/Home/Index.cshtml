@@ -1,0 +1,325 @@
+@model FINPRO.Models.parametre
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="~/assets/css/styles.css">
+
+    <!-- ===== BOX ICONS ===== -->
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+    <link href="~/Content/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
+
+    <title>Login form responsive</title>
+</head>
+<body>
+    <div class="l-form">
+        <div class="row justify-content-center" style="text-align:center">
+            <div class="col-md-4">
+                <input type="hidden" name="Multiproj" value="@ViewBag.Multiproj" id="Multiproj" class="form-control" />
+            </div>
+        </div>
+        <div class="shape1"></div>
+        <div class="shape2"></div>
+        <div class="form" id="ErreurBase">
+            <div class="row justify-content-center" style="text-align:center;margin-top:-10%;">
+                <div class="col-md-12" style="border:1px solid #808080;border-radius:8px;box-shadow: 4px 8px 60px #808080">
+                    <div class="row" style="text-align:left;">
+                        <div class="col-md-12" style="background-color: #f5f2f2;border-radius:8px 8px 0 0">
+                            <h5 style="color:#808080">GESTION DE LA PAIE COPYRIGHT 2DBC</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="height:120px;padding-top:10px">
+                        <div class="col-md-12">
+                            <img src="~/images/icons/close.png" style="width:40px" alt="Alternate Text" />
+                            <strong> @ViewBag.Message</strong>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:8px;padding-bottom:8px;background-color:#f5f2f2;border-radius:0 0 8px 8px">
+                        <div class="col-md-12">
+                            <a href="#" class="btn btn-sm btn-info btn-lg" onclick='window.location.reload(false)'>
+                                Rafraichir
+                            </a>
+                            @*<input type="button" onclick='window.location.reload(false)' value="Rafraichir" style="cursor:pointer" />*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form" id="saisirConnexion">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" name="versionSql" value="@Model.versionSql" id="versionSql" class="form-control" />
+                    <input type="hidden" name="NomServeur" value="@ViewBag.NomServeur" id="NomServeur" class="form-control" />
+                    <input type="hidden" name="NomBase" value="@ViewBag.NomBase" id="NomBase" class="form-control" />
+                </div>
+            </div>
+            <img src="~/assets/img/authentication.svg" alt="" class="form__img">
+
+            <form action="" class="form__content">
+                <h1 class="form__title">@Session["titre"]</h1>
+
+                <div class="form__div form__div-one">
+                    <div class="form__icon">
+                        <i class='bx bx-user-circle'></i>
+                    </div>
+
+                    <div class="form__div-input">
+                        <label for="" class="form__label">Identifiant</label>
+                        <input type="text" class="form__input">
+                    </div>
+                </div>
+
+                <div class="form__div">
+                    <div class="form__icon">
+                        <i class='bx bx-lock'></i>
+                    </div>
+
+                    <div class="form__div-input">
+                        <label for="" class="form__label">Mot de passe</label>
+                        <input type="password" class="form__input">
+                    </div>
+                </div>
+                @*<a href="#" class="form__forgot">Mot de passe oublié ?</a>*@
+                <div>
+                    <a href="#" class="form__forgot" style="color:#ff6a00">Listes des projets</a>
+                </div>
+                <div class="form__button">
+                    <input type="button" class="" value="Se connecter" id="SeConnecter" onclick="SeConnecter()">
+                    <input type="button" style="display:none" class="" value="Liste Projets" id="ListProjet" onclick="ListProjet()">
+                </div>
+
+                <div class="form__social">
+                    <span class="form__social-text" id="infoBDD" style="font-size:10px;font-weight:bold"></span>
+
+                    <a href="#" class="form__social-icon"><i class='bx bxl-facebook'></i></a>
+                    <a href="#" class="form__social-icon"><i class='bx bxl-google'></i></a>
+                    <a href="#" class="form__social-icon"><i class='bx bxl-instagram'></i></a>
+                </div>
+            </form>
+        </div>
+        <div class="form" id="saisirMultiProj">
+            <div class="row" style="width:100%">
+                <div class="col-md-12">
+                    <div class="row" style="margin-top:-15px;padding-bottom:8px">
+                        <div class="col-md-12">
+                            <div class="float-end">
+                                <button type="button" class="btn btn-sm btn-primary" id="CreerProj">Créer Projet(s)</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" style="text-align:center">
+                        <div class="col-md-12" style="background-color:#4682b4">
+                            <h4 style="color:#fff">GESTION DES PROJETS</h4>
+                        </div>
+                    </div>
+                    <div style="height:auto;max-height:500px;overflow-x:hidden;overflow-y:auto">
+                        <div id="addProjet" style="display:none">
+                            <div id="ButtonMultiBDD">
+                                <div class="row justify-content-center" style="padding-top:8px;text-align:center">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-sm btn-primary" id="ajouter_">Ajouter</button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="modifier_">Modifier</button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="supprimer_">Supprimer</button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="annuler_">Annuler</button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="Enregistrer_">Enregistrer</button>
+                                        @*<button type="button" class="btn btn-sm btn-primary" id="fermer_">Fermer</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <strong style="color:#0162b0">Saisie</strong> <span class="horizontal-line" style="width: 35%;"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="SaisieCheck" style="display:none">
+                                        <div class="row justify-content-center" style="text-align:center">
+                                            <div class="col-md-12">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                                    <label class="form-check-label" for="inlineRadio1"><strong>Nouvelle base</strong></label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
+                                                    <label class="form-check-label" for="inlineRadio2"><strong>Base existante</strong></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="hidden" name="numEnreg" value="" id="numEnreg" style="background-color:#000;color:#fff" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label for="typeBase">Type de base :</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select id="typeBase" class="input_focus" style="width:100%">
+                                                <option value="SQL">MICROSOFT SQL SERVER</option>
+                                                <option value="ORACLE">ORACLE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:8px">
+                                        <div class="col-md-12" style="border-left:2px solid #808080;border-top:2px solid #808080;border-right:1px solid #ddd;border-bottom:1px solid #ddd;padding-top:10px">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="nomServeur_">Nom du Serveur</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="nomServeur_" value="" id="nomServeur_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="buttonOptionBDD" id="pencilButton" title="Editer">
+                                                        <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="nomUser_">Utilisateur</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="nomUser_" value="" id="nomUser_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="buttonOptionBDD" id="hddButton" title="Enregistrer">
+                                                        <i class="fa fa-hdd"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="nompassword_">Mot de passe</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="password" name="nompassword_" value="" id="nompassword_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="nomBDD_" id="labelNameBdd">Nom de la Base</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="nomBDD_" value="" id="nomBDD_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:8px">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="sigle_">Sigle</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="sigle_" value="" id="sigle_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                        <label class="form-check-label" for="flexCheckDefault">
+                                                            <strong>En cours</strong>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="libelle_">Libellé</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="libelle_" value="" id="libelle_" class="form-control input_focus" />
+                                                    <span class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row justify-content-center" style="text-align:center;">
+                                                <div class="col-md-12">
+                                                    <div id="loading_Impression" style="display:none">
+                                                        <div class="fa-3x">
+                                                            <i class="fas fa-sync fa-spin" style="color:seagreen"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <strong id="EtatTraitement"></strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="hidden" name="hiddenId" value="0" id="hiddenId" class="form-control" style="background-color:seagreen;color:#fff" />
+                                <input type="hidden" name="cellsID" value="" id="cellsID" class="form-control" style="background-color:#574B90;color:#fff" />
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top:10px;padding-bottom:80px">
+                            <div class="col-md-12" style="max-height: 300px; overflow-y: auto">
+                                <table class="table table-bordered tabList" id="tabBase" style="width:100%">
+                                    <thead class="sticky-top">
+                                        <tr>
+                                            <th hidden>ID</th>
+                                            <th>Sigle</th>
+                                            <th>Libellé</th>
+                                            <th>Type de Base</th>
+                                            <th>Nom Serveur</th>
+                                            <th>Nom de la Base</th>
+                                            <th hidden>Nom Utilisateur</th>
+                                            <th hidden>MOTDEPASSE</th>
+                                            <th hidden>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyBase">
+                                        @if (Model.all_parametre != null)
+                                        {
+                                            foreach (var item in Model.all_parametre)
+                                            {
+                                                <tr>
+                                                    <td hidden>@item.code</td>
+                                                    <td>@item.sigle</td>
+                                                    <td>@item.libelle</td>
+                                                    <td>@item.typeBase</td>
+                                                    <td>@item.nomServeur</td>
+                                                    <td>@item.nomBase</td>
+                                                    <td hidden>@item.nomUtilisateur</td>
+                                                    <td hidden>@item.motDePasse</td>
+                                                    <td hidden>@item.statut</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN JS ===== -->
+    <script src="~/assets/js/main.js"></script>
+    <script src="~/Scripts/jquery-3.6.1.min.js"></script>
+    <script src="~/js/FINPRO/authentification.js"></script>
+</body>
+</html>
