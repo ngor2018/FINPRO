@@ -15,7 +15,13 @@
     <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
     <link href="~/Content/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
 
-    <title>Login form responsive</title>
+    <title>@Session["titre"]</title>
+    <style>
+
+        @*.textKey:focus {
+            background-color: yellow;
+        }*@
+    </style>
 </head>
 <body>
     <div class="l-form">
@@ -54,16 +60,17 @@
         <div class="form" id="saisirConnexion">
             <div class="row">
                 <div class="col-md-12">
-                    <input type="hidden" name="versionSql" value="@Model.versionSql" id="versionSql" class="form-control" />
+                    <input type="hidden" name="versionSql" value="@ViewBag.versionSql" id="versionSql" class="form-control" />
                     <input type="hidden" name="NomServeur" value="@ViewBag.NomServeur" id="NomServeur" class="form-control" />
                     <input type="hidden" name="NomBase" value="@ViewBag.NomBase" id="NomBase" class="form-control" />
+                    <input type="hidden" name="NomUser" value="@ViewBag.NomUser" id="NomUser" class="form-control" />
+                    <input type="hidden" name="passWordBdd" value="@ViewBag.passWord" id="passWordBdd" class="form-control" />
                 </div>
             </div>
             <img src="~/assets/img/authentication.svg" alt="" class="form__img">
 
             <form action="" class="form__content">
                 <h1 class="form__title">@Session["titre"]</h1>
-
                 <div class="form__div form__div-one">
                     <div class="form__icon">
                         <i class='bx bx-user-circle'></i>
@@ -71,10 +78,9 @@
 
                     <div class="form__div-input">
                         <label for="" class="form__label">Identifiant</label>
-                        <input type="text" class="form__input">
+                        <input type="text" class="form__input textKey" id="login">
                     </div>
                 </div>
-
                 <div class="form__div">
                     <div class="form__icon">
                         <i class='bx bx-lock'></i>
@@ -82,15 +88,31 @@
 
                     <div class="form__div-input">
                         <label for="" class="form__label">Mot de passe</label>
-                        <input type="password" class="form__input">
+                        <input type="password" class="form__input textKey" id="password">
+                    </div>
+                </div>
+                <div id="divConfirmPWD" style="display:none">
+                    <div class="form__div">
+                        <div class="form__icon">
+                            <i class='bx bx-lock'></i>
+                        </div>
+
+                        <div class="form__div-input">
+                            <label for="" class="form__label">Confirmer mot de passe</label>
+                            <input type="password" class="form__input textKey" id="Confirmpassword">
+                        </div>
                     </div>
                 </div>
                 @*<a href="#" class="form__forgot">Mot de passe oublié ?</a>*@
                 <div>
-                    <a href="#" class="form__forgot" style="color:#ff6a00">Listes des projets</a>
+                    @if (Convert.ToString(ViewBag.Multiproj) == "1")
+                    {
+                        <a href="#" class="form__forgot" id="AllProjets" style="color:#ff6a00">La liste des projets</a>
+                    }
                 </div>
+                <span id="erreur_authentif" style="color:red;font-size:12px"></span>
                 <div class="form__button">
-                    <input type="button" class="" value="Se connecter" id="SeConnecter" onclick="SeConnecter()">
+                    <input type="button" class="" value="Se connecter" id="SeConnecter">
                     <input type="button" style="display:none" class="" value="Liste Projets" id="ListProjet" onclick="ListProjet()">
                 </div>
 

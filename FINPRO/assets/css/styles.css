@@ -289,10 +289,9 @@ th, td {
     background-color: #FFEFC6;
     cursor: pointer;
 }
-
 .tabList tbody tr:hover td {
     background-color: #FFEFC6;
-    color:#000;
+    color: #000;
     cursor: pointer;
     font-weight: bold;
 }

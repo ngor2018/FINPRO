@@ -23,6 +23,12 @@
     $("#rafraichir").click(function () {
         window.location.reload();
     })
+    $("#password").click(function () {
+        password();
+    })
+    $("#password").keyup(function () {
+        password();
+    })
     $("#AllProjets").click(function () {
         document.getElementById('saisirConnexion').style.display = "none";
         document.getElementById('saisirMultiProj').style.display = "block";
@@ -67,6 +73,71 @@
     })
     $("#annuler_").click(function () {
         reset();
+    })
+    $("#SeConnecter").click(function () {
+        var isAllValid = true;
+        var login = $("#login").val().trim();
+        var password = $("#password").val().trim();
+        var Confirmpassword = $("#Confirmpassword").val().trim();
+        var codeMultiBase = $("#hiddenId").val();
+        var NomServeur = $("#NomServeur").val();
+        var NomBase = $("#NomBase").val();
+        var NomUser = $("#NomUser").val();
+        var passWordBdd = $("#passWordBdd").val();
+        const form = document.getElementById('divConfirmPWD');
+        const currentDisplay = window.getComputedStyle(form).display;
+        switch (currentDisplay) {
+            case "none":
+                if (!login || !password) {
+                    isAllValid = false;
+                    alert()
+                    document.getElementById('erreur_authentif').textContent = "Tous les champs doivent être remplis.";
+                }
+                break;
+            case "block":
+                if (!login || !password || !Confirmpassword) {
+                    isAllValid = false;
+                    document.getElementById('erreur_authentif').textContent = "Tous les champs doivent être remplis.";
+                }
+                // Vérification des critères de mot de passe
+                // Au moins un chiffre, une majuscule, et 6 caractères
+                var passwordPattern = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+                if (!passwordPattern.test(password)) {
+                    document.getElementById('erreur_authentif').textContent = "Au moins 6 caractères(une majuscule, et un chiffre compris)";
+                    isAllValid = false;
+                }
+                if (password !== Confirmpassword) {
+                    isAllValid = false;
+                    document.getElementById('erreur_authentif').textContent = "Les nouveaux mots de passe ne correspondent pas !";
+                }
+                break;
+        }
+        if (isAllValid) {
+            const objData = {
+                login: login,
+                password: password,
+                nomServeur: NomServeur,
+                nomBase: NomBase,
+                nomUtilisateur: NomUser,
+                motDePasse: passWordBdd
+            }
+            $.ajax({
+                url: "/Home/login",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(objData),
+                success: function (data) {
+                    switch (data.statut) {
+                        case true:
+                            window.location.href = '/Home/account';
+                            break;
+                        default:
+                            $("#erreur_authentif").hide().html(data.message).fadeIn('slow');
+                            break;
+                    }
+                }
+            })
+        }
     })
 })
 var Connexion = function () {
@@ -135,9 +206,17 @@ var Connexion = function () {
 }
 function password() {
     var login = $("#login").val();
+    var NomServeur = $("#NomServeur").val();
+    var NomBase = $("#NomBase").val();
+    var NomUser = $("#NomUser").val();
+    var passWordBdd = $("#passWordBdd").val();
     if (login.trim() != '') {
         const objData = {
-            login: login
+            login: login,
+            nomServeur: NomServeur,
+            nomBase: NomBase,
+            nomUtilisateur: NomUser,
+            motDePasse: passWordBdd,
         }
         $.ajax({
             url: "/Home/checkLoginPasswod",
@@ -148,15 +227,12 @@ function password() {
                 switch (data.statut) {
                     case 1:
                         document.getElementById('divConfirmPWD').style.display = "block";
-                        document.getElementById('forgotpass').style.display = "block";
                         break;
                     case 2:
                         document.getElementById('divConfirmPWD').style.display = "none";
-                        document.getElementById('forgotpass').style.display = "none";
                         break;
                     default:
                         document.getElementById('divConfirmPWD').style.display = "none";
-                        document.getElementById('forgotpass').style.display = "none";
                         break;
                 }
             },
@@ -165,6 +241,9 @@ function password() {
                 console.error(error);
             }
         });
+    } else {
+        document.getElementById('divConfirmPWD').style.display = "none";
+        $("#Confirmpassword").val('');
     }
 }
 function enableOneClick() {
@@ -217,6 +296,7 @@ function enableDblClick() {
         var versionSql = $("#versionSql").val();
         var sql = NomServeur + " (" + versionSql + " - " + NomBase + ")";
         $("#infoBDD").html(sql);
+        $("#NomBase").val(this.cells[5].innerHTML);
     });
 }
 // Désactiver le double-clic
