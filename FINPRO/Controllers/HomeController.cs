@@ -216,7 +216,7 @@ namespace FINPRO.Controllers {
             return Json(new { statut = etat }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public ActionResult login(parametre user)
+        public JsonResult login(parametre user)
         {
             Tables.rUser rUser = new Tables.rUser();
             var login = user.login;
@@ -250,95 +250,92 @@ namespace FINPRO.Controllers {
 
             string connectionString = "Data Source = " + nomServeur + "; database = " + NomBase + "; user id = " + NomUtilisateur + "; password = " + MotDePasse + ";";
             SqlConnection conn = new SqlConnection(connectionString);
-            if (result == 0)
+            conn.Open();
+            com.Connection = conn;
+            NomBase = objFinproXml.NomBase;
+            // Vérifier si la table rBase existe dans FINCONF
+            string checkTableQuery = @"USE " + NomBase + ";SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @TableName";
+            using (SqlCommand cmd = new SqlCommand(checkTableQuery, conn))
             {
-                conn.Open();
-                com.Connection = conn;
-                NomBase = objFinproXml.NomBase;
-                // Vérifier si la table rBase existe dans FINCONF
-                string checkTableQuery = @"USE " + NomBase + ";SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @TableName";
-                using (SqlCommand cmd = new SqlCommand(checkTableQuery, conn))
+                cmd.Parameters.AddWithValue("@TableName", "RUSER");
+                object result1 = cmd.ExecuteScalar();
+                if (result1 == null)
                 {
-                    cmd.Parameters.AddWithValue("@TableName", "RUSER");
-                    object result1 = cmd.ExecuteScalar();
-                    if (result1 == null)
-                    {
-                        ViewBag.Multiproj = "";
-                        //ViewBag.Message = "La table rBase n'existe pas dans la base de données " + NomBase + ".";
-                        message = "Echec de la connexion.Les paramètres de configuration sont invalides.";
-                        isAllValid = false;
-                    }
+                    ViewBag.Multiproj = "";
+                    //ViewBag.Message = "La table rBase n'existe pas dans la base de données " + NomBase + ".";
+                    message = "Echec de la connexion.Les paramètres de configuration sont invalides.";
+                    isAllValid = false;
                 }
-                conn.Close();
-            }
-            else
-            {
-                if (objTable.Rows.Count > 0)
+                else
                 {
-                    var loginActuel = (string)objTable.Rows[0][Tables.rUser.GetChamp.Login.ToString()];
-                    if (login == loginActuel)
+                    if (objTable.Rows.Count > 0)
                     {
-                        string passwordActuel = objTable.Rows[0][Tables.rUser.GetChamp.PassWord.ToString()] as string ?? string.Empty;
-                        switch (passwordActuel)
+                        var loginActuel = (string)objTable.Rows[0][Tables.rUser.GetChamp.Login.ToString()];
+                        if (login == loginActuel)
                         {
-                            case "":
-                            case null:
-                                conn.Open();
-                                com.Connection = conn;
-                                com.CommandText = "update RUSER set PASSWORD = '" + password + "' where LOGIN = '" + login + "'";
-                                dr = com.ExecuteReader();
-                                conn.Close();
-                                etatCompte = (bool)objTable.Rows[0][Tables.rUser.GetChamp.Actif.ToString()];
-                                if (!etatCompte)
-                                {
-                                    isAllValid = false;
-                                    message = "Ce compte est désactivé";
-                                }
-                                break;
-                            default:
-                                var filtreConnexion = Tables.rUser.GetChamp.Login.ToString() + " = '" + login + "' and " + Tables.rUser.GetChamp.PassWord.ToString() + " = '" + password + "'";
-                                DataTable objTabConn = rUser.RemplirDataTable(filtreConnexion);
-                                //var statutPassword = string.Equals(password, passwordActuel, StringComparison.OrdinalIgnoreCase); //Sensible a la casse
-                                if (password == passwordActuel)
-                                {
-                                    etatCompte = (bool)objTabConn.Rows[0][Tables.rUser.GetChamp.Actif.ToString()];
+                            string passwordActuel = objTable.Rows[0][Tables.rUser.GetChamp.PassWord.ToString()] as string ?? string.Empty;
+                            switch (passwordActuel)
+                            {
+                                case "":
+                                case null:
+                                    conn.Open();
+                                    com.Connection = conn;
+                                    com.CommandText = "update RUSER set PASSWORD = '" + password + "' where LOGIN = '" + login + "'";
+                                    dr = com.ExecuteReader();
+                                    conn.Close();
+                                    etatCompte = (bool)objTable.Rows[0][Tables.rUser.GetChamp.Actif.ToString()];
                                     if (!etatCompte)
                                     {
                                         isAllValid = false;
                                         message = "Ce compte est désactivé";
                                     }
-                                }
-                                else
-                                {
-                                    isAllValid = false;
-                                    message = "Login ou mot de passe incorrect";
-                                }
-                                break;
+                                    break;
+                                default:
+                                    var filtreConnexion = Tables.rUser.GetChamp.Login.ToString() + " = '" + login + "' and " + Tables.rUser.GetChamp.PassWord.ToString() + " = '" + password + "'";
+                                    DataTable objTabConn = rUser.RemplirDataTable(filtreConnexion);
+                                    //var statutPassword = string.Equals(password, passwordActuel, StringComparison.OrdinalIgnoreCase); //Sensible a la casse
+                                    if (password == passwordActuel)
+                                    {
+                                        etatCompte = (bool)objTabConn.Rows[0][Tables.rUser.GetChamp.Actif.ToString()];
+                                        if (!etatCompte)
+                                        {
+                                            isAllValid = false;
+                                            message = "Ce compte est désactivé";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        isAllValid = false;
+                                        message = "Login ou mot de passe incorrect";
+                                    }
+                                    break;
+                            }
+                        }
+                        if (isAllValid)
+                        {
+                            Session["LOGIN"] = login;
+                            Session["GROUPE"] = (string)objTable.Rows[0][Tables.rUser.GetChamp.Groupe.ToString()];
+
+                            Session["NomServeur"] = nomServeur;
+                            Session["NomBase"] = NomBase;
+                            Session["NomUtilisateur"] = NomUtilisateur;
+                            Session["MotDePasse"] = MotDePasse;
+                            Session["result"] = message;
+                            Tables.rGroup rGroup = new Tables.rGroup();
+                            var filtreGroupe = Tables.rGroup.GetChamp.Code.ToString() + " = '" + Session["GROUPE"].ToString() + "'";
+                            DataTable tabGr = rGroup.RemplirDataTable(filtreGroupe);
+                            Session["TypeGroupe"] = (string)tabGr.Rows[0][Tables.rGroup.GetChamp.Type.ToString()];
+                            Session["pass"] = user.password;
                         }
                     }
-                    if (isAllValid)
+                    else
                     {
-                        Session["LOGIN"] = login;
-                        Session["GROUPE"] = (string)objTable.Rows[0][Tables.rUser.GetChamp.Groupe.ToString()];
-
-                        Session["NomServeur"] = nomServeur;
-                        Session["NomBase"] = NomBase;
-                        Session["NomUtilisateur"] = NomUtilisateur;
-                        Session["MotDePasse"] = MotDePasse;
-                        Session["result"] = message;
-                        Tables.rGroup rGroup = new Tables.rGroup();
-                        var filtreGroupe = Tables.rGroup.GetChamp.Code.ToString() + " = '" + Session["GROUPE"].ToString() + "'";
-                        DataTable tabGr = rGroup.RemplirDataTable(filtreGroupe);
-                        Session["TypeGroupe"] = (string)tabGr.Rows[0][Tables.rGroup.GetChamp.Type.ToString()];
-                        Session["pass"] = user.password;
+                        isAllValid = false;
+                        message = "Login ou mot de passe incorrect";
                     }
                 }
-                else
-                {
-                    isAllValid = false;
-                    message = "Login ou mot de passe incorrect";
-                }
             }
+            conn.Close();
             return Json(new
             {
                 statut = isAllValid,
@@ -347,7 +344,21 @@ namespace FINPRO.Controllers {
         }
         public ActionResult account()
         {
-            return View();
+            if (Session["LOGIN"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return View(parametre);
+            }
+        }
+        //Déconnexion
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index");
         }
     }
 }

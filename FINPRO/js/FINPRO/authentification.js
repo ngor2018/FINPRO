@@ -90,7 +90,6 @@
             case "none":
                 if (!login || !password) {
                     isAllValid = false;
-                    alert()
                     document.getElementById('erreur_authentif').textContent = "Tous les champs doivent être remplis.";
                 }
                 break;
@@ -141,67 +140,7 @@
     })
 })
 var Connexion = function () {
-    var isAllValid = true;
-    const login = document.getElementById('login').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const Confirmpassword = document.getElementById('Confirmpassword').value.trim();
-
-    var errorMessage = document.getElementById("erreur");
-    const form = document.getElementById('divConfirmPWD');
-    const currentDisplay = window.getComputedStyle(form).display;
-    switch (currentDisplay) {
-        case "none":
-            if (!login || !password) {
-                isAllValid = false;
-                errorMessage.textContent = "Tous les champs doivent être remplis.";
-            }
-            break;
-        case "block":
-            if (!login || !password || !Confirmpassword) {
-                isAllValid = false;
-                errorMessage.textContent = "Tous les champs doivent être remplis.";
-            }
-            // Vérification des critères de mot de passe
-            // Au moins un chiffre, une majuscule, et 6 caractères
-            var passwordPattern = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-            if (!passwordPattern.test(password)) {
-                errorMessage.textContent = "Au moins 6 caractères(une majuscule, et un chiffre compris)";
-                isAllValid = false;
-            }
-            if (password !== Confirmpassword) {
-                isAllValid = false;
-                errorMessage.textContent = "Les nouveaux mots de passe ne correspondent pas !";
-            }
-            break;
-    }
-    if (isAllValid) {
-        const objData = {
-            login: login,
-            password: password,
-        }
-        $.ajax({
-            async: true,
-            type: 'POST',
-            dataType: 'JSON',
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(objData),
-            url: "/Home/login",
-            success: function (data) {
-                switch (data.statut) {
-                    case true:
-                        window.location.href = '/Home/account';
-                        break;
-                    case false:
-                        $("#erreur").html(data.message);
-                }
-                document.getElementById('divConfirmPWD').style.display = "none";
-                document.getElementById('forgotpass').style.display = "none";
-            },
-            error: function () {
-                alert('Erreur');
-            }
-        });
-    }
+    
 
 }
 function password() {

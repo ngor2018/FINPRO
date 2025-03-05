@@ -8,20 +8,38 @@
 
         // Vérifier à quel contrôleur appartient le lien en fonction des classes
         switch (true) {
-            case classes.contains("Parametre"):
-                controller = "Parametre";
-                break;
-            case classes.contains("Saisie"):
-                controller = "Saisie";
-                break;
-            case classes.contains("Exploitations"):
-                controller = "Exploitations";
-                break;
-            case classes.contains("Consommations"):
-                controller = "Consommations";
-                break;
             case classes.contains("Home"):
                 controller = "Home";
+                break;
+            case classes.contains("Codifications"):
+                controller = "Codifications";
+                break;
+            case classes.contains("ComptabiliteGenerale"):
+                controller = "ComptabiliteGenerale";
+                break;
+            case classes.contains("ComptabiliteAnalytique"):
+                controller = "ComptabiliteAnalytique";
+                break;
+            case classes.contains("SuiviBudgetaire"):
+                controller = "SuiviBudgetaire";
+                break;
+            case classes.contains("SuiviConvention"):
+                controller = "SuiviConvention";
+                break;
+            case classes.contains("Immobilisations"):
+                controller = "Immobilisations";
+                break;
+            case classes.contains("EtatsFinanciers"):
+                controller = "EtatsFinanciers";
+                break;
+            case classes.contains("MarchesEngagements"):
+                controller = "MarchesEngagements";
+                break;
+            case classes.contains("Decaissements"):
+                controller = "Decaissements";
+                break;
+            case classes.contains("Utilitaires"):
+                controller = "Utilitaires";
                 break;
             default:
                 console.warn("Aucun contrôleur correspondant trouvé.");
