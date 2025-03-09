@@ -1,6 +1,9 @@
 ﻿<nav class="navbar navbar-top navbar-slim fixed-top navbar-expand" id="topNavSlim" style="display:none;">
     <div class="collapse navbar-collapse justify-content-between">
-        @Html.Partial("logo_next")
+        <div class="navbar-logo">
+            <button class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+            @Html.Partial("logo_next")
+        </div>
         @Html.Partial("Entete")
     </div>
 </nav>
