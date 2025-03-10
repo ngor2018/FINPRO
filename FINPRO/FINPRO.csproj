@@ -168,6 +168,7 @@
     <Content Include="Content\dx.material.teal.light.css" />
     <Content Include="Content\dx.softblue.compact.css" />
     <Content Include="Content\dx.softblue.css" />
+    <Content Include="Content\select2.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -248,6 +249,9 @@
     <Content Include="js\echarts.min.js" />
     <Content Include="js\ecommerce-dashboard.js" />
     <Content Include="js\feather.min.js" />
+    <Content Include="js\FINPRO\Codifications\ParamGen.js" />
+    <Content Include="js\FINPRO\Codifications\PlanCompte.js" />
+    <Content Include="js\FINPRO\Codifications\structures.js" />
     <Content Include="js\imagesloaded.pkgd.min.js" />
     <Content Include="js\is.min.js" />
     <Content Include="js\leaflet-tilelayer-colorfilter.min.js" />
@@ -378,9 +382,9 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.6.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.6.1.min.map" />
+    <Content Include="Scripts\select2.min.js" />
     <None Include="Scripts\_references.js" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\customize.cshtml" />
     <Content Include="Views\Shared\Entete.cshtml" />
     <Content Include="Views\Shared\footer.cshtml" />
@@ -456,6 +460,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
+    <Content Include="Views\Codifications\Structures.cshtml" />
+    <Content Include="Views\Codifications\popup\modalStructure.cshtml" />
+    <Content Include="Views\Codifications\PlanCompte.cshtml" />
+    <Content Include="Views\Codifications\ParametreGeneraux.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -469,6 +478,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CodificationsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />
     <Compile Include="Global.asax.cs">

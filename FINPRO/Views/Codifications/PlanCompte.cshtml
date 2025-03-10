@@ -1,0 +1,58 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <h3 class="mb-2">Plan Compte</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" id="EntiteBudgetTech-tab" data-bs-toggle="tab" href="#tab-EntiteBudgetTech" role="tab" aria-controls="tab-EntiteBudgetTech" aria-selected="true">Entités Budgétaires & techniques</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="PlanExterne-tab" data-bs-toggle="tab" href="#tab-PlanExterne" role="tab" aria-controls="tab-PlanExterne" aria-selected="false" tabindex="-1">Plans externes</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="EntiteComptable-tab" data-bs-toggle="tab" href="#tab-EntiteComptable" role="tab" aria-controls="tab-EntiteComptable" aria-selected="false" tabindex="-1">Entité comptable</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="EntiteFinancier-tab" data-bs-toggle="tab" href="#tab-EntiteFinancier" role="tab" aria-controls="tab-EntiteFinancier" aria-selected="false" tabindex="-1">Entité financière</a></li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade active show" id="tab-EntiteBudgetTech" role="tabpanel" aria-labelledby="EntiteBudgetTech-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Budget" onclick="Budget()">Budget</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Activite" onclick="Activite()">Activité</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="zone" onclick="zone()">Zone</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-PlanExterne" role="tabpanel" aria-labelledby="PlanExterne-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p1" onclick="p1()">P1</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p2" onclick="p2()">P2</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p3" onclick="p3()">P3</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p4" onclick="p4()">P4</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="CorrespondPlan" onclick="CorrespondPlan()">Correspondance des Plans</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-EntiteComptable" role="tabpanel" aria-labelledby="EntiteComptable-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanComptable" onclick="PlanComptable()">Plan Comptable</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanTier" onclick="PlanTier()">Plan des tiers</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanJournaux" onclick="PlanJournaux()">Plan des journaux</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-EntiteFinancier" role="tabpanel" aria-labelledby="EntiteFinancier-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="BailleurFond" onclick="BailleurFond()">Bailleur de fonds</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Conventions" onclick="Conventions()">Conventions</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="CategorieFinance" onclick="CategorieFinance()">Catégories financières</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Ventilation" onclick="Ventilation()">Ventilation</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Signataires" onclick="Signataires()">Signataires</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/FINPRO/Codifications/PlanCompte.js"></script>

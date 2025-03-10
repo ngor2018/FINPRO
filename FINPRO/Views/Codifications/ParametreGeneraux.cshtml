@@ -1,0 +1,45 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <h3 class="mb-2">Plan Compte</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" id="ParamProjet-tab" data-bs-toggle="tab" href="#tab-ParamProjet" role="tab" aria-controls="tab-ParamProjet" aria-selected="true">Paramètres du Projet</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="ParamReg-tab" data-bs-toggle="tab" href="#tab-ParamReg" role="tab" aria-controls="tab-ParamReg" aria-selected="false" tabindex="-1">Paramètres régionaux</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="AutresParam-tab" data-bs-toggle="tab" href="#tab-AutresParam" role="tab" aria-controls="tab-AutresParam" aria-selected="false" tabindex="-1">Autres paramètres</a></li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade active show" id="tab-ParamProjet" role="tabpanel" aria-labelledby="ParamProjet-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamProjetMonnaie" onclick="ParamProjetMonnaie()">Monnaies</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamProjetPays" onclick="ParamProjetPays()">Pays</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamProjetEntete" onclick="ParamProjetEntete()">Entête</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-ParamReg" role="tabpanel" aria-labelledby="ParamReg-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamRegExercice" onclick="ParamRegExercice()">Exercices</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamRegEtat" onclick="ParamRegEtat()">Modèles d'état</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="ParamRegSite" onclick="ParamRegSite()">Sites</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-AutresParam" role="tabpanel" aria-labelledby="AutresParam-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="AutreParamUnite" onclick="AutreParamUnite()">Unités</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="AutreParamEmplacement" onclick="AutreParamEmplacement()">Emplacements</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="AutreParamSysteme" onclick="AutreParamSysteme()">Système</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="AutreParamSuperClass" onclick="AutreParamSuperClass()">Super Classes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/FINPRO/Codifications/ParamGen.js"></script>

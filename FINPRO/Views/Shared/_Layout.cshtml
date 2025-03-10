@@ -1,9 +1,24 @@
 ﻿@{
     var action = ViewContext.RouteData.Values["action"].ToString();
-     if (@Session["LOGIN"] == null)
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    bool statut = false;
+    var etat = "";
+    if (@Session["LOGIN"] == null)
+    {
+        Response.Redirect("~/Home/Index");
+    }
+    if (ViewBag.Controleur == controller)
+    {
+        statut = true;
+        if (ViewBag.page == action)
         {
-            Response.Redirect("~/Home/Index");
+            etat = "active";
         }
+        else
+        {
+            etat = "";
+        }
+    }
 }
 <!DOCTYPE html>
 
@@ -67,8 +82,8 @@
     <link href="~/Content/css/leaflet.css" rel="stylesheet">
     <link href="~/Content/css/MarkerCluster.css" rel="stylesheet">
     <link href="~/Content/css/MarkerCluster.Default.css" rel="stylesheet">
-
-
+    <link href="~/Content/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
 
 </head>
 
@@ -93,7 +108,7 @@
                             <p class="navbar-vertical-label">@Session["titre"]</p>
                             <hr class="navbar-vertical-line" />
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-CRM" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-CRM" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Codifications</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
@@ -497,7 +512,7 @@
             }
         </script>
         <div class="content">
-            <input type="text" name="@action" value="@action" id="pageName" class="form-control" />
+            <input type="hidden" name="@action" value="@action" id="pageName" class="form-control" />
             @RenderBody()
             @Html.Partial("footer")
         </div>

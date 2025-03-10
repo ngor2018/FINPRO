@@ -1,0 +1,104 @@
+﻿
+<div id="fullscreen_popup"  style="display:none;">
+    <div class="forme" id="partieBudget">
+        <div class="row justify-content-center" style="padding-top:2%">
+            <div class="col-md-8 pageView">
+                <div class="row">
+                    <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
+                        <div class="float-start">
+                            <strong id="titleStruct"></strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_padd">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="niveau">Niveau</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="niveau" value="" id="niveau" class="form-control input_focus disabled_me" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="libelle">Libellé</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="libelle" value="" id="libelle" class="form-control input_focus disabled_me" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="abreviation">Abréviation</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="abreviation" value="" id="abreviation" class="form-control input_focus disabled_me" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="format">Format</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="format" value="" id="format" class="form-control input_focus disabled_me" maxlength="10"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="titre">Titre</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="titre" value="" id="titre" class="form-control input_focus disabled_me" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="abreviationTitre">Abréviation Titre</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="abreviationTitre" value="" id="abreviationTitre" class="form-control input_focus disabled_me" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-right" style="padding-top:10px;text-align:right">
+                        <div class="col-md-12">
+                            <button class="btn btn-secondary btn-sm" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                            <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                            <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                            <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                            <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
+                            <table class="table-bordered tabList" id="contentTab" width="100%">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th>Niveau</th>
+                                        <th>Libellé</th>
+                                        <th>Abréviation</th>
+                                        <th>Format</th>
+                                        <th hidden>titre</th>
+                                        <th hidden>Abre titre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" style="text-align:center">
+                        <div class="col-md-12" style="background-color:#0094ff;color:#fff">
+                            <strong>Format : 9=Numérique;A=Alphabétique;C=AlphaNumérique</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,3 +1,35 @@
+.form_padd .row{
+    padding-top:4px;
+}
+.input_focus:focus, .form-control-sm:focus {
+    background-color: yellow;
+}
+
+.input_focus {
+    border: 1px solid #808080;
+    font-weight: 600;
+    border-radius: 5px;
+    height: 28px;
+}
+.select2-container {
+    z-index: 2001 !important; /* Même niveau que Bootstrap Modal */
+}
+.forme {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.forme.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.forme.hidden {
+    display: none;
+    opacity: 0;
+    transform: scale(0.9);
+}
 span.erreur {
     color: red;
     font-size: 15px;
@@ -7,7 +39,9 @@ th, td {
     width: calc(var(--char-count, 5) * 1ch);
     white-space: nowrap;
 }
-
+thead, tbody, tfoot, tr, td, th {
+    border: 1px solid #dad3d3;
+}
 .tabList thead tr th {
     background-color: #77B5FE;
     color: #fff;
@@ -20,13 +54,9 @@ th, td {
     font-size: 12px;
 }
 
-.tabList thead tr, .tabList tbody tr {
-    line-height: 6px;
+.tabList thead tr th {
+    text-align: center;
 }
-
-    .tabList thead tr th {
-        text-align: center;
-    }
 
 .selected {
     background-color: #f5d279;
@@ -64,9 +94,14 @@ th, td {
     overflow-y: scroll;
     overflow-x: hidden;
 }
-
+.pageView {
+    background-color: #fff;
+    border-radius: 0 8px 8px 0;
+    padding-top: 10px;
+    padding-bottom: 10px
+}
 #fullscreen_popup {
-    z-index: 1003;
+    z-index: 2000;
 }
 
 #fullscreen_popup_Delete {

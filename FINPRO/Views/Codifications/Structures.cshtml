@@ -1,0 +1,38 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <h3 class="mb-2">Structure</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" id="StructurePlan-tab" data-bs-toggle="tab" href="#tab-StructurePlan" role="tab" aria-controls="tab-StructurePlan" aria-selected="true">Structures des Plans</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="StructurePlanExterne-tab" data-bs-toggle="tab" href="#tab-StructurePlanExterne" role="tab" aria-controls="tab-StructurePlanExterne" aria-selected="false" tabindex="-1">Structure des plans externes</a></li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade active show" id="tab-StructurePlan" role="tabpanel" aria-labelledby="StructurePlan-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanBudget" onclick="StructPlanBudget()">Budget</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanCompt" onclick="StructPlanCompt()">Plan comptable</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructActivite" onclick="StructActivite()">Activité</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructZone" onclick="StructZone()">Zones</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructEmplacements" onclick="StructEmplacements()">Emplacements</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-StructurePlanExterne" role="tabpanel" aria-labelledby="StructurePlanExterne-tab">
+                <div class="row" style="padding-bottom:10px">
+                    <div class="col-md-12">
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanExtP1" onclick="StructPlanExtP1()">P1</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanExtP2" onclick="StructPlanExtP2()">P2</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanExtP3" onclick="StructPlanExtP3()">P3</button>
+                        <button class="btn btn-secondary me-1 mb-1" type="button" id="StructPlanExtP4" onclick="StructPlanExtP4()">P4</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("popup/modalStructure")
+<script src="~/js/FINPRO/Codifications/structures.js"></script>
