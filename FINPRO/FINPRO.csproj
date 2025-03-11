@@ -249,9 +249,9 @@
     <Content Include="js\echarts.min.js" />
     <Content Include="js\ecommerce-dashboard.js" />
     <Content Include="js\feather.min.js" />
-    <Content Include="js\FINPRO\Codifications\ParamGen.js" />
-    <Content Include="js\FINPRO\Codifications\PlanCompte.js" />
-    <Content Include="js\FINPRO\Codifications\structures.js" />
+    <Content Include="js\FINPRONET\Codifications\ParamGen.js" />
+    <Content Include="js\FINPRONET\Codifications\PlanCompte.js" />
+    <Content Include="js\FINPRONET\Codifications\structures.js" />
     <Content Include="js\imagesloaded.pkgd.min.js" />
     <Content Include="js\is.min.js" />
     <Content Include="js\leaflet-tilelayer-colorfilter.min.js" />
@@ -263,9 +263,10 @@
     <Content Include="js\polyfill.min.js" />
     <Content Include="js\popper.min.js" />
     <Content Include="js\simplebar.min.js" />
-    <Content Include="js\FINPRO\authentification.js" />
-    <Content Include="js\FINPRO\Layout.js" />
-    <Content Include="js\FINPRO\parametre\parametre.js" />
+    <Content Include="js\authentification.js" />
+    <Content Include="js\Layout.js" />
+    <Content Include="js\FINPRONET\parametre\parametre.js" />
+    <Content Include="js\STOCK\parametre\parametre.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.mvc.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -465,6 +466,7 @@
     <Content Include="Views\Codifications\PlanCompte.cshtml" />
     <Content Include="Views\Codifications\ParametreGeneraux.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\parametre\Pays.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -480,6 +482,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CodificationsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ParametreController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

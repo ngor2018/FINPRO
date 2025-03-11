@@ -41,6 +41,21 @@
             case classes.contains("Utilitaires"):
                 controller = "Utilitaires";
                 break;
+            case classes.contains("Parametre"):
+                controller = "Parametre";
+                break;
+            case classes.contains("Saisie"):
+                controller = "Saisie";
+                break;
+            case classes.contains("Exploitations"):
+                controller = "Exploitations";
+                break;
+            case classes.contains("Consommations"):
+                controller = "Consommations";
+                break;
+            case classes.contains("Fichiers"):
+                controller = "Fichiers";
+                break;
             default:
                 console.warn("Aucun contrôleur correspondant trouvé.");
                 return;

@@ -1,24 +1,26 @@
 ﻿@{
     var action = ViewContext.RouteData.Values["action"].ToString();
-    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    //var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var controller = ViewBag.Controleur;
+    var projet = ViewBag.Projet;
     bool statut = false;
     var etat = "";
     if (@Session["LOGIN"] == null)
     {
         Response.Redirect("~/Home/Index");
     }
-    if (ViewBag.Controleur == controller)
-    {
-        statut = true;
-        if (ViewBag.page == action)
-        {
-            etat = "active";
-        }
-        else
-        {
-            etat = "";
-        }
-    }
+    //if (ViewBag.Controleur == controller)
+    //{
+    //    statut = true;
+    //    if (ViewBag.page == action)
+    //    {
+    //        etat = "active";
+    //    }
+    //    else
+    //    {
+    //        etat = "";
+    //    }
+    //}
 }
 <!DOCTYPE html>
 
@@ -64,6 +66,9 @@
     <link href="~/Content/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
     <link href="~/Content/Site.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-3.6.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
         if (phoenixIsRTL) {
@@ -82,8 +87,6 @@
     <link href="~/Content/css/leaflet.css" rel="stylesheet">
     <link href="~/Content/css/MarkerCluster.css" rel="stylesheet">
     <link href="~/Content/css/MarkerCluster.Default.css" rel="stylesheet">
-    <link href="~/Content/select2.min.css" rel="stylesheet" />
-    <script src="~/Scripts/select2.min.js"></script>
 
 </head>
 
@@ -104,13 +107,44 @@
                 <div class="navbar-vertical-content">
                     <ul class="navbar-nav flex-column" id="navbarVerticalNav">
                         <li class="nav-item">
+                            <p class="navbar-vertical-label"><strong>App</strong></p>
+                            <hr class="navbar-vertical-line" />
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-app" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Fichiers</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-app">
+                                        <li class="collapsed-nav-item-title d-none">Fichiers</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Fichiers" href="#" name="NewConnexion" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Nouvelle Connexion</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Fichiers" name="ChangerLangue" href="#" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Changer de Langue</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Codifications" href="#" name="Groupe" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Groupe</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
                             <!-- label-->
-                            <p class="navbar-vertical-label">@Session["titre"]</p>
+                            <p class="navbar-vertical-label"><strong>FINPRONET</strong></p>
                             <hr class="navbar-vertical-line" />
                             <div class="nav-item-wrapper">
                                 <a class="nav-link dropdown-indicator label-1" href="#nv-CRM" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
                                     <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Codifications</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Codifications</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
@@ -199,13 +233,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events1" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Suivi budgétaire</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events1">
                                         <li class="collapsed-nav-item-title d-none">Suivi budgétaire</li>
                                         <li class="nav-item">
                                             <a class="nav-link SuiviBudgetaire" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
@@ -246,13 +280,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events2" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Suivi des conventions</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events2">
                                         <li class="collapsed-nav-item-title d-none">Suivi des conventions</li>
                                         <li class="nav-item">
                                             <a class="nav-link SuiviConvention" href="#" name="ParametresIDA" data-bs-toggle="" aria-expanded="false">
@@ -273,13 +307,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events3" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Immobilisations</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events3">
                                         <li class="collapsed-nav-item-title d-none">Immobilisations</li>
                                         <li class="nav-item">
                                             <a class="nav-link Immobilisations" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
@@ -300,13 +334,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events4" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Etats Financiers</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events4">
                                         <li class="collapsed-nav-item-title d-none">Etats Financiers</li>
                                         <li class="nav-item">
                                             <a class="nav-link EtatsFinanciers" href="#" name="EtatStandard" data-bs-toggle="" aria-expanded="false">
@@ -327,13 +361,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events5" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Marchés Engagements</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events5">
                                         <li class="collapsed-nav-item-title d-none">Marchés Engagements</li>
                                         <li class="nav-item">
                                             <a class="nav-link MarchesEngagements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
@@ -354,13 +388,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events6" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Décaissements</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events6">
                                         <li class="collapsed-nav-item-title d-none">Décaissements</li>
                                         <li class="nav-item">
                                             <a class="nav-link Decaissements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
@@ -376,13 +410,13 @@
                                 </div>
                             </div><!-- parent pages-->
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events7" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Utilitaires</span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events7">
                                         <li class="collapsed-nav-item-title d-none">Utilitaires</li>
                                         <li class="nav-item">
                                             <a class="nav-link Utilitaires" href="#" name="BaseDonnees" data-bs-toggle="" aria-expanded="false">
@@ -397,6 +431,188 @@
                                         <li class="nav-item">
                                             <a class="nav-link Utilitaires" href="#" name="tracabilite" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Traçabilité</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- parent pages-->
+                        </li>
+                        <li class="nav-item">
+                            <!-- label-->
+                            <p class="navbar-vertical-label"><strong>FINSTOCK</strong></p>
+                            <hr class="navbar-vertical-line" />
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Paramétres</span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events8">
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Pays" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Pays</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" name="EnteteProjet" href="#" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Entête du projet</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Saisie_Sites" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie des Sites</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Exercices" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exercices</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Familles" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Familles</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Consommateurs" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommateurs</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="signataire" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Signataires</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="" name="Monnaie" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Monnaie</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Magasins</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Groupes</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="services" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Services</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametre" href="#" name="unite" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Unité</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- parent pages-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events9" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Saisie</span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events9">
+                                        <li class="collapsed-nav-item-title d-none">Saisie</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Saisie" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Articles</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Saisie" href="#" name="EntreeStock" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Entrée de stock</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Saisie" href="#" name="Mouvements" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Mouvements</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Saisie" href="#" name="Affectations" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Affectations</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Saisie" href="#" name="SortieStock" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Sortie de Stock</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- parent pages-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events10" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-email">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Exploitations</span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events10">
+                                        <li class="collapsed-nav-item-title d-none">Exploitations</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Exploitations" href="#" name="JournalStock" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Journal de stocks</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Exploitations" href="#" name="GrandLivre" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Grand Livre</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Exploitations" href="#" name="PropositionCommandes" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Proposition de commandes</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Exploitations" href="#" name="EtatStock" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etats des stocks</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Exploitations" href="#" name="RuptureStock" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Rupture de stocks</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- parent pages-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-events11" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Consommations</span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events11">
+                                        <li class="collapsed-nav-item-title d-none">Consommations</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Consommations" href="#" name="Consommateur" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par consommateur</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Consommations" href="#" name="EtatCompta" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etat pour la comptabilité</span></div>
+                                            </a><!-- more inner pages-->
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Consommations" href="#" name="ConsomService" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par service</span></div>
                                             </a><!-- more inner pages-->
                                         </li>
                                     </ul>
@@ -513,6 +729,8 @@
         </script>
         <div class="content">
             <input type="hidden" name="@action" value="@action" id="pageName" class="form-control" />
+            <input type="hidden" name="@controller" value="@controller" id="pageNameController" class="form-control" />
+            <input type="hidden" name="@projet" value="@projet" id="pageNameProjet" class="form-control" />
             @RenderBody()
             @Html.Partial("footer")
         </div>
@@ -542,7 +760,7 @@
     <script src="~/js/leaflet.markercluster.js"></script>
     <script src="~/js/leaflet-tilelayer-colorfilter.min.js"></script>
     <script src="~/js/ecommerce-dashboard.js"></script>
-    <script src="~/js/FINPRO/Layout.js"></script>
+    <script src="~/js/Layout.js"></script>
 </body>
 
 </html>
