@@ -1,4 +1,5 @@
-﻿$(function () {
+﻿var pageName = $("#pageName").val();
+$(function () {
     paramater();
     $("#code").keyup(function () {
         this.value = this.value.toUpperCase();
@@ -6,20 +7,59 @@
     $("#fermer").click(function () {
         document.getElementById('fullscreen_popup').style.display = "none";
     })
+    $("#" + pageName + " tbody").on("click", "tr", function () {
+        $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
+        // Supprimer les messages d'erreur
+        $(".erreur").html('').hide();
+        document.getElementById('code').disabled = true;
+        $("#code").val(this.cells[0].innerHTML);
+        $("#libelle").val(this.cells[1].innerHTML);
+        document.getElementById('Supprimer').style.visibility = "visible";
+
+        toggleForms("partieUnique");
+        var nomTitre = "Editer ";
+        switch (pageName) {
+            case "Pays":
+                nomTitre += "Pays";
+                break;
+        }
+        $("#titleParam_").html(nomTitre);
+    })
 })
+var Enregistrer = function () {
+    var isAllValid = true;
+    var code = $("#code").val();
+    var libelle = $("#libelle").val();
+    if (code.trim() == '') {
+        isAllValid = false;
+        $("#code").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
+    }
+    if (libelle.trim() == '') {
+        isAllValid = false;
+        $("#libelle").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
+    }
+    if (isAllValid) {
+        alert('');
+    }
+}
 var Ajout = function () {
     toggleForms("partieUnique");
     resetForm();
+    var nomTitre = "Ajout ";
+    switch (pageName) {
+        case "Pays":
+            nomTitre += "Pays";
+            break;
+    }
+    $("#titleParam_").html(nomTitre);
+    setTimeout(function () {
+        $("#code").focus();
+    },500)
 }
 function paramater() {
-    var pageName = $("#pageName").val();
     var pageNameController = $("#pageNameController").val();
     var pageNameProjet = $("#pageNameProjet").val();
     var titre = $("#nameTitre");
-    switch (pageName) {
-        case "Pays":
-            break;
-    }
     titre.html(`
         <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
@@ -50,7 +90,7 @@ function formTable(pageName) {
                     <div id="niveauImpression"></div>
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table table-bordered tabList" id="${pageName}">
+                            <table class="table-bordered tabList" id="${pageName}">
                                 <thead>
                                     <tr>
                                         <th>Code</th>
@@ -70,7 +110,24 @@ function formTable(pageName) {
     formPopup(pageName);
 }
 function formPopup(pageName) {
-    var list = "";
+    var list = "", tailleCode = 0;
+    switch (pageName) {
+        case "Pays":
+            tailleCode = 3;
+            break;
+        case "signataire":
+            tailleCode = 10;
+            break;
+        case "groupes":
+            tailleCode = 2;
+            break;
+        case "services":
+            tailleCode = 5;
+            break;
+        case "unite":
+            tailleCode = 10;
+            break;
+    }
     switch (pageName) {
         case "Pays":
         case "signataire":
@@ -96,7 +153,8 @@ function formPopup(pageName) {
                                         <label for="code">Code</label>
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="text" name="code" value="" id="code" class="form-control input_focus"/>
+                                        <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus"/>
+                                        <span class='erreur'></span>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -104,7 +162,8 @@ function formPopup(pageName) {
                                         <label for="libelle">Libellé</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" name="libelle" value="" id="libelle" class="form-control input_focus"/>
+                                        <input type="text" name="libelle" value="" id="libelle" maxlength="250" class="input_focus"/>
+                                        <span class='erreur'></span>
                                     </div>
                                 </div>
                                 <div class="row justify-content-end" style="text-align:right;padding-top:15px">
@@ -137,15 +196,14 @@ function loadData(code) {
     })
 }
 function reportData(data) {
-    var code = $("#pageName").val();
     // Vérifier si la table existe déjà et la réinitialiser
-    if ($.fn.DataTable.isDataTable('#' + code)) {
-        $('#' + code).DataTable().destroy();
-        $("#" + code + " tbody").empty();
+    if ($.fn.DataTable.isDataTable('#' + pageName)) {
+        $('#' + pageName).DataTable().destroy();
+        $("#" + pageName + " tbody").empty();
     }
     data.forEach(item => {
         var list = "";
-        switch (code) {
+        switch (pageName) {
             case "Pays":
             case "signataire":
             case "groupes":
@@ -161,9 +219,10 @@ function reportData(data) {
 
         }
         // Ajouter la ligne générée au tableau
-        $("#" + code + " tbody").append(list);
+        $("#" + pageName + " tbody").append(list);
     })
-    DataTable(code);
+    DataTable(pageName);
+
 }
 function DataTable(code) {
     $('#' + code).DataTable({
@@ -189,16 +248,17 @@ function DataTable(code) {
             }
         }
     });
+    $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
 }
 function resetForm() {
     $(".input_focus").val('');
     $('.input_focus').siblings('span.erreur').css('display', 'none');
     document.getElementById('Supprimer').style.visibility = "hidden";
+    document.getElementById('code').disabled = false;
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
     let forms = ["partieUnique", ""];
-    resetForm();
     document.getElementById('fullscreen_popup').style.display = "block";
     forms.forEach(id => {
         let elem = document.getElementById(id);

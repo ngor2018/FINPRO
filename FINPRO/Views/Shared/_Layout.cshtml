@@ -9,18 +9,6 @@
     {
         Response.Redirect("~/Home/Index");
     }
-    //if (ViewBag.Controleur == controller)
-    //{
-    //    statut = true;
-    //    if (ViewBag.page == action)
-    //    {
-    //        etat = "active";
-    //    }
-    //    else
-    //    {
-    //        etat = "";
-    //    }
-    //}
 }
 <!DOCTYPE html>
 
@@ -68,6 +56,8 @@
     <script src="~/Scripts/jquery-3.6.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
 
+    <link href="~/Content/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
@@ -731,6 +721,7 @@
             <input type="hidden" name="@action" value="@action" id="pageName" class="form-control" />
             <input type="hidden" name="@controller" value="@controller" id="pageNameController" class="form-control" />
             <input type="hidden" name="@projet" value="@projet" id="pageNameProjet" class="form-control" />
+            <input type="text" name="nameIDButton" value="" id="nameIDButton" class="form-control" />
             @RenderBody()
             @Html.Partial("footer")
         </div>

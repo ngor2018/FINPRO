@@ -27,8 +27,8 @@ namespace FINPRO.Controllers
             }
             else
             {
-                ViewBag.Controleur = "Codifications";
-                ViewBag.page = "Structures";
+                ViewBag.Projet = "FINPRONET";
+                ViewBag.Controleur = "Structures";
                 return View();
             }
         }
@@ -40,8 +40,8 @@ namespace FINPRO.Controllers
             }
             else
             {
-                ViewBag.Controleur = "Codifications";
-                ViewBag.page = "PlanCompte";
+                ViewBag.Projet = "FINPRONET";
+                ViewBag.Controleur = "Plans de comptes";
                 return View();
             }
         }
@@ -53,8 +53,8 @@ namespace FINPRO.Controllers
             }
             else
             {
-                ViewBag.Controleur = "Codifications";
-                ViewBag.page = "ParametreGeneraux";
+                ViewBag.Projet = "FINPRONET";
+                ViewBag.Controleur = "Paramètres généraux";
                 return View();
             }
         }
@@ -62,9 +62,11 @@ namespace FINPRO.Controllers
         {
             List<parametre> listData = new List<parametre>();
             DataTable objTab = new DataTable();
+            DataTable objTab1 = new DataTable();
+            int cpte = 0;
             switch (id)
             {
-                case "Budget":
+                case "StructPlanBudget":
                     Tables.rStruPost rStruPost = new Tables.rStruPost();
                     objTab = rStruPost.RemplirDataTable();
                     foreach (DataRow row in objTab.Rows)
@@ -79,9 +81,17 @@ namespace FINPRO.Controllers
                             abreviationTitre = row[Tables.rStruPost.GetChamp.TitreCourt.ToString()].ToString(),
                         });
                     }
+                    Tables.rPost1 rPost1 = new Tables.rPost1();
+                    objTab1 = rPost1.RemplirDataTable();
+                    cpte = (int)objTab1.Rows.Count;
                     break;
             }
-            return Json(listData, JsonRequestBehavior.AllowGet);
+            var data = new
+            {
+                total = cpte,
+                listData = listData
+            };
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
     }
 }
