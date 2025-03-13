@@ -466,6 +466,7 @@
     <Content Include="Views\Codifications\ParametreGeneraux.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\parametre\Pays.cshtml" />
+    <Content Include="Views\parametre\services.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -96,7 +96,7 @@
                 <!-- scrollbar removed-->
                 <div class="navbar-vertical-content">
                     <ul class="navbar-nav flex-column" id="navbarVerticalNav">
-                        <li class="nav-item">
+                        <li class="nav-item" hidden>
                             <p class="navbar-vertical-label"><strong>App</strong></p>
                             <hr class="navbar-vertical-line" />
                             <div class="nav-item-wrapper">
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" hidden>
                             <!-- label-->
                             <p class="navbar-vertical-label"><strong>FINPRONET</strong></p>
                             <hr class="navbar-vertical-line" />
@@ -721,7 +721,7 @@
             <input type="hidden" name="@action" value="@action" id="pageName" class="form-control" />
             <input type="hidden" name="@controller" value="@controller" id="pageNameController" class="form-control" />
             <input type="hidden" name="@projet" value="@projet" id="pageNameProjet" class="form-control" />
-            <input type="text" name="nameIDButton" value="" id="nameIDButton" class="form-control" />
+            <input type="hidden" name="nameIDButton" value="" id="nameIDButton" class="form-control" />
             @RenderBody()
             @Html.Partial("footer")
         </div>
