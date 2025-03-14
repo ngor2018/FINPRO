@@ -108,6 +108,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\TABLES.dll</HintPath>
     </Reference>
+    <Reference Include="Tables_Sto, Version=1.0.9186.19240, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Tables_Sto.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
@@ -227,6 +231,7 @@
     <Content Include="images\nav-combo-dark.png" />
     <Content Include="images\nav-combo-light.png" />
     <Content Include="images\navbar-top-style-light.png" />
+    <Content Include="images\question.png" />
     <Content Include="images\russia.png" />
     <Content Include="images\south-korea.png" />
     <Content Include="images\top-default-dark.png" />

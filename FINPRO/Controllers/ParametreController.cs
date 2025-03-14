@@ -56,10 +56,10 @@ namespace FINPRO.Controllers
             switch (code)
             {
                 case "Pays":
-                    tableInstance = new Tables.rPays();
+                    tableInstance = new Tables_Sto.rPays();
                     break;
                 case "services":
-                    tableInstance = new Tables.RSERVICES();
+                    tableInstance = new Tables_Sto.rService();
                     break;
             }
             if (tableInstance != null)
@@ -117,13 +117,14 @@ namespace FINPRO.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult AddParam(parametre objData)
+        public JsonResult Add_EditParam(parametre objData)
         {
             string result = "", filtre = "";
             bool isAllValid = true;
             var niveau = objData.niveau;
             var code = objData.code;
             var libelle = objData.libelle;
+            bool statut = objData.statut;
             DataTable table = new DataTable();
             DataRow row;
             object tableInstance = null;
@@ -133,10 +134,10 @@ namespace FINPRO.Controllers
             switch (niveau)
             {
                 case "Pays":
-                    tableInstance = new Tables.rPays();
+                    tableInstance = new Tables_Sto.rPays();
                     break;
                 case "services":
-                    tableInstance = new Tables.RSERVICES();
+                    tableInstance = new Tables_Sto.rService();
                     break;
                 case "Region":
                     tableInstance = new Tables.rAgences();
@@ -152,39 +153,60 @@ namespace FINPRO.Controllers
                 if (remplirDataTableMethod != null)
                 {
                     table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
-
-                    if (table.Rows.Count > 0)
+                    switch (statut)
                     {
-                        isAllValid = false;
+                        //Ajout
+                        case false:
+                            if (table.Rows.Count > 0)
+                            {
+                                isAllValid = false;
+                            }
+                            else
+                            {
+                                table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
+                                row = table.NewRow();
+                                row["CODE"] = code;
+                                row["LIBELLE"] = libelle;
+                                // Ajout des champs supplémentaires s'ils existent
+                                if (extraFields != null)
+                                {
+                                    foreach (var field in extraFields)
+                                    {
+                                        row[field.Key] = field.Value;
+                                    }
+                                }
+                                table.Rows.Add(row);
+                            }
+                            break;
+                        //Edition
+                        default:
+                            row = table.Rows[0];
+                            row.BeginEdit();
+                            row["LIBELLE"] = libelle;
+                            row.EndEdit();
+                            break;
+                    }
+                    // Enregistrer si la méthode existe
+                    enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                }
+            }
+            switch (statut)
+            {
+                //Edition
+                case true:
+                    result = "Enregistrement modifié avec succès";
+                    break;
+               //Ajout
+                default:
+                    if (isAllValid)
+                    {
+                        result = "Enregistrement ajouté avec succès";
                     }
                     else
                     {
-                        table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] {"" });
-                        row = table.NewRow();
-                        row["CODE"] = code;
-                        row["LIBELLE"] = libelle;
-                        // Ajout des champs supplémentaires s'ils existent
-                        if (extraFields != null)
-                        {
-                            foreach (var field in extraFields)
-                            {
-                                row[field.Key] = field.Value;
-                            }
-                        }
-                        table.Rows.Add(row);
-
-                        // Enregistrer si la méthode existe
-                        enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                        result = "Code existe déjà";
                     }
-                }
-            }
-            if (isAllValid)
-            {
-                result = "Enregistrement ajouté avec succès";
-            }
-            else
-            {
-                result = "Code existe déjà";
+                    break;
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }

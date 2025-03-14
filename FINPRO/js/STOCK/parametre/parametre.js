@@ -24,7 +24,7 @@ $(function () {
         $("#code").val(this.cells[0].innerHTML);
         $("#libelle").val(this.cells[1].innerHTML);
         document.getElementById('Supprimer').style.visibility = "visible";
-
+        $("#libelle").focus();
     })
     $('.input_focus').keyup(function () {
         $(this).siblings('span.erreur').css('display', 'none');
@@ -50,49 +50,70 @@ var Enregistrer = function () {
     }
     if (isAllValid) {
         var EtatCod = document.getElementById('code');
-        const objData = {
-            code: code,
-            libelle: libelle,
-            niveau: pageName
-        }
+        var etat = true;
         switch (EtatCod.disabled) {
             case true:
-                alert('Modification');
+                //Edition
+                etat = true;
                 break;
             default:
                 //Ajout
-                $.ajax({
-                    url: "/Parametre/AddParam",
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(objData),
-                    success: function (data) {
-                        switch (data.statut) {
-                            case true:
-                                $('.alert_Param').removeClass("hide");
-                                $('.alert_Param').addClass("show");
-                                $('.alert_Param').addClass("showAlert");
-                                $(".result_Param").html('<font style="color:#ce8500">' + data.message + '</font>');
-                                setTimeout(function () {
-                                    $('.alert_Param').addClass("hide");
-                                    $('.alert_Param').removeClass("show");
-                                    resetForm();
-                                    loadData(pageName, "", "");
-                                }, 1500);
-                                break;
-                            default:
-                                $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
-                                break;
-                        }
-                    },
-
-                    error: function (error) {
-                        alert("Erreur lors de l'envoi des données.");
-                        console.error(error);
-                    }
-                });
+                etat = false;
                 break;
         }
+        const objData = {
+            code: code,
+            libelle: libelle,
+            niveau: pageName,
+            statut: etat
+        }
+
+        $.ajax({
+            url: "/Parametre/Add_EditParam",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(objData),
+            success: function (data) {
+                switch (data.statut) {
+                    case true:
+                        $('.alert_Param').removeClass("hide");
+                        $('.alert_Param').addClass("show");
+                        $('.alert_Param').addClass("showAlert");
+                        $(".result_Param").html('<font style="color:#ce8500">' + data.message + '</font>');
+                        setTimeout(function () {
+                            $('.alert_Param').addClass("hide");
+                            $('.alert_Param').removeClass("show");
+                            switch (etat) {
+                                //Ajout
+                                case false:
+                                    resetForm();
+                                    loadData(pageName, "", "");
+                                    break;
+                                //Edition
+                                default:
+                                    var table = document.getElementById(pageName);
+                                    for (var i = 1; i < table.rows.length; i++) {
+                                        var item = table.rows[i];
+                                        if (item.cells[0].innerHTML == code) {
+                                            item.cells[1].innerHTML = libelle;
+                                        }
+                                    }
+                                    break;
+                            }
+                            document.getElementById('fermer').click();
+                        }, 1500);
+                        break;
+                    default:
+                        $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
+                        break;
+                }
+            },
+
+            error: function (error) {
+                alert("Erreur lors de l'envoi des données.");
+                console.error(error);
+            }
+        });
     }
 }
 var Ajout = function () {
@@ -108,6 +129,23 @@ var Ajout = function () {
     setTimeout(function () {
         $("#code").focus();
     },500)
+}
+var Supprimer = function () {
+    toggleForms("partieDelete");
+    var nomTitre = "Suppression ";
+    var nomTitreDel = "Voulez-vous supprimer Code ";
+    var code = $("#code").val();
+    switch (pageName) {
+        case "Pays":
+            nomTitre += "Pays";
+            nomTitreDel += '<strong><u>' + code + '</u></strong>';
+            break;
+    }
+    $("#titreDel").html(nomTitre);
+    $("#messageDel").html(nomTitreDel);
+}
+var closeDel = function () {
+    toggleForms("partieUnique");
 }
 function paramater() {
     var pageNameController = $("#pageNameController").val();
@@ -185,6 +223,7 @@ function formTable(pageName) {
     var printEnd = $("#printEnd").val();
     loadData(pageName,printTo,printEnd);
     formPopup(pageName);
+    formDel();
 }
 function formPopup(pageName) {
     var list = "", tailleCode = 0;
@@ -265,6 +304,38 @@ function formPopup(pageName) {
     }
     $("#partieUnique").append(list);
 }
+function formDel() {
+    let container = document.getElementById("partieDelete");
+    container.innerHTML = "";
+    let formHTML = `
+            <div class="row justify-content-center" style="padding-top:12%">
+                <div class="col-md-4 pageView">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="float-start">
+                                <strong id="titreDel"></strong>
+                            </div>
+                            <div class="float-end">
+                                <button class="btn btn-sm btn-danger closeDel" onclick="closeDel()">&times;</button>
+                            </div>
+                        </div>
+                    </div><hr />
+                    <div class="row justify-content-center" style="text-align:center;padding-top:20px;padding-bottom:20px">
+                        <div class="col-md-12">
+                            <img src="../../images/question.png" style="width:20px" /><span id="messageDel"></span>
+                        </div>
+                    </div><hr />
+                    <div class="row justify-content-end" style="text-align:right">
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-success" onclick="validerDel()">Oui</button>
+                            <button class="btn btn-sm btn-danger closeDel" onclick="closeDel()">Non</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    container.insertAdjacentHTML("beforeend", formHTML);
+}
 function loadData(code,printTo,prinEnd) {
     $.ajax({
         async: true,
@@ -341,7 +412,7 @@ function resetForm() {
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
-    let forms = ["partieUnique", ""];
+    let forms = ["partieUnique", "partieDelete"];
     document.getElementById('fullscreen_popup').style.display = "block";
     forms.forEach(id => {
         let elem = document.getElementById(id);
