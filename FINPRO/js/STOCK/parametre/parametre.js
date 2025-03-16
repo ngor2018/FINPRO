@@ -1,6 +1,5 @@
 ﻿var pageName = $("#pageName").val();
 $(function () {
-
     paramater();
     $("#code").keyup(function () {
         this.value = this.value.toUpperCase();
@@ -15,6 +14,18 @@ $(function () {
         switch (pageName) {
             case "Pays":
                 nomTitre += "Pays";
+                break;
+            case "services":
+                nomTitre += "Service";
+                break;
+            case "groupes":
+                nomTitre += "Groupe";
+                break;
+            case "unite":
+                nomTitre += "Unité";
+                break;
+            case "magasins":
+                nomTitre += "Magasin";
                 break;
         }
         $("#titleParam_").html(nomTitre);
@@ -124,6 +135,18 @@ var Ajout = function () {
         case "Pays":
             nomTitre += "Pays";
             break;
+        case "services":
+            nomTitre += "Service";
+            break;
+        case "groupes":
+            nomTitre += "Groupe";
+            break;
+        case "unite":
+            nomTitre += "Unité";
+            break;
+        case "magasins":
+            nomTitre += "Magasin";
+            break;
     }
     $("#titleParam_").html(nomTitre);
     setTimeout(function () {
@@ -138,14 +161,64 @@ var Supprimer = function () {
     switch (pageName) {
         case "Pays":
             nomTitre += "Pays";
-            nomTitreDel += '<strong><u>' + code + '</u></strong>';
+            break;
+        case "services":
+            nomTitre += "Service";
+            break;
+        case "groupes":
+            nomTitre += "Groupe";
+            break;
+        case "unite":
+            nomTitre += "Unité";
+            break;
+        case "magasins":
+            nomTitre += "Magasin";
             break;
     }
+    nomTitreDel += '<strong><u>' + code + '</u></strong>';
     $("#titreDel").html(nomTitre);
     $("#messageDel").html(nomTitreDel);
 }
+var validerDel = function () {
+    var code = $("#code").val();
+    const objData = {
+        code: code,
+        niveau:pageName
+    }
+    $.ajax({
+        url: "/Parametre/DelParam",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(objData),
+        success: function (data) {
+            switch (data.statut) {
+                case true:
+                    var table = document.getElementById(pageName);
+                    for (var i = 1; i < table.rows.length; i++) {
+                        var item = table.rows[i];
+                        if (item.cells[0].innerHTML == code) {
+                            table.deleteRow(i); //Supprimer la ligne correspondante
+                            break; //Sort de la boucle apres supppression
+                        }
+                    }
+                    closeDel();
+                    document.getElementById('fermer').click();
+                    break;
+                case false:
+                    $("#errorCodif").html(data.message);
+                    break;
+            }
+        },
+
+        error: function (error) {
+            alert("Erreur lors de l'envoi des données.");
+            console.error(error);
+        }
+    });
+}
 var closeDel = function () {
     toggleForms("partieUnique");
+    $("#errorCodif").html('');
 }
 function paramater() {
     var pageNameController = $("#pageNameController").val();
@@ -171,6 +244,7 @@ function formTable(pageName) {
         case "groupes":
         case "services":
         case "unite":
+        case "magasins":
             formHTML = `
                     <div class="row">
                         <div class="col-md-12" style="padding-bottom:10px">
@@ -243,6 +317,9 @@ function formPopup(pageName) {
         case "unite":
             tailleCode = 10;
             break;
+        case "magasins":
+            tailleCode = 2;
+            break;
     }
     switch (pageName) {
         case "Pays":
@@ -250,6 +327,7 @@ function formPopup(pageName) {
         case "groupes":
         case "services":
         case "unite":
+        case "magasins":
             list = `
                     <div class="row justify-content-center" style="padding-top:12%">
                         <div class="col-md-6 pageView">
@@ -324,7 +402,13 @@ function formDel() {
                         <div class="col-md-12">
                             <img src="../../images/question.png" style="width:20px" /><span id="messageDel"></span>
                         </div>
-                    </div><hr />
+                    </div>
+                    <div class="row justify-content-center" style="text-align:center;padding-top:8px;padding-bottom:8px">
+                        <div>
+                            <span id="errorCodif" style="color:red"></span>
+                        </div>
+                    </div>
+                    <hr />
                     <div class="row justify-content-end" style="text-align:right">
                         <div class="col-md-12">
                             <button class="btn btn-sm btn-success" onclick="validerDel()">Oui</button>

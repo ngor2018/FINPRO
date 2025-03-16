@@ -472,6 +472,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\parametre\Pays.cshtml" />
     <Content Include="Views\parametre\services.cshtml" />
+    <Content Include="Views\parametre\groupes.cshtml" />
+    <Content Include="Views\parametre\vue_config.cshtml" />
+    <Content Include="Views\parametre\unite.cshtml" />
+    <Content Include="Views\parametre\magasins.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
