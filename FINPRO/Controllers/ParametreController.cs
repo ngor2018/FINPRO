@@ -85,7 +85,7 @@ namespace FINPRO.Controllers
             }
         }
         [HttpGet]
-        public JsonResult GetDataParam(string code, string start, string End)
+        public JsonResult GetDataParam(string code,string site)
         {
             List<parametre> listData = new List<parametre>();
             List<parametre> listDataFiltre = new List<parametre>();
@@ -93,7 +93,6 @@ namespace FINPRO.Controllers
             DataTable objTabFiltre = new DataTable();
             DataTable objTable = new DataTable();
             object tableInstance = null;
-            string site = "";
             switch (code)
             {
                 case "Pays":
@@ -127,11 +126,6 @@ namespace FINPRO.Controllers
             DataRow lastRow = objTable.Rows[objTable.Rows.Count - 1];
             var codeLast = (string)lastRow["CODE"];
             var filtre = "";
-            if (start == null || start == "" || End == null || End == "")
-            {
-                start = codeFirst;
-                End = codeLast;
-            }
             switch (code)
             {
                 case "magasins":
@@ -149,12 +143,12 @@ namespace FINPRO.Controllers
                     {
                         DataRow firstRowS = tabSite.Rows[0];
                         var codeFirstS = (string)firstRowS["CODE"];
-                        filtre = $"SITE = '{codeFirstS}' AND CODE >= '{start}' AND CODE <= '{End}'";
+                        if (site == null || site == "")
+                        {
+                            site = codeFirstS;
+                        }
+                        filtre = $"SITE = '{site}'";
                     }
-
-                    break;
-                default:
-                    filtre = $"CODE >= '{start}' AND CODE <= '{End}'";
                     break;
             }
             DataRow[] rowsFilters = objTable.Select(filtre);
@@ -165,14 +159,6 @@ namespace FINPRO.Controllers
             else
             {
                 objTabFiltre = objTable.Clone();
-            }
-            foreach (DataRow row in objTable.Rows)
-            {
-                listData.Add(new parametre()
-                {
-                    code = row["code"].ToString(),
-                    libelle = row["libelle"].ToString(),
-                });
             }
             foreach (DataRow row in objTabFiltre.Rows)
             {
@@ -185,10 +171,7 @@ namespace FINPRO.Controllers
             var data = new
             {
                 listData = listData,
-                listDataFiltre = listDataFiltre,
                 listDataSite = listSite,
-                FirstRow = codeFirst,
-                lastRow = codeLast,
             };
             return Json(data, JsonRequestBehavior.AllowGet);
         }
@@ -200,13 +183,13 @@ namespace FINPRO.Controllers
             var niveau = objData.niveau;
             var code = objData.code;
             var libelle = objData.libelle;
+            var site = objData.site;
             bool statut = objData.statut;
             DataTable table = new DataTable();
             DataRow row;
             object tableInstance = null;
             // Déclaration du dictionnaire pour les champs supplémentaires
             Dictionary<string, object> extraFields = null;
-            filtre = $"CODE = '{code}'";
             switch (niveau)
             {
                 case "Pays":
@@ -223,10 +206,19 @@ namespace FINPRO.Controllers
                     break;
                 case "magasins":
                     tableInstance = new Tables_Sto.rMagasin();
+                    extraFields = new Dictionary<string, object> { { "SITE", site } };
                     break;
-                case "Region":
-                    tableInstance = new Tables.rAgences();
-                    extraFields = new Dictionary<string, object> { { "VILLE", code } };
+            }
+            switch (niveau)
+            {
+                case "Pays":
+                case "services":
+                case "groupes":
+                case "unite":
+                    filtre = $"CODE = '{code}'";
+                    break;
+                case "magasins":
+                    filtre = $"CODE = '{code}' AND SITE = '{site}'";
                     break;
             }
             // Vérification et enregistrement

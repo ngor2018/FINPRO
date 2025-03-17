@@ -11,6 +11,7 @@ namespace FINPRO.Models
         public string code { get; set; }
         public string login { get; set; }
         public string password { get; set; }
+        public string site { get; set; }
         public string sigle { get; set; }
         public string libelle { get; set; }
         public string niveau { get; set; }

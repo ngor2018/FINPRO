@@ -25,7 +25,7 @@ $(function () {
                 nomTitre += "Unité";
                 break;
             case "magasins":
-                nomTitre += "Magasin";
+                nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
                 break;
         }
         $("#titleParam_").html(nomTitre);
@@ -42,15 +42,11 @@ $(function () {
     })
     $(".selectChoix").select2();
 })
-function changePrint() {
-    var printTo = $("#printTo").val();
-    var printEnd = $("#printEnd").val();
-    loadData(pageName, printTo, printEnd);
-}
 var Enregistrer = function () {
     var isAllValid = true;
     var code = $("#code").val();
     var libelle = $("#libelle").val();
+    var site = $("#site").val();
     if (code.trim() == '') {
         isAllValid = false;
         $("#code").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
@@ -75,6 +71,7 @@ var Enregistrer = function () {
         const objData = {
             code: code,
             libelle: libelle,
+            site: site,
             niveau: pageName,
             statut: etat
         }
@@ -145,13 +142,13 @@ var Ajout = function () {
             nomTitre += "Unité";
             break;
         case "magasins":
-            nomTitre += "Magasin";
+            nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
             break;
     }
     $("#titleParam_").html(nomTitre);
     setTimeout(function () {
         $("#code").focus();
-    },500)
+    }, 500)
 }
 var Supprimer = function () {
     toggleForms("partieDelete");
@@ -234,7 +231,6 @@ function paramater() {
         </nav>
     `);
     formTable(pageName);
-
 }
 function formTable(pageName) {
     let formHTML = "";
@@ -246,6 +242,8 @@ function formTable(pageName) {
         case "unite":
         case "magasins":
             formHTML = `
+                    <div id="partieSite">
+                    </div>
                     <div class="row">
                         <div class="col-md-12" style="padding-bottom:10px">
                             <div class="float-start">
@@ -254,24 +252,6 @@ function formTable(pageName) {
                             <div class="float-end">
                                 <button class="btn btn-sm btn-primary" id="Ajout" onclick="Ajout()"> <i class="fas fa-plus mr-2"></i>Ajouter</button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row" style="padding-top:10px;padding-bottom:10px">
-                        <div class="col-md-1">
-                            <label for="printTo">De</label>
-                        </div>
-                        <div class="col-md-5">
-                            <select id="printTo" onchange="changePrint()" class="input_focus selectChoix ${pageName}" style="width:100%">
-
-                            </select>
-                        </div>
-                        <div class="col-md-1">
-                            <label for="printEnd">A</label>
-                        </div>
-                        <div class="col-md-5">
-                            <select id="printEnd" onchange="changePrint()" class="input_focus selectChoix ${pageName}" style="width:100%">
-
-                            </select>
                         </div>
                     </div>
                     <div id="niveauImpression"></div>
@@ -293,11 +273,30 @@ function formTable(pageName) {
             break;
     }
     $("#formParam").append(formHTML);
-    var printTo = $("#printTo").val();
-    var printEnd = $("#printEnd").val();
-    loadData(pageName,printTo,printEnd);
+    formTableTOP(pageName);
+    loadData(pageName);
     formPopup(pageName);
     formDel();
+}
+function formTableTOP(pageName) {
+    let formHTML = "";
+    formHTML = `
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="site" id="nameLabel"></label>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="site" style="width:100%" class="selectChoix">
+                            </select>
+                        </div>
+                    </div>
+                `;
+    switch (pageName) {
+        case "magasins":
+            $("#partieSite").append(formHTML);
+            document.getElementById('nameLabel').textContent = "Site";
+            break;
+    }
 }
 function formPopup(pageName) {
     var list = "", tailleCode = 0;
@@ -420,7 +419,8 @@ function formDel() {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
-function loadData(code,printTo,prinEnd) {
+function loadData(code) {
+    var site = $("#site").val();
     $.ajax({
         async: true,
         type: 'GET',
@@ -428,8 +428,7 @@ function loadData(code,printTo,prinEnd) {
         contentType: 'application/json; charset=utf-8',
         data: {
             code: code,
-            start: printTo,
-            End: prinEnd
+            site: site,
         },
         url: '/Parametre/GetDataParam', // URL de l'API pour récupérer les données
         success: function (data) {
@@ -438,13 +437,11 @@ function loadData(code,printTo,prinEnd) {
     })
 }
 function reportData(data) {
-    if ($('.' + pageName).val() == "" || $('.' + pageName).val() == null) {
-        $('.' + pageName).empty();
-        $.each(data.listData, function (index, row) {
-            $("." + pageName).append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+    if ($("#site").val() == "" || $("#site").val() == null) {
+        $('#site').empty();
+        $.each(data.listDataSite, function (index, row) {
+            $("#site").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
         })
-        var lastID = $("#printEnd option:last").val();
-        $("#printEnd").val(lastID);
     }
     DataTable(pageName, data);
 }

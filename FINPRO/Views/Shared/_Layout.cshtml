@@ -1,6 +1,6 @@
 ﻿@{
     var action = ViewContext.RouteData.Values["action"].ToString();
-    //var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var Namecontroller = ViewContext.RouteData.Values["controller"].ToString();
     var controller = ViewBag.Controleur;
     var projet = ViewBag.Projet;
     bool statut = false;
@@ -96,8 +96,8 @@
                 <!-- scrollbar removed-->
                 <div class="navbar-vertical-content">
                     <ul class="navbar-nav flex-column" id="navbarVerticalNav">
-                        <li class="nav-item" hidden>
-                            <p class="navbar-vertical-label"><strong>App</strong></p>
+                        <li class="nav-item">
+                            <p class="navbar-vertical-label"><strong>Configuration</strong></p>
                             <hr class="navbar-vertical-line" />
                             <div class="nav-item-wrapper">
                                 <a class="nav-link dropdown-indicator label-1" href="#nv-app" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
@@ -111,504 +111,584 @@
                                         <li class="nav-item">
                                             <a class="nav-link Fichiers" href="#" name="NewConnexion" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Nouvelle Connexion</span></div>
-                                            </a><!-- more inner pages-->
+                                            </a> 
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link Fichiers" name="ChangerLangue" href="#" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Changer de Langue</span></div>
-                                            </a><!-- more inner pages-->
+                                            </a> 
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link Codifications" href="#" name="Groupe" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Groupe</span></div>
-                                            </a><!-- more inner pages-->
+                                            </a> 
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item" hidden>
-                            <!-- label-->
-                            <p class="navbar-vertical-label"><strong>FINPRONET</strong></p>
-                            <hr class="navbar-vertical-line" />
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-CRM" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Codifications</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-CRM">
-                                        <li class="collapsed-nav-item-title d-none">Codifications</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Codifications" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Codifications" name="PlanCompte" href="#" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Plans de comptes</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Codifications" href="#" name="ParametreGeneraux" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres généraux</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-project-management" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Comptabilité générale</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-project-management">
-                                        <li class="collapsed-nav-item-title d-none">Comptabilité générale</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Editions" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Editions</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="TravauxPeriodiques" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Travaux Périodiques</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Brouillard" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Brouillard</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Importation" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Importation</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-email" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-email">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Comptabilité Analytique</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-email">
-                                        <li class="collapsed-nav-item-title d-none">Comptabilité Analytique</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteAnalytique" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link ComptabiliteAnalytique" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events1" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Suivi budgétaire</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events1">
-                                        <li class="collapsed-nav-item-title d-none">Suivi budgétaire</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="ExploitationsPrevision" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations Prévisionnnelles</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="TravauxPeriodiques" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Travaux Périodiques</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="Alertes" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Alertes</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviBudgetaire" href="#" name="Importation" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Importation</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events2" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Suivi des conventions</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events2">
-                                        <li class="collapsed-nav-item-title d-none">Suivi des conventions</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviConvention" href="#" name="ParametresIDA" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres IDA</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviConvention" href="#" name="SaisieIDA" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie IDA</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link SuiviConvention" href="#" name="ExploitationsIDA" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations IDA</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events3" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Immobilisations</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events3">
-                                        <li class="collapsed-nav-item-title d-none">Immobilisations</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Immobilisations" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Immobilisations" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Immobilisations" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events4" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Etats Financiers</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events4">
-                                        <li class="collapsed-nav-item-title d-none">Etats Financiers</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link EtatsFinanciers" href="#" name="EtatStandard" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etats Standards</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link EtatsFinanciers" href="#" name="EtatIFR" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etat IFR</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link EtatsFinanciers" href="#" name="Ratios" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Ratios</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events5" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Marchés Engagements</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events5">
-                                        <li class="collapsed-nav-item-title d-none">Marchés Engagements</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link MarchesEngagements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link MarchesEngagements" href="#" name="FicheMarche" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Fiches Marchés</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link MarchesEngagements" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events6" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Décaissements</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events6">
-                                        <li class="collapsed-nav-item-title d-none">Décaissements</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Decaissements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Decaissements" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events7" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Utilitaires</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events7">
-                                        <li class="collapsed-nav-item-title d-none">Utilitaires</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Utilitaires" href="#" name="BaseDonnees" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Base de Données</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Utilitaires" href="#" name="Interfaces" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Interfaces</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Utilitaires" href="#" name="tracabilite" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Traçabilité</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                        </li>
                         <li class="nav-item">
-                            <!-- label-->
-                            <p class="navbar-vertical-label"><strong>FINSTOCK</strong></p>
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-paramGen" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Paramètres généraux</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-paramGen">
+                                        <li class="collapsed-nav-item-title d-none">Paramètres généraux</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Fichiers" href="#" name="NewConnexion" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Nouvelle Connexion</span></div>
+                                            </a> 
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Fichiers" name="ChangerLangue" href="#" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Changer de Langue</span></div>
+                                            </a> 
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Codifications" href="#" name="Groupe" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Groupe</span></div>
+                                            </a> 
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+
+
+
+
+                        <li class="nav-item">
+                            <p class="navbar-vertical-label"><strong>Application</strong></p>
                             <hr class="navbar-vertical-line" />
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                <a class="nav-link dropdown-indicator label-1" href="#appFinpronet" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="appFinpronet">
                                     <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Paramétres</span>
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">FINPRONET</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events8">
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="appFinpronet">
+                                        <li class="collapsed-nav-item-title d-none">FINPRONET</li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Pays" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Pays</span></div>
-                                            </a><!-- more inner pages-->
+                                            <a class="nav-link dropdown-indicator" href="#nv-CRM" role="button" data-bs-toggle="collapse" aria-expanded="@statut" aria-controls="nv-CRM">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Codifications</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-CRM">
+                                                    <li class="collapsed-nav-item-title d-none">Codifications</li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Codifications" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
+                                                        </a> 
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Codifications" name="PlanCompte" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Plans de comptes</span></div>
+                                                        </a> 
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Codifications" href="#" name="ParametreGeneraux" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres généraux</span></div>
+                                                        </a> 
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" name="EnteteProjet" href="#" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Entête du projet</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-project-management" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Comptabilité générale</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-project-management">
+                                                        <li class="collapsed-nav-item-title d-none">Comptabilité générale</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Editions" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Editions</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="TravauxPeriodiques" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Travaux Périodiques</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Brouillard" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Brouillard</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteGenerale" href="#" name="Importation" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Importation</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Saisie_Sites" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie des Sites</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-email" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-email">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Comptabilité Analytique</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-email">
+                                                        <li class="collapsed-nav-item-title d-none">Comptabilité Analytique</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteAnalytique" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link ComptabiliteAnalytique" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Exercices" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exercices</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events1" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Suivi budgétaire</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events1">
+                                                        <li class="collapsed-nav-item-title d-none">Suivi budgétaire</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="ExploitationsPrevision" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations Prévisionnnelles</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="TravauxPeriodiques" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Travaux Périodiques</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="Alertes" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Alertes</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviBudgetaire" href="#" name="Importation" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Importation</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Familles" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Familles</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events2" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Suivi des conventions</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events2">
+                                                        <li class="collapsed-nav-item-title d-none">Suivi des conventions</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviConvention" href="#" name="ParametresIDA" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres IDA</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviConvention" href="#" name="SaisieIDA" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie IDA</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link SuiviConvention" href="#" name="ExploitationsIDA" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations IDA</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Consommateurs" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommateurs</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events3" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Immobilisations</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events3">
+                                                        <li class="collapsed-nav-item-title d-none">Immobilisations</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Immobilisations" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Immobilisations" href="#" name="Saisie" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Saisie</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Immobilisations" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="signataire" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Signataires</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events4" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Etats Financiers</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events4">
+                                                        <li class="collapsed-nav-item-title d-none">Etats Financiers</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link EtatsFinanciers" href="#" name="EtatStandard" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etats Standards</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link EtatsFinanciers" href="#" name="EtatIFR" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etat IFR</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link EtatsFinanciers" href="#" name="Ratios" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Ratios</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="" name="Monnaie" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Monnaie</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events5" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Marchés Engagements</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events5">
+                                                        <li class="collapsed-nav-item-title d-none">Marchés Engagements</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link MarchesEngagements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link MarchesEngagements" href="#" name="FicheMarche" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Fiches Marchés</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link MarchesEngagements" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events6" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Décaissements</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events6">
+                                                        <li class="collapsed-nav-item-title d-none">Décaissements</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Decaissements" href="#" name="Parametres" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Paramètres</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Decaissements" href="#" name="Exploitations" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exploitations</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Magasins</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Groupes</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="services" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Services</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Parametre" href="#" name="unite" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Unité</span></div>
-                                            </a><!-- more inner pages-->
+                                            <div class="nav-item-wrapper">
+                                                <a class="nav-link dropdown-indicator" href="#nv-events7" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Utilitaires</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav collapse parent" data-bs-parent="#appFinpronet" id="nv-events7">
+                                                        <li class="collapsed-nav-item-title d-none">Utilitaires</li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Utilitaires" href="#" name="BaseDonnees" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Base de Données</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Utilitaires" href="#" name="Interfaces" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Interfaces</span></div>
+                                                            </a> 
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link Utilitaires" href="#" name="tracabilite" data-bs-toggle="" aria-expanded="false">
+                                                                <div class="d-flex align-items-center"><span class="nav-link-text">Traçabilité</span></div>
+                                                            </a> 
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
-                            </div><!-- parent pages-->
+                            </div>
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events9" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
+                                <a class="nav-link dropdown-indicator label-1" href="#appFinStock" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="appFinStock">
                                     <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Saisie</span>
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">FINSTOCK</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events9">
-                                        <li class="collapsed-nav-item-title d-none">Saisie</li>
+                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="appFinStock">
+                                        <li class="collapsed-nav-item-title d-none">FINSTOCK</li>
                                         <li class="nav-item">
-                                            <a class="nav-link Saisie" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Articles</span></div>
-                                            </a><!-- more inner pages-->
+                                            <a class="nav-link dropdown-indicator" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Paramétres</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav collapse parent @(Namecontroller == "Parametre"?"show":"")" data-bs-parent="#appFinStock" id="nv-events8">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre @(action == "Pays"?"active":"")" href="#" name="Pays" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Pays</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" name="EnteteProjet" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Entête du projet</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="Saisie_Sites" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Saisie des Sites</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="Exercices" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Exercices</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="Familles" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Familles</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="Consommateurs" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Consommateurs</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="signataire" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Signataires</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="" name="Monnaie" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Monnaie</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Magasins</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Groupes</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="services" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Services</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Parametre" href="#" name="unite" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Unité</span></div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Saisie" href="#" name="EntreeStock" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Entrée de stock</span></div>
-                                            </a><!-- more inner pages-->
+                                            <a class="nav-link dropdown-indicator" href="#nv-events9" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Saisie</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav collapse parent" data-bs-parent="#appFinStock" id="nv-events9">
+                                                    <li class="collapsed-nav-item-title d-none">Saisie</li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Saisie" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Articles</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Saisie" href="#" name="EntreeStock" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Entrée de stock</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Saisie" href="#" name="Mouvements" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Mouvements</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Saisie" href="#" name="Affectations" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Affectations</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Saisie" href="#" name="SortieStock" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Sortie de Stock</span></div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Saisie" href="#" name="Mouvements" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Mouvements</span></div>
-                                            </a><!-- more inner pages-->
+                                            <a class="nav-link dropdown-indicator" href="#nv-events10" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-email">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Exploitations</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav collapse parent" data-bs-parent="#appFinStock" id="nv-events10">
+                                                    <li class="collapsed-nav-item-title d-none">Exploitations</li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Exploitations" href="#" name="JournalStock" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Journal de stocks</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Exploitations" href="#" name="GrandLivre" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Grand Livre</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Exploitations" href="#" name="PropositionCommandes" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Proposition de commandes</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Exploitations" href="#" name="EtatStock" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Etats des stocks</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Exploitations" href="#" name="RuptureStock" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Rupture de stocks</span></div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Saisie" href="#" name="Affectations" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Affectations</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Saisie" href="#" name="SortieStock" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Sortie de Stock</span></div>
-                                            </a><!-- more inner pages-->
+                                            <a class="nav-link dropdown-indicator" href="#nv-events11" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Consommations</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav collapse parent" data-bs-parent="#appFinStock" id="nv-events11">
+                                                    <li class="collapsed-nav-item-title d-none">Consommations</li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Consommations" href="#" name="Consommateur" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par consommateur</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Consommations" href="#" name="EtatCompta" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Etat pour la comptabilité</span></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link Consommations" href="#" name="ConsomService" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par service</span></div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events10" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-email">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="clipboard"></span></span><span class="nav-link-text">Exploitations</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events10">
-                                        <li class="collapsed-nav-item-title d-none">Exploitations</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Exploitations" href="#" name="JournalStock" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Journal de stocks</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Exploitations" href="#" name="GrandLivre" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Grand Livre</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Exploitations" href="#" name="PropositionCommandes" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Proposition de commandes</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Exploitations" href="#" name="EtatStock" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etats des stocks</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Exploitations" href="#" name="RuptureStock" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Rupture de stocks</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-events11" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-events">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="bookmark"></span></span><span class="nav-link-text">Consommations</span>
-                                    </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-events11">
-                                        <li class="collapsed-nav-item-title d-none">Consommations</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Consommations" href="#" name="Consommateur" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par consommateur</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Consommations" href="#" name="EtatCompta" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Etat pour la comptabilité</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link Consommations" href="#" name="ConsomService" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Consommations par service</span></div>
-                                            </a><!-- more inner pages-->
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div><!-- parent pages-->
+                                
+                            </div>
+
                         </li>
+
+
+
+
+
+                       
+                        
+                        
                     </ul>
                 </div>
             </div>
