@@ -12,80 +12,17 @@ using FINPRO.Models;
 
 namespace FINPRO.Controllers
 {
-    public class ParametreController : Controller
+    public class CRUDController : Controller
     {
-        // GET: Parametre
+        // GET: CRUD
         SqlCommand com = new SqlCommand();
         SqlDataReader dr;
         SqlConnection conn = new SqlConnection(GetConnexion.GetConnectionString());
         parametre parametre = new parametre();
-        public ActionResult Pays()
-        {
-            if (Session["LOGIN"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Projet = "Gestion Stock";
-                ViewBag.Controleur = "Paramètre";
-                return View(parametre);
-            }
-        }
-        public ActionResult services()
-        {
-            if (Session["LOGIN"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Projet = "Gestion Stock";
-                ViewBag.Controleur = "Paramètre";
-                return View(parametre);
-            }
-        }
-        public ActionResult groupes()
-        {
-            if (Session["LOGIN"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Projet = "Gestion Stock";
-                ViewBag.Controleur = "Paramètre";
-                return View(parametre);
-            }
-        }
-        public ActionResult unite()
-        {
-            if (Session["LOGIN"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Projet = "Gestion Stock";
-                ViewBag.Controleur = "Paramètre";
-                return View(parametre);
-            }
-        }
-        public ActionResult magasins()
-        {
-            if (Session["LOGIN"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Projet = "Gestion Stock";
-                ViewBag.Controleur = "Paramètre";
-                return View(parametre);
-            }
-        }
+
+
         [HttpGet]
-        public JsonResult GetDataParam(string code,string site)
+        public JsonResult GetDataParam(string code, string site)
         {
             List<parametre> listData = new List<parametre>();
             List<parametre> listDataFiltre = new List<parametre>();
@@ -120,47 +57,46 @@ namespace FINPRO.Controllers
                     objTable = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
                 }
             }
-            DataRow firstRow = objTable.Rows[0];
-            var codeFirst = (string)firstRow["CODE"];
+            //DataRow firstRow = objTable.Rows[0];
+            //var codeFirst = (string)firstRow["CODE"];
 
-            DataRow lastRow = objTable.Rows[objTable.Rows.Count - 1];
-            var codeLast = (string)lastRow["CODE"];
+            //DataRow lastRow = objTable.Rows[objTable.Rows.Count - 1];
+            //var codeLast = (string)lastRow["CODE"];
             var filtre = "";
-            switch (code)
+            if (code == "magasins")
             {
-                case "magasins":
-                    Tables.rSite rSite = new Tables.rSite();
-                    DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
-                    foreach (DataRow row in tabSite.Rows)
+                Tables.rSite rSite = new Tables.rSite();
+                DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
+
+                foreach (DataRow row in tabSite.Rows)
+                {
+                    listSite.Add(new parametre()
                     {
-                        listSite.Add(new parametre()
-                        {
-                            code = row["code"].ToString(),
-                            libelle = row["libelle"].ToString()
-                        });
-                    }
-                    if (tabSite.Rows.Count > 0)
+                        code = row["code"].ToString(),
+                        libelle = row["libelle"].ToString()
+                    });
+                }
+
+                if (tabSite.Rows.Count > 0)
+                {
+                    DataRow firstRowS = tabSite.Rows[0];
+                    var codeFirstS = firstRowS["CODE"].ToString();
+
+                    if (string.IsNullOrEmpty(site))
                     {
-                        DataRow firstRowS = tabSite.Rows[0];
-                        var codeFirstS = (string)firstRowS["CODE"];
-                        if (site == null || site == "")
-                        {
-                            site = codeFirstS;
-                        }
-                        filtre = $"SITE = '{site}'";
+                        site = codeFirstS;
                     }
-                    break;
+
+                    filtre = $"SITE = '{site}'";
+                    DataRow[] rowsFilters = objTable.Select(filtre);
+                    objTable = rowsFilters.Length > 0 ? rowsFilters.CopyToDataTable() : objTable.Clone();
+                }
             }
-            DataRow[] rowsFilters = objTable.Select(filtre);
-            if (rowsFilters.Length > 0)
-            {
-                objTabFiltre = rowsFilters.CopyToDataTable();
-            }
-            else
-            {
-                objTabFiltre = objTable.Clone();
-            }
-            foreach (DataRow row in objTabFiltre.Rows)
+
+
+
+            // Remplissage de la liste
+            foreach (DataRow row in objTable.Rows)
             {
                 listDataFiltre.Add(new parametre()
                 {
@@ -168,10 +104,11 @@ namespace FINPRO.Controllers
                     libelle = row["libelle"].ToString(),
                 });
             }
+
             var data = new
             {
-                listData = listData,
-                listDataSite = listSite,
+                listData = listDataFiltre, // Contient toutes les données sauf pour magasins où c'est filtré
+                listDataSite = listSite    // Contient les sites uniquement si code == "magasins"
             };
             return Json(data, JsonRequestBehavior.AllowGet);
         }
@@ -273,7 +210,7 @@ namespace FINPRO.Controllers
                 case true:
                     result = "Enregistrement modifié avec succès";
                     break;
-               //Ajout
+                //Ajout
                 default:
                     if (isAllValid)
                     {
@@ -287,13 +224,14 @@ namespace FINPRO.Controllers
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpPost]
         public JsonResult DelParam(parametre objData)
         {
             string result = "";
             bool isAllValid = true;
             var code = objData.code;
+            var site = objData.site;
             var niveau = objData.niveau;
             object tableInstance = null;
             string tableType = "";
@@ -315,18 +253,30 @@ namespace FINPRO.Controllers
                     tableInstance = new Tables_Sto.rMagasin();
                     break;
             }
-            if(tableInstance != null)
+            if (tableInstance != null)
             {
                 tableType = tableInstance.GetType().Name;
             }
-            long totalCount = GetTotalOccurrences(niveau, code);
+            long totalCount = GetTotalOccurrences(niveau, code,site);
             if (totalCount > 0)
             {
                 isAllValid = false;
             }
             else
             {
-                string requete = "DELETE FROM " + tableType + " where CODE = '" + code + "'";
+                string requete = "";
+                switch (niveau)
+                {
+                    case "Pays":
+                    case "services":
+                    case "groupes":
+                    case "unite":
+                        requete = "DELETE FROM " + tableType + " where CODE = '" + code + "'";
+                        break;
+                    case "magasins":
+                        requete = "DELETE FROM " + tableType + " where CODE = '" + code + "' and SITE = '" + site + "'";
+                        break;
+                }
                 conn.Open();
                 com.Connection = conn;
                 com.CommandText = requete;
@@ -343,7 +293,7 @@ namespace FINPRO.Controllers
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
-        private long GetTotalOccurrences(string niveau, string valueCheck)
+        private long GetTotalOccurrences(string niveau, string valueCheck,string valueCheck1)
         {
             long totalCount = 0;
             string nomColonne = "", nomColonne1 = "";
@@ -435,6 +385,8 @@ namespace FINPRO.Controllers
                                  FROM ' + QUOTENAME(@tableName) + '
                                  WHERE ' + QUOTENAME(@nomColonne) + ' IS NOT NULL
                                  AND ' + QUOTENAME(@nomColonne1) + ' IS NOT NULL
+                                AND CAST(' + QUOTENAME(@nomColonne) + ' AS VARCHAR(MAX)) = @code
+								 AND CAST(' + QUOTENAME(@nomColonne1) + ' AS VARCHAR(MAX)) = @code1
                                  UNION ALL ';
 
                                 FETCH NEXT FROM table_cursor INTO @tableName;
@@ -448,10 +400,12 @@ namespace FINPRO.Controllers
                             BEGIN
                                 SET @sql = LEFT(@sql, LEN(@sql) - 10);
                                 SET @sql = 'SELECT SUM(NombreOccurrences) AS TotalOccurrences FROM (' + @sql + ') AS T;';
-
-                                                --Exécuter la requête générée
-                                               EXEC sp_executesql @sql;
-                                                END
+                    
+                                -- Passer correctement les paramètres à sp_executesql
+                                EXEC sp_executesql @sql, 
+                                    N'@code VARCHAR(MAX), @code1 VARCHAR(MAX)', 
+                                    @code, @code1;
+                             END
                             ";
                     break;
             }
@@ -462,6 +416,7 @@ namespace FINPRO.Controllers
             {
                 case "magasins":
                     com.Parameters.AddWithValue("@nomColonne1", nomColonne1);
+                    com.Parameters.AddWithValue("@code1", valueCheck1);
                     break;
             }
             dr = com.ExecuteReader();

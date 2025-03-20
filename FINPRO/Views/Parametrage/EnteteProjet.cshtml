@@ -1,0 +1,72 @@
+﻿<style>
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        object-fit: cover;
+        transition: transform 0.3s ease-in-out;
+    }
+    .profile-pic:hover {
+        transform: scale(1.5);
+        cursor: pointer;
+    }
+    .upload-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation"><a class="nav-link" id="Coordonnees-tab" data-bs-toggle="tab" href="#tab-Coordonnees" role="tab" aria-controls="tab-Coordonnees" aria-selected="false" tabindex="-1">Coordonnées</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link" id="Personnalisation-tab" data-bs-toggle="tab" href="#tab-Personnalisation" role="tab" aria-controls="tab-Personnalisation" aria-selected="false" tabindex="-1">Personnalisation</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link" id="systemDRF-tab" data-bs-toggle="tab" href="#tab-systemDRF" role="tab" aria-controls="tab-systemDRF" aria-selected="true">Système DRF</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link" id="Suivi-tab" data-bs-toggle="tab" href="#tab-Suivi" role="tab" aria-controls="tab-Suivi" aria-selected="true">Suivi</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link active" id="Autres-tab" data-bs-toggle="tab" href="#tab-Autres" role="tab" aria-controls="tab-Autres" aria-selected="true">Autres</a></li>
+</ul>
+<div class="tab-content mt-3" id="myTabContent">
+    <div class="tab-pane fade" id="tab-Coordonnees" role="tabpanel" aria-labelledby="Coordonnees-tab">
+
+    </div>
+    <div class="tab-pane fade" id="tab-Personnalisation" role="tabpanel" aria-labelledby="Personnalisation-tab">
+
+    </div>
+    <div class="tab-pane fade" id="tab-systemDRF" role="tabpanel" aria-labelledby="systemDRF-tab">
+
+    </div>
+    <div class="tab-pane fade" id="tab-Suivi" role="tabpanel" aria-labelledby="Suivi-tab">
+
+    </div>
+    <div class="tab-pane fade active show" id="tab-Autres" role="tabpanel" aria-labelledby="Autres-tab">
+        <div class="row g-4">
+            <div class="fallback">
+                <input type="file" id="profileUpload" accept="image/*" class="d-none">
+            </div>
+            <div class="col-md-auto">
+                <div class="text-center mb-3">
+                    <label for="profileUpload" class="upload-btn">
+                        <img id="profilePic" src="~/images/user.png" alt="Profile Picture" class="profile-pic">
+                    </label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="dz-message dropzone-area px-2 py-2" data-dz-message="data-dz-message" id="clickUpload">
+                    <div class="text-center text-body-emphasis">
+                        <h6 class="mb-2"><span class="fa-solid fa-upload me-2"></span>Télécharger une photo de profil</h6>
+                        <p class="mb-0 fs-9 text-body-tertiary text-opacity-85 lh-sm">Télécharger une image d'une taille maximale de 100 Ko</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<script src="~/js/parametrage/EnteteProjet.js"></script>

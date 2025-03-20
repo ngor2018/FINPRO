@@ -11,6 +11,9 @@
             case classes.contains("Home"):
                 controller = "Home";
                 break;
+            case classes.contains("Parametrage"):
+                controller = "Parametrage";
+                break;
             case classes.contains("Codifications"):
                 controller = "Codifications";
                 break;
@@ -41,8 +44,8 @@
             case classes.contains("Utilitaires"):
                 controller = "Utilitaires";
                 break;
-            case classes.contains("Parametre"):
-                controller = "Parametre";
+            case classes.contains("FINSTOCKParam"):
+                controller = "FINSTOCKParam";
                 break;
             case classes.contains("Saisie"):
                 controller = "Saisie";

@@ -116,7 +116,9 @@
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="js\STOCK\parametre\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="assets\css\styles.css" />
     <Content Include="assets\img\authentication.svg" />
@@ -264,6 +266,7 @@
     <Content Include="js\leaflet.markercluster.js" />
     <Content Include="js\list.min.js" />
     <Content Include="js\lodash.min.js" />
+    <Content Include="js\parametrage\EnteteProjet.js" />
     <Content Include="js\phoenix.js" />
     <Content Include="js\polyfill.min.js" />
     <Content Include="js\popper.min.js" />
@@ -271,7 +274,7 @@
     <Content Include="js\authentification.js" />
     <Content Include="js\Layout.js" />
     <Content Include="js\FINPRONET\parametre\parametre.js" />
-    <Content Include="js\STOCK\parametre\parametre.js" />
+    <Content Include="js\parametrage\parametre.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.mvc.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -470,12 +473,13 @@
     <Content Include="Views\Codifications\PlanCompte.cshtml" />
     <Content Include="Views\Codifications\ParametreGeneraux.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\parametre\Pays.cshtml" />
-    <Content Include="Views\parametre\services.cshtml" />
-    <Content Include="Views\parametre\groupes.cshtml" />
-    <Content Include="Views\parametre\vue_config.cshtml" />
-    <Content Include="Views\parametre\unite.cshtml" />
-    <Content Include="Views\parametre\magasins.cshtml" />
+    <Content Include="Views\FINSTOCKParam\services.cshtml" />
+    <Content Include="Views\FINSTOCKParam\groupes.cshtml" />
+    <Content Include="Views\CRUD\vue_config.cshtml" />
+    <Content Include="Views\Parametrage\unite.cshtml" />
+    <Content Include="Views\FINSTOCKParam\magasins.cshtml" />
+    <Content Include="Views\Parametrage\Pays.cshtml" />
+    <Content Include="Views\Parametrage\EnteteProjet.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -490,8 +494,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CodificationsController.cs" />
+    <Compile Include="Controllers\CRUDController.cs" />
+    <Compile Include="Controllers\FINSTOCKParamController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ParametreController.cs" />
+    <Compile Include="Controllers\ParametrageController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

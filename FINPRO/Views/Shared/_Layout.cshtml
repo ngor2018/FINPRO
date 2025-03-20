@@ -1,5 +1,6 @@
 ﻿@{
     var action = ViewContext.RouteData.Values["action"].ToString();
+    var NameTitrecontroller = ViewBag.NameTitrecontroller;
     var Namecontroller = ViewContext.RouteData.Values["controller"].ToString();
     var controller = ViewBag.Controleur;
     var projet = ViewBag.Projet;
@@ -129,27 +130,37 @@
                         </li>
                         <li class="nav-item">
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#nv-paramGen" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                <a class="nav-link dropdown-indicator label-1" href="#nv-paramGen" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "Parametrage"?"true":"false")" aria-controls="nv-CRM">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">Paramètres généraux</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-paramGen">
+                                    <ul class="nav collapse parent @(Namecontroller == "Parametrage"?"show":"")" data-bs-parent="#navbarVerticalCollapse" id="nv-paramGen">
                                         <li class="collapsed-nav-item-title d-none">Paramètres généraux</li>
                                         <li class="nav-item">
-                                            <a class="nav-link Fichiers" href="#" name="NewConnexion" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Nouvelle Connexion</span></div>
+                                            <a class="nav-link Parametrage @(action == "EnteteProjet"?"active":"")" href="#" name="EnteteProjet" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Entête du projet</span></div>
                                             </a> 
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Fichiers" name="ChangerLangue" href="#" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Changer de Langue</span></div>
+                                            <a class="nav-link Parametrage @(action == "Pays"?"active":"")" href="#" name="Pays" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Pays</span></div>
                                             </a> 
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link Codifications" href="#" name="Groupe" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Groupe</span></div>
+                                            <a class="nav-link Parametrage @(action == "Monnaie"?"active":"")" href="#" name="Monnaie" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Monnaie</span></div>
+                                            </a> 
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametrage @(action == "Exercices"?"active":"")" href="#" name="Exercices" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Exercices</span></div>
+                                            </a> 
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link Parametrage @(action == "unite"?"active":"")" href="#" name="unite" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Unité</span></div>
                                             </a> 
                                         </li>
                                     </ul>
@@ -490,85 +501,61 @@
                                 </div>
                             </div>
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#appFinStock" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="appFinStock">
+                                <a class="nav-link dropdown-indicator label-1" href="#appFinStock" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "FINSTOCKParam"?"true":"false")" aria-controls="appFinStock">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">FINSTOCK</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="appFinStock">
+                                    <ul class="nav collapse parent @(Namecontroller == "FINSTOCKParam"?"show":"")" data-bs-parent="#navbarVerticalCollapse" id="appFinStock">
                                         <li class="collapsed-nav-item-title d-none">FINSTOCK</li>
                                         <li class="nav-item">
-                                            <a class="nav-link dropdown-indicator" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-CRM">
+                                            <a class="nav-link dropdown-indicator" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "FINSTOCKParam"?"true":"false")" aria-controls="nv-CRM">
                                                 <div class="d-flex align-items-center">
                                                     <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Paramétres</span>
                                                 </div>
                                             </a>
                                             <div class="parent-wrapper">
-                                                <ul class="nav collapse parent @(Namecontroller == "Parametre"?"show":"")" data-bs-parent="#appFinStock" id="nv-events8">
+                                                <ul class="nav collapse parent @(Namecontroller == "FINSTOCKParam"?"show":"")" data-bs-parent="#appFinStock" id="nv-events8">
+                                                    
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre @(action == "Pays"?"active":"")" href="#" name="Pays" data-bs-toggle="" aria-expanded="false">
-                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Pays</span></div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link Parametre" name="EnteteProjet" href="#" data-bs-toggle="" aria-expanded="false">
-                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Entête du projet</span></div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="Saisie_Sites" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam" href="#" name="Saisie_Sites" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Saisie des Sites</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="Exercices" data-bs-toggle="" aria-expanded="false">
-                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Exercices</span></div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="Familles" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam" href="#" name="Familles" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Familles</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="Consommateurs" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam" href="#" name="Consommateurs" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Consommateurs</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="signataire" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam" href="#" name="signataire" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Signataires</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="" name="Monnaie" data-bs-toggle="" aria-expanded="false">
-                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Monnaie</span></div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @(action == "magasins"?"active":"")" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Magasins</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @(action == "groupes"?"active":"")" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Groupes</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="services" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @(action == "services"?"active":"")" href="#" name="services" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Services</span></div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link Parametre" href="#" name="unite" data-bs-toggle="" aria-expanded="false">
-                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Unité</span></div>
                                                         </a>
                                                     </li>
                                                 </ul>
@@ -798,9 +785,14 @@
             }
         </script>
         <div class="content">
-            <input type="text" name="@action" value="@action" id="pageName" class="form-control" />
+            <input type="hidden" name="@action" value="@action" id="pageName" class="form-control" />
+
+
+            <input type="hidden" name="@NameTitrecontroller" value="@NameTitrecontroller" id="pageNameTitreController" class="form-control" />
             <input type="hidden" name="@controller" value="@controller" id="pageNameController" class="form-control" />
             <input type="hidden" name="@projet" value="@projet" id="pageNameProjet" class="form-control" />
+
+
             <input type="hidden" name="nameIDButton" value="" id="nameIDButton" class="form-control" />
             @RenderBody()
             @Html.Partial("footer")

@@ -77,7 +77,7 @@ var Enregistrer = function () {
         }
 
         $.ajax({
-            url: "/Parametre/Add_EditParam",
+            url: "/CRUD/Add_EditParam",
             type: "POST",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(objData),
@@ -178,12 +178,14 @@ var Supprimer = function () {
 }
 var validerDel = function () {
     var code = $("#code").val();
+    var site = $("#site").val();
     const objData = {
         code: code,
+        site: site,
         niveau:pageName
     }
     $.ajax({
-        url: "/Parametre/DelParam",
+        url: "/CRUD/DelParam",
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(objData),
@@ -224,9 +226,8 @@ function paramater() {
     titre.html(`
         <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">${pageNameProjet}</li>
-            <li class="breadcrumb-item active" aria-current="page">${pageNameController}</li>
-            <li class="breadcrumb-item active" aria-current="page"><u>${pageName}</u></li>
+            <li class="breadcrumb-item">${pageNameController}</li>
+            <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
           </ol>
         </nav>
     `);
@@ -430,7 +431,7 @@ function loadData(code) {
             code: code,
             site: site,
         },
-        url: '/Parametre/GetDataParam', // URL de l'API pour récupérer les données
+        url: '/CRUD/GetDataParam', // URL de l'API pour récupérer les données
         success: function (data) {
             reportData(data);
         }
@@ -452,7 +453,7 @@ function DataTable(code,data) {
         $('#' + code).DataTable().destroy();
         $("#" + code + " tbody").empty();
     }
-    data.listDataFiltre.forEach(item => {
+    data.listData.forEach(item => {
         list = `<tr>
                     <td>${item.code}</td>
                     <td>${item.libelle}</td>
