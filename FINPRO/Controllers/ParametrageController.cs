@@ -58,5 +58,18 @@ namespace FINPRO.Controllers
                 return View(parametre);
             }
         }
+        public ActionResult Exercices()
+        {
+            if (Session["LOGIN"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.Projet = "Exercices";
+                ViewBag.Controleur = "Paramétrage";
+                return View(parametre);
+            }
+        }
     }
 }

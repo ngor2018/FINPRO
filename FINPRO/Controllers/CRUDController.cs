@@ -24,7 +24,6 @@ namespace FINPRO.Controllers
         [HttpGet]
         public JsonResult GetDataParam(string code, string site)
         {
-            List<parametre> listData = new List<parametre>();
             List<parametre> listDataFiltre = new List<parametre>();
             List<parametre> listSite = new List<parametre>();
             DataTable objTabFiltre = new DataTable();
@@ -46,6 +45,9 @@ namespace FINPRO.Controllers
                     break;
                 case "magasins":
                     tableInstance = new Tables_Sto.rMagasin();
+                    break;
+                case "Exercices":
+                    tableInstance = new Tables_Sto.rExercice();
                     break;
             }
             if (tableInstance != null)
@@ -93,17 +95,39 @@ namespace FINPRO.Controllers
                 }
             }
 
-
-
             // Remplissage de la liste
-            foreach (DataRow row in objTable.Rows)
+            switch (code)
             {
-                listDataFiltre.Add(new parametre()
-                {
-                    code = row["code"].ToString(),
-                    libelle = row["libelle"].ToString(),
-                });
+                case "Pays":
+                case "signataire":
+                case "groupes":
+                case "services":
+                case "unite":
+                case "magasins":
+                    foreach (DataRow row in objTable.Rows)
+                    {
+                        listDataFiltre.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString(),
+                        });
+                    }
+                    break;
+                case "Exercices":
+                    foreach (DataRow row in objTable.Rows)
+                    {
+                        listDataFiltre.Add(new parametre()
+                        {
+                            annee = row["ANNEE"].ToString(),
+                            dateDebut = DateTime.Parse(row["DATEDEB"].ToString()).ToString("dd/MM/yyyy"),
+                            dateFin = DateTime.Parse(row["DATEFIN"].ToString()).ToString("dd/MM/yyyy"),
+                            dateCloture = DateTime.Parse(row["DATECLOTURE"].ToString()).ToString("dd/MM/yyyy"),
+                            statut = bool.Parse(row["ENCOURS"].ToString())
+                        });
+                    }
+                    break;
             }
+
 
             var data = new
             {

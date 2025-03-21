@@ -242,6 +242,7 @@ function formTable(pageName) {
         case "services":
         case "unite":
         case "magasins":
+        case "Exercices":
             formHTML = `
                     <div id="partieSite">
                     </div>
@@ -256,25 +257,13 @@ function formTable(pageName) {
                         </div>
                     </div>
                     <div id="niveauImpression"></div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table class="table-bordered tabList" id="${pageName}" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Code</th>
-                                        <th>Libellé</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div id="niveauFormTableau"></div>                    
                     `;
             break;
     }
     $("#formParam").append(formHTML);
     formTableTOP(pageName);
+    formTableau(pageName);
     loadData(pageName);
     formPopup(pageName);
     formDel();
@@ -298,6 +287,56 @@ function formTableTOP(pageName) {
             document.getElementById('nameLabel').textContent = "Site";
             break;
     }
+}
+function formTableau(pageName) {
+    let formHTML = "";
+    switch (pageName) {
+        case "Pays":
+        case "signataire":
+        case "groupes":
+        case "services":
+        case "unite":
+        case "magasins":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-bordered tabList" id="${pageName}" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Libellé</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    `;
+            break;
+        case "Exercices":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-bordered tabList" id="${pageName}" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Année</th>
+                                            <th>Date de début d'exercice</th>
+                                            <th>Date de fin d'exercice</th>
+                                            <th>En Cours</th>
+                                            <th>Date de clôture</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    `;
+            break;
+    }
+    $("#niveauFormTableau").append(formHTML);
 }
 function formPopup(pageName) {
     var list = "", tailleCode = 0;
@@ -446,21 +485,41 @@ function reportData(data) {
     }
     DataTable(pageName, data);
 }
-function DataTable(code,data) {
-    var list = "";
+function DataTable(code, data) {
+
     // Vérifier si la table existe déjà et la réinitialiser
     if ($.fn.DataTable.isDataTable('#' + code)) {
         $('#' + code).DataTable().destroy();
         $("#" + code + " tbody").empty();
     }
-    data.listData.forEach(item => {
-        list = `<tr>
-                    <td>${item.code}</td>
-                    <td>${item.libelle}</td>
-                </tr>`;
-        $("#" + code + " tbody").append(list);
-    });
-    var table = $('#' + code).DataTable({
+    // Configuration des colonnes pour chaque type de table
+    const config = {
+        default: ["code", "libelle"],
+        Exercices: ["annee", "dateDebut", "dateFin", "etat", "dateCloture"]
+    };
+
+    // Générer une ligne HTML en fonction des colonnes définies
+    function generateRow(item, columns) {
+        return `<tr>` + columns.map(col => `<td>${col === "etat" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`).join('') + `</tr>`;
+    }
+
+    // Générer un champ checkbox pour l'état (statut)
+    function generateEtatCheckbox(status) {
+        return `
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" ${status ? "checked" : ""} />
+            </div>
+        `;
+    }
+    // Déterminer les colonnes à utiliser
+    const columns = config[code] || config.default;
+
+    // Générer les lignes et les insérer dans le tableau
+    const rows = data.listData.map(item => generateRow(item, columns)).join('');
+    $("#" + code + " tbody").append(rows);
+
+    // Initialisation de DataTable
+    $('#' + code).DataTable({
         "pageLength": 10,
         "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
         "responsive": true,

@@ -480,6 +480,7 @@
     <Content Include="Views\FINSTOCKParam\magasins.cshtml" />
     <Content Include="Views\Parametrage\Pays.cshtml" />
     <Content Include="Views\Parametrage\EnteteProjet.cshtml" />
+    <Content Include="Views\Parametrage\Exercices.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

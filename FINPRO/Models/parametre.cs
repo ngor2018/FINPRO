@@ -26,6 +26,10 @@ namespace FINPRO.Models
         public string motDePasse { get; set; }
         public string versionSql { get; set; }
         public bool statut { get; set; }
+        public string annee { get; set; }
+        public string dateDebut { get; set; }
+        public string dateFin { get; set; }
+        public string dateCloture { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
     }

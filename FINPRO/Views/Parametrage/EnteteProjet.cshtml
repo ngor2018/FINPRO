@@ -18,54 +18,670 @@
         align-items: center;
         justify-content: center;
     }
+    #myTab {
+        position: fixed;
+        width: 100%;
+        z-index: 1050;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        background-color:#ffffff;
+    }
+    .border_form {
+        border: 1px solid #dbd6d6;
+        border-radius: 0 0 8px 0;
+        padding-top: 10px;
+        padding-bottom: 15px
+    }
 </style>
 
 <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation"><a class="nav-link" id="Coordonnees-tab" data-bs-toggle="tab" href="#tab-Coordonnees" role="tab" aria-controls="tab-Coordonnees" aria-selected="false" tabindex="-1">Coordonnées</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link active" id="Coordonnees-tab" data-bs-toggle="tab" href="#tab-Coordonnees" role="tab" aria-controls="tab-Coordonnees" aria-selected="false" tabindex="-1">Coordonnées</a></li>
     <li class="nav-item" role="presentation"><a class="nav-link" id="Personnalisation-tab" data-bs-toggle="tab" href="#tab-Personnalisation" role="tab" aria-controls="tab-Personnalisation" aria-selected="false" tabindex="-1">Personnalisation</a></li>
-    <li class="nav-item" role="presentation"><a class="nav-link" id="systemDRF-tab" data-bs-toggle="tab" href="#tab-systemDRF" role="tab" aria-controls="tab-systemDRF" aria-selected="true">Système DRF</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link" id="systemDRF-tab" data-bs-toggle="tab" href="#tab-systemDRF" role="tab" aria-controls="tab-systemDRF" aria-selected="true">Systèmes DRF</a></li>
     <li class="nav-item" role="presentation"><a class="nav-link" id="Suivi-tab" data-bs-toggle="tab" href="#tab-Suivi" role="tab" aria-controls="tab-Suivi" aria-selected="true">Suivi</a></li>
-    <li class="nav-item" role="presentation"><a class="nav-link active" id="Autres-tab" data-bs-toggle="tab" href="#tab-Autres" role="tab" aria-controls="tab-Autres" aria-selected="true">Autres</a></li>
+    <li class="nav-item" role="presentation"><a class="nav-link" id="Autres-tab" data-bs-toggle="tab" href="#tab-Autres" role="tab" aria-controls="tab-Autres" aria-selected="true">Autres</a></li>
 </ul>
 <div class="tab-content mt-3" id="myTabContent">
-    <div class="tab-pane fade" id="tab-Coordonnees" role="tabpanel" aria-labelledby="Coordonnees-tab">
-
-    </div>
-    <div class="tab-pane fade" id="tab-Personnalisation" role="tabpanel" aria-labelledby="Personnalisation-tab">
-
-    </div>
-    <div class="tab-pane fade" id="tab-systemDRF" role="tabpanel" aria-labelledby="systemDRF-tab">
-
-    </div>
-    <div class="tab-pane fade" id="tab-Suivi" role="tabpanel" aria-labelledby="Suivi-tab">
-
-    </div>
-    <div class="tab-pane fade active show" id="tab-Autres" role="tabpanel" aria-labelledby="Autres-tab">
+    <div class="tab-pane fade active show" id="tab-Coordonnees" role="tabpanel" aria-labelledby="Coordonnees-tab">
         <div class="row g-4">
-            <div class="fallback">
-                <input type="file" id="profileUpload" accept="image/*" class="d-none">
-            </div>
-            <div class="col-md-auto">
-                <div class="text-center mb-3">
-                    <label for="profileUpload" class="upload-btn">
-                        <img id="profilePic" src="~/images/user.png" alt="Profile Picture" class="profile-pic">
-                    </label>
+            <div class="col-md-12" style="padding-top:40px">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>Identification</h5>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md">
-                <div class="dz-message dropzone-area px-2 py-2" data-dz-message="data-dz-message" id="clickUpload">
-                    <div class="text-center text-body-emphasis">
-                        <h6 class="mb-2"><span class="fa-solid fa-upload me-2"></span>Télécharger une photo de profil</h6>
-                        <p class="mb-0 fs-9 text-body-tertiary text-opacity-85 lh-sm">Télécharger une image d'une taille maximale de 100 Ko</p>
+                <div class="row">
+                    <div class="col-md-12 border_form">
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="libelleProjet">Libellé du projet</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="libelleProjet" value="" id="libelleProjet" class="form-control input_focus" />
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="libelleProjet2">Libellé du projet (2)</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="libelleProjet2" value="" id="libelleProjet2" class="form-control input_focus" />
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="sigle">Sigle</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="sigle" value="" id="sigle" class="form-control input_focus" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Adresse</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 border_form">
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="adresse1">Adresse (1ère ligne)</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="adresse1" value="" id="adresse1" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="adresse2">Adresse (2ème ligne)</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="adresse2" value="" id="adresse2" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="ville">Ville</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="ville" value="" id="ville" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="pays">Pays</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select id="pays" class="input_focus select_" style="width:100%">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="telephone">Téléphone</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="telephone" value="" id="telephone" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="fax">FAX</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="fax" value="" id="fax" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="email">Email</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="email" value="" id="email" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="tab-pane fade" id="tab-Personnalisation" role="tabpanel" aria-labelledby="Personnalisation-tab">
+        <div class="row g-4">
+            <div class="col-md-12" style="padding-top:40px">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Monnaies</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 border_form">
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="locale">Locale</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="locale" class="input_focus select_" style="width:100%">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="ref">REF</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="ref" class="input_focus select_" style="width:100%">
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="Coursref">Cours du REF</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" name="Coursref" value="" id="Coursref" class="form-control input_focus" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-3">
+                                        <label for="rapport">Rapport</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="rapport" class="input_focus select_" style="width:100%">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <h5>Comptabilité générale</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 border_form">
+                                <div class="row mb-1">
+                                    <div class="col-md-6">
+                                        <div class="row mb-1">
+                                            <div class="col-md-10">
+                                                <label for="testSurPiece" class="cursorPointer">Test sur n* pièce</label>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input cursorPointer" type="checkbox" id="testSurPiece">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col-md-10">
+                                                <label for="GestionBROV" class="cursorPointer">Gestion du BR et OV</label>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input cursorPointer" type="checkbox" id="GestionBROV">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col-md-10">
+                                                <label for="GererRefFact" class="cursorPointer">Gérer la référence de facture</label>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input cursorPointer" type="checkbox" id="GererRefFact">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row mb-1">
+                                            <div class="col-md-12">
+                                                <h5>Echéance/Trésorerie </h5>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 border_form">
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-1">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input cursorPointer" id="GestEcheance" value="GestEcheance" type="radio" name="EcheanceTres" />
+                                                            <label class="form-check-label cursorPointer" for="GestEcheance">Gestion des échéances</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-1">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input cursorPointer" id="GestTreso" value="GestTreso" type="radio" name="EcheanceTres" />
+                                                            <label class="form-check-label cursorPointer" for="GestTreso">Gestion de la trésorerie</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-1">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input cursorPointer" id="AucunGest" value="Aucun" type="radio" name="EcheanceTres" checked />
+                                                            <label class="form-check-label cursorPointer" for="AucunGest">Aucun</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label for="compteFrais1">1.</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <select id="compteFrais1" class="select_" style="width:100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-6">
+                                        <div class="row justify-content-end" style="text-align:right">
+                                            <div class="col-md-12">
+                                                <label>Comptes des frais bancaires</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label for="compteFrais2">2.</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <select id="compteFrais2" class="select_" style="width:100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-md-6">
 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label for="compteFrais3">3.</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <select id="compteFrais3" class="select_" style="width:100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <div class="row mb-1">
+                                    <div class="col-md-12">
+                                        <h5>Marché et Engagement</h5>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 border_form">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <label for="GererHT_TTC" class="cursorPointer">Gérer les montants HT et TTC</label>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input cursorPointer" type="checkbox" id="GererHT_TTC">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row mb-1">
+                                    <div class="col-md-12">
+                                        <h5>Clôture des rapprochements bancaires</h5>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 border_form" style="margin-left:8px">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <label for="GererRappBanc" class="cursorPointer">Gérer la clôture des rapprochements</label>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input cursorPointer" type="checkbox" id="GererRappBanc">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tab-systemDRF" role="tabpanel" aria-labelledby="systemDRF-tab">
+        <div class="row g-4">
+            <div class="col-md-12" style="padding-top:40px">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>Système DRF</h5>
+                    </div>
+                </div>
+                <div class="row" style="padding-bottom:8px">
+                    <div class="col-md-12 border_form">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <label class="form-check-label cursorPointer" for="IDA-classique">IDA Classique</label>
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="IDA-classique">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <label class="form-check-label cursorPointer" for="BAD">BAD</label>
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="BAD">
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="DRF-standard">DRF Standard</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="DRF-standard">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="FED">FED</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="FED">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tab-Suivi" role="tabpanel" aria-labelledby="Suivi-tab">
+        <div class="row g-4">
+            <div class="col-md-12" style="padding-top:40px">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>Suivi</h5>
+                    </div>
+                </div>
+                <div class="row" style="padding-bottom:8px">
+                    <div class="col-md-12 border_form">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <label class="form-check-label cursorPointer" for="Budget">Budget</label>
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="Budget">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <label class="form-check-label cursorPointer" for="Activite">Activité</label>
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="Activite">
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="Financier">Financier</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="Financier">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="Zones">Zones</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="Zones">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="sousCategorie">Sous-Catégories</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="sousCategorie">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label cursorPointer" for="6ePlan">6ème Plan</label>
+                                        <input class="form-check-input cursorPointer" type="checkbox" id="6ePlan">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tab-Autres" role="tabpanel" aria-labelledby="Autres-tab">
+        <div class="row g-4">
+            <div class="col-md-12" style="padding-top:40px">
+                <div class="row mb-2">
+                    <div class="fallback">
+                        <input type="file" id="profileUpload" accept="image/*" class="d-none">
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="text-center mb-3">
+                            <label for="profileUpload" class="upload-btn">
+                                <img id="profilePic" src="~/images/user.png" alt="Profile Picture" class="profile-pic">
+                            </label>
+                            <span style="color:red;cursor:pointer;padding-top:10px" id="resetImg">&times;Annuler</span>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="dz-message dropzone-area px-1 py-1" data-dz-message="data-dz-message" id="clickUpload">
+                            <div class="text-center text-body-emphasis">
+                                <h6 class="mb-2"><span class="fa-solid fa-upload me-2"></span>Télécharger une photo de profil</h6>
+                                <p class="mb-0 fs-9 text-body-tertiary text-opacity-85 lh-sm">Télécharger une image d'une taille maximale de 100 Ko</p>
+                                <p class="mb-0 fs-9s text-opacity-85 lh-sm" id="error_img" style="color:red"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row" style="padding-top:8px">
+                            <div class="col-md-12">
+                                <h5 class="mb-3">
+                                    <label for="sous_comp_conv">Sous-Composante Convention</label>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <select class="input_focus select_" style="width:100%" id="sous_comp_conv">
+                                        <option>2 - SOUS COMPOSANTES</option>
+                                        <option>1 - COMPOSANTE PRINCIPALE</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Autres</h5>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-bottom:8px">
+                            <div class="col-md-12" style="border:1px solid #dbd6d6;border-radius:0 0 12px 0">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="syscohada">
+                                            <label class="form-check-label cursorPointer" for="syscohada">Syscohada</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3 form-check">
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="source-finance" checked>
+                                            <label class="form-check-label cursorPointer" for="source-finance">Source Financement</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3 form-check">
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="verrouillage">
+                                            <label class="form-check-label cursorPointer" for="verrouillage">Verrouillage des exportations</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3 form-check">
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="alerte-budget">
+                                            <label class="form-check-label cursorPointer" for="alerte-budget">Alerte Budget</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="mb-3">Écritures comptables</h5>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-bottom:8px">
+                            <div class="col-md-12" style="border:1px solid #dbd6d6;border-radius:0 0 12px 0">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3 form-check">
+                                            <label class="form-check-label cursorPointer" for="montant-local">Autoriser la saisie de montant local nul</label>
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="montant-local">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3 form-check">
+                                            <label class="form-check-label cursorPointer" for="comptabilite-budgetaire">Comptabilité Budgétaire</label>
+                                            <input class="form-check-input cursorPointer" type="checkbox" id="comptabilite-budgetaire">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="immobilisations">
+                                    <label class="form-check-label cursorPointer" for="immobilisations">Autoriser la saisie de montant nul sur les immobilisations</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input class="form-check-input cursorPointer" type="checkbox" id="chaine-traitement">
+                                    <label class="form-check-label cursorPointer" for="chaine-traitement">Chaîne de traitement des engagements obligatoire</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="mb-3">Saisie des marchés et engagements</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="increment">Incrémentation (Numérique)</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" id="increment" class="form-control input_focus" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center" style="text-align:center;padding-top:10px">
+        <div class="col-md-12" style="border-top: 1px solid #c8c5c5;padding-top:10px">
+            <button class="btn btn-sm btn-success" id="Valider" onclick="Valider()">Valider</button>
+            <button class="btn btn-sm btn-success" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+        </div>
     </div>
 </div>
 
-
+<div id="fullscreen_popup" style="display:none;z-index:3000">
+    <div class="row justify-content-center" style="text-align:center;padding-top:15%">
+        <div class="col-md-6" style="background-color:#dbd6d6">
+            <div class="row" style="padding-top:8px;padding-bottom:2px">
+                <div class="col-md-12" style="background-color:#dbd6d6">
+                    <div class="float-start">
+                        <h5 style="color:#b4520c">Choix de l'impression</h5>
+                    </div>
+                    <div class="float-end">
+                        <button class="btn btn-sm btn-danger closeForm">&times;</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="selectionImp" type="radio" name="choixImpression" value="Selection" checked/>
+                        <label class="form-check-label" for="selectionImp">Sélection</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="ToutImp" type="radio" name="choixImpression" value="Tout" />
+                        <label class="form-check-label" for="ToutImp">Tout</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-2">
+                    <label for="DuImp">Du</label>
+                </div>
+                <div class="col-md-10">
+                    <select id="DuImp" class="input_focus select_" style="width:100%">
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-2">
+                    <label for="AuImp">Au</label>
+                </div>
+                <div class="col-md-10">
+                    <select id="AuImp" class="input_focus select_" style="width:100%">
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-12">
+                    <button class="btn btn-sm btn-success" id="ValiderChoix" onclick="ValiderChoix()">OK</button>
+                    <button class="btn btn-sm btn-danger closeForm">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

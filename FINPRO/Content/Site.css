@@ -1,3 +1,6 @@
+.cursorPointer:hover{
+    cursor:pointer;
+}
 .result_Param {
     font-weight: bold;
     color: #ce8500;
