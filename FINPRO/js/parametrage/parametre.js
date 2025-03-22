@@ -47,13 +47,73 @@ var Enregistrer = function () {
     var code = $("#code").val();
     var libelle = $("#libelle").val();
     var site = $("#site").val();
-    if (code.trim() == '') {
-        isAllValid = false;
-        $("#code").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
-    }
-    if (libelle.trim() == '') {
-        isAllValid = false;
-        $("#libelle").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
+
+    //Exercice
+    var annee = $("#annee").val();
+    var dateDebut = $("#DebutDate").val();
+    var dateFin = $("#FinDate").val();
+
+    
+    switch (pageName) {
+        case "Pays":
+        case "signataire":
+        case "groupes":
+        case "services":
+        case "unite":
+        case "magasins":
+            if (code.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#code", "champ obligatoire", isAllValid);
+            }
+            if (libelle.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#libelle", "champ obligatoire", isAllValid);
+            }
+            break;
+        case "Exercices":
+            if (annee.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#annee", "champ obligatoire", isAllValid);
+            }
+            if (dateDebut.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#DebutDate", "champ obligatoire", isAllValid);
+            } else {
+                const endDateD = document.getElementById('DebutDate').value;
+
+                const yearD = endDateD.split('-')[0];
+                // Vérifier si l'année a 4 caractères
+                if (yearD.length === 4 && !isNaN(yearD)) {
+                    $("#DebutDate").siblings('span.error').css('display', 'none');
+                } else {
+                    isAllValid = false;
+                    setErrorMessage("#DebutDate", "Revoir l\'année.", isAllValid);
+                }
+            }
+            if (dateFin.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#FinDate", "champ obligatoire", isAllValid);
+            } else {
+                const startDate = document.getElementById('dateDebut').value;
+                const endDate = document.getElementById('FinDate').value;
+                const resultElement = document.getElementById('ControleDateSup');
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+
+                const yearCloture = endDate.split('-')[0];
+                // Vérifier si l'année a 4 caractères
+                if (yearCloture.length === 4 && !isNaN(yearCloture)) {
+                    resultElement.textContent = '';
+                    if (end < start) {
+                        isAllValid = false;
+                        resultElement.textContent = 'La date fin doit être supérieure ou égale à la date début.';
+                    }
+                } else {
+                    isAllValid = false;
+                    setErrorMessage("#FinDate", "Revoir l\'année.", isAllValid);
+                }
+            }
+            break;
     }
     if (isAllValid) {
         var EtatCod = document.getElementById('code');
@@ -144,10 +204,14 @@ var Ajout = function () {
         case "magasins":
             nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
             break;
+        case "Exercices":
+            nomTitre += "Exercice";
+            break;
     }
     $("#titleParam_").html(nomTitre);
     setTimeout(function () {
         $("#code").focus();
+        $("#annee").focus();
     }, 500)
 }
 var Supprimer = function () {
@@ -266,6 +330,7 @@ function formTable(pageName) {
     formTableau(pageName);
     loadData(pageName);
     formPopup(pageName);
+    formPopupParieSaisie(pageName);
     formDel();
 }
 function formTableTOP(pageName) {
@@ -321,11 +386,14 @@ function formTableau(pageName) {
                                 <table class="table-bordered tabList" id="${pageName}" style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th>Année</th>
-                                            <th>Date de début d'exercice</th>
-                                            <th>Date de fin d'exercice</th>
-                                            <th>En Cours</th>
-                                            <th>Date de clôture</th>
+                                            <th rowspan="2">Année</th>
+                                            <th colspan="3">Date</th>
+                                            <th rowspan="2">En Cours</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Début</th>
+                                            <th>Fin</th>
+                                            <th>Clôture</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -339,27 +407,7 @@ function formTableau(pageName) {
     $("#niveauFormTableau").append(formHTML);
 }
 function formPopup(pageName) {
-    var list = "", tailleCode = 0;
-    switch (pageName) {
-        case "Pays":
-            tailleCode = 3;
-            break;
-        case "signataire":
-            tailleCode = 10;
-            break;
-        case "groupes":
-            tailleCode = 2;
-            break;
-        case "services":
-            tailleCode = 5;
-            break;
-        case "unite":
-            tailleCode = 10;
-            break;
-        case "magasins":
-            tailleCode = 2;
-            break;
-    }
+    var list = "";
     switch (pageName) {
         case "Pays":
         case "signataire":
@@ -367,9 +415,10 @@ function formPopup(pageName) {
         case "services":
         case "unite":
         case "magasins":
+        case "Exercices":
             list = `
                     <div class="row justify-content-center" style="padding-top:12%">
-                        <div class="col-md-6 pageView">
+                        <div class="col-md-8 pageView">
                             <div class="row">
                                 <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
                                     <div class="float-start">
@@ -389,24 +438,7 @@ function formPopup(pageName) {
                                 </div>
                             </div>
                             <div class="form_padd">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label for="code">Code</label>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus"/>
-                                        <span class='erreur'></span>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label for="libelle">Libellé</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <input type="text" name="libelle" value="" id="libelle" maxlength="250" class="input_focus"/>
-                                        <span class='erreur'></span>
-                                    </div>
-                                </div>
+                                <div id="zoneSaisie"></div>
                                 <div class="row justify-content-end" style="text-align:right;padding-top:15px">
                                     <div class="col-md-12">
                                         <button class="btn btn-sm btn-success me-1 mb-1" id="Enregistrer" onclick="Enregistrer()">Enregistrer</button>
@@ -420,6 +452,122 @@ function formPopup(pageName) {
             break;
     }
     $("#partieUnique").append(list);
+}
+function formPopupParieSaisie(pageName) {
+    let formHTML = "", tailleCode = 0;
+    switch (pageName) {
+        case "Pays":
+            tailleCode = 3;
+            break;
+        case "signataire":
+            tailleCode = 10;
+            break;
+        case "groupes":
+            tailleCode = 2;
+            break;
+        case "services":
+            tailleCode = 5;
+            break;
+        case "unite":
+            tailleCode = 10;
+            break;
+        case "magasins":
+            tailleCode = 2;
+            break;
+        case "Exercices":
+            tailleCode = 4;
+    }
+    switch (pageName) {
+        case "Pays":
+        case "signataire":
+        case "groupes":
+        case "services":
+        case "unite":
+        case "magasins":
+            formHTML = `
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="code">Code</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus" />
+                                <span class='erreur'></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="libelle">Libellé</label>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" name="libelle" value="" id="libelle" maxlength="250" class="input_focus" />
+                                <span class='erreur'></span>
+                            </div>
+                        </div>
+                    `;
+            break;
+        case "Exercices":
+            formHTML = `
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="annee">Année</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="annee" value="" maxlength="${tailleCode}" id="annee" class="input_focus"/>
+                                <span class='erreur'></span>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input style='cursor:pointer' class="form-check-input" id="checkEncours" type="checkbox" value="" />
+                                    <label style='cursor:pointer' class="form-check-label" for="checkEncours">En cours</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center" style="text-align:center;padding-top:10px">
+                            <div class="col-md-12">
+                                <h5>Date d'exercice</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="DebutDate">Début</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" name="DebutDate" value="" id="DebutDate" class="input_focus DateSaisie"/>
+                                <span class='erreur'></span>    
+                            </div>
+                            <div class="col-md-2">
+                                <label for="FinDate">Fin</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" name="FinDate" value="" id="FinDate" class="input_focus DateSaisie"/>
+                                <span class='erreur'></span>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center" style="text-align:center">
+                            <div class="col-md-12">
+                                <span id='ControleDateSup' style='color:red'></span>
+                            </div>
+                        </div>
+                    `;
+            break;
+    }
+    $("#zoneSaisie").append(formHTML); 
+    switch (pageName) {
+        case "Pays":
+        case "signataire":
+        case "groupes":
+        case "services":
+        case "unite":
+        case "magasins":
+            const code = document.getElementById('code');
+            formatChiffreInput(code);
+            break;
+        case "Exercices":
+            const annee = document.getElementById('annee');
+            formatChiffreInput(annee);
+            break;
+    }
 }
 function formDel() {
     let container = document.getElementById("partieDelete");
@@ -494,28 +642,40 @@ function DataTable(code, data) {
     }
     // Configuration des colonnes pour chaque type de table
     const config = {
-        default: ["code", "libelle"],
-        Exercices: ["annee", "dateDebut", "dateFin", "etat", "dateCloture"]
+        default: { columns: ["code", "libelle"], styles: {} },
+        Exercices: {
+            columns: ["annee", "dateDebut", "dateFin", "statut", "dateCloture"],
+            styles: {
+                annee: "text-align: right;",
+                dateDebut: "text-align: center;",
+                dateFin: "text-align: center;",
+                dateCloture: "text-align: right;",
+                statut: "text-align: center;"
+            }
+        }
     };
 
     // Générer une ligne HTML en fonction des colonnes définies
-    function generateRow(item, columns) {
-        return `<tr>` + columns.map(col => `<td>${col === "etat" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`).join('') + `</tr>`;
+    function generateRow(item, columns,styles) {
+        return `<tr>` +
+                columns.map(col => {
+                    let style = styles[col] ? ` style='${styles[col]}'` : "";
+                    return `<td${style}>${col === "statut" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`;
+                }).join('') +
+            `</tr>`;
     }
 
     // Générer un champ checkbox pour l'état (statut)
     function generateEtatCheckbox(status) {
         return `
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" ${status ? "checked" : ""} />
-            </div>
+            <input class="" disabled type="checkbox" ${status ? "checked" : ""} />
         `;
     }
-    // Déterminer les colonnes à utiliser
-    const columns = config[code] || config.default;
+    // Déterminer les colonnes et styles à utiliser
+    const { columns, styles } = config[code] || config.default;
 
     // Générer les lignes et les insérer dans le tableau
-    const rows = data.listData.map(item => generateRow(item, columns)).join('');
+    const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
     $("#" + code + " tbody").append(rows);
 
     // Initialisation de DataTable
@@ -546,10 +706,29 @@ function DataTable(code, data) {
 
 }
 function resetForm() {
+    switch (pageName) {
+        case "Pays":
+        case "signataire":
+        case "groupes":
+        case "services":
+        case "unite":
+        case "magasins":
+            document.getElementById('code').disabled = false;
+            break;
+        case "Exercices":
+            $('.DateSaisie').val('').attr('type', 'text').attr('type', 'date');
+            break;
+    }
     $(".input_focus").val('');
     $('.input_focus').siblings('span.erreur').css('display', 'none');
     document.getElementById('Supprimer').style.visibility = "hidden";
-    document.getElementById('code').disabled = false;
+}
+function setErrorMessage(selector, message, isValid) {
+    if (!isValid) {
+        $(selector).siblings('span.erreur').html(message).css('display', 'block');
+    } else {
+        $(selector).siblings('span.erreur').css('display', 'none');
+    }
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
@@ -565,6 +744,50 @@ function toggleForms(showId) {
                 elem.classList.remove("active");
                 elem.classList.add("hidden");
             }
+        }
+    });
+}
+// Fonction pour formater les entrées alphanumériques seulement number
+function formatChiffreInput(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isNumber ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
+
+        if (!isAllowedKey) {
+            event.preventDefault();
+        }
+    });
+}
+// Fonction pour formater les entrées alphanumériques
+function formatChiffreLettreInput(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isLetter = /^[a-zA-Z]$/.test(key);
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isLetter ||
+            isNumber ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
+
+        if (!isAllowedKey) {
+            event.preventDefault();
         }
     });
 }

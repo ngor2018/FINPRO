@@ -116,12 +116,15 @@ namespace FINPRO.Controllers
                 case "Exercices":
                     foreach (DataRow row in objTable.Rows)
                     {
+                        var dateCloture = row["DATECLOTURE"] == DBNull.Value || string.IsNullOrWhiteSpace(row["DATECLOTURE"].ToString())
+                                            ? null
+                                            : DateTime.Parse(row["DATECLOTURE"].ToString()).ToString("dd/MM/yyyy");
                         listDataFiltre.Add(new parametre()
                         {
                             annee = row["ANNEE"].ToString(),
                             dateDebut = DateTime.Parse(row["DATEDEB"].ToString()).ToString("dd/MM/yyyy"),
                             dateFin = DateTime.Parse(row["DATEFIN"].ToString()).ToString("dd/MM/yyyy"),
-                            dateCloture = DateTime.Parse(row["DATECLOTURE"].ToString()).ToString("dd/MM/yyyy"),
+                            dateCloture = dateCloture,
                             statut = bool.Parse(row["ENCOURS"].ToString())
                         });
                     }
