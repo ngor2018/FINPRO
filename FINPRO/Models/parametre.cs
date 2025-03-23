@@ -26,6 +26,7 @@ namespace FINPRO.Models
         public string motDePasse { get; set; }
         public string versionSql { get; set; }
         public bool statut { get; set; }
+        public bool Encours { get; set; }
         public string annee { get; set; }
         public string dateDebut { get; set; }
         public string dateFin { get; set; }

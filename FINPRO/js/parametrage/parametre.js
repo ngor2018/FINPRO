@@ -24,6 +24,9 @@ $(function () {
             case "unite":
                 nomTitre += "Unité";
                 break;
+            case "Exercies":
+                nomTitre += "Exercice";
+                break;
             case "magasins":
                 nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
                 break;
@@ -31,14 +34,38 @@ $(function () {
         $("#titleParam_").html(nomTitre);
         // Supprimer les messages d'erreur
         $(".erreur").html('').hide();
-        document.getElementById('code').disabled = true;
-        $("#code").val(this.cells[0].innerHTML);
-        $("#libelle").val(this.cells[1].innerHTML);
+        switch (pageName) {
+            case "Exercices":
+                document.getElementById('annee').disabled = true;
+                document.getElementById('annee').value = this.cells[0].innerHTML;
+                document.getElementById('DebutDate').value = afficherDateyyyyMMdd(this.cells[1].innerHTML);
+                document.getElementById('FinDate').value = afficherDateyyyyMMdd(this.cells[2].innerHTML);
+                
+                if (this.cells[3].innerHTML.includes('checked')) {
+                    document.getElementById('checkEncours').checked = true;
+                } else {
+                    document.getElementById('checkEncours').checked = false;
+                }
+                break;
+            default:
+                document.getElementById('code').disabled = true;
+                $("#code").val(this.cells[0].innerHTML);
+                $("#libelle").val(this.cells[1].innerHTML);
+                $("#libelle").focus();
+                break;
+        }
         document.getElementById('Supprimer').style.visibility = "visible";
-        $("#libelle").focus();
     })
     $('.input_focus').keyup(function () {
         $(this).siblings('span.erreur').css('display', 'none');
+    })
+    $('.input_focus').change(function () {
+        $(this).siblings('span.erreur').css('display', 'none');
+        switch (pageName) {
+            case "Exercices":
+                $("#ControleDateSup").html('');
+                break;
+        }
     })
     $(".selectChoix").select2();
 })
@@ -52,8 +79,7 @@ var Enregistrer = function () {
     var annee = $("#annee").val();
     var dateDebut = $("#DebutDate").val();
     var dateFin = $("#FinDate").val();
-
-    
+    var EnCours = document.getElementById('checkEncours')?.checked ?? false;
     switch (pageName) {
         case "Pays":
         case "signataire":
@@ -94,7 +120,7 @@ var Enregistrer = function () {
                 isAllValid = false;
                 setErrorMessage("#FinDate", "champ obligatoire", isAllValid);
             } else {
-                const startDate = document.getElementById('dateDebut').value;
+                const startDate = document.getElementById('DebutDate').value;
                 const endDate = document.getElementById('FinDate').value;
                 const resultElement = document.getElementById('ControleDateSup');
                 const start = new Date(startDate);
@@ -116,8 +142,20 @@ var Enregistrer = function () {
             break;
     }
     if (isAllValid) {
-        var EtatCod = document.getElementById('code');
+        var EtatCod = null;
         var etat = true;
+        switch (pageName) {
+            case "Pays":
+            case "signataire":
+            case "groupes":
+            case "services":
+            case "unite":
+            case "magasins":
+                EtatCod = document.getElementById('code');
+                break;
+            case "Exercices":
+                EtatCod = document.getElementById('annee');
+        }
         switch (EtatCod.disabled) {
             case true:
                 //Edition
@@ -133,7 +171,12 @@ var Enregistrer = function () {
             libelle: libelle,
             site: site,
             niveau: pageName,
-            statut: etat
+            statut: etat,
+
+            annee: annee,
+            Encours: EnCours,
+            dateDebut: dateDebut,
+            dateFin: dateFin,
         }
 
         $.ajax({
@@ -155,16 +198,23 @@ var Enregistrer = function () {
                                 //Ajout
                                 case false:
                                     resetForm();
-                                    loadData(pageName, "", "");
+                                    loadData(pageName);
                                     break;
                                 //Edition
                                 default:
                                     var table = document.getElementById(pageName);
-                                    for (var i = 1; i < table.rows.length; i++) {
-                                        var item = table.rows[i];
-                                        if (item.cells[0].innerHTML == code) {
-                                            item.cells[1].innerHTML = libelle;
-                                        }
+                                    switch (pageName) {
+                                        case "Exercices":
+                                            loadData(pageName);
+                                            break;
+                                        default:
+                                            for (var i = 1; i < table.rows.length; i++) {
+                                                var item = table.rows[i];
+                                                if (item.cells[0].innerHTML == code) {
+                                                    item.cells[1].innerHTML = libelle;
+                                                }
+                                            }
+                                            break;
                                     }
                                     break;
                             }
@@ -172,7 +222,18 @@ var Enregistrer = function () {
                         }, 1500);
                         break;
                     default:
-                        $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
+                        switch (pageName) {
+                            case "Pays":
+                            case "services":
+                            case "groupes":
+                            case "unite":
+                            case "magasins":
+                                $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
+                                break;
+                            case "Exercices":
+                                $("#annee").siblings('span.erreur').html(data.message).css('display', 'block');
+                                break;
+                        }
                         break;
                 }
             },
@@ -561,7 +622,7 @@ function formPopupParieSaisie(pageName) {
         case "unite":
         case "magasins":
             const code = document.getElementById('code');
-            formatChiffreInput(code);
+            formatChiffreLettreInput(code);
             break;
         case "Exercices":
             const annee = document.getElementById('annee');
@@ -716,7 +777,9 @@ function resetForm() {
             document.getElementById('code').disabled = false;
             break;
         case "Exercices":
+            document.getElementById('annee').disabled = false;
             $('.DateSaisie').val('').attr('type', 'text').attr('type', 'date');
+            $("#ControleDateSup").html('');
             break;
     }
     $(".input_focus").val('');
@@ -790,4 +853,20 @@ function formatChiffreLettreInput(input) {
             event.preventDefault();
         }
     });
+}
+function afficherDateyyyyMMdd(date) {
+    const [day, month, year] = date.split("/");
+    const formatDate = `${year}-${month}-${day}`;
+    return formatDate;
+}
+function afficherDateddMMyyyy(date) {
+    const today = new Date(date);
+    const jour = String(today.getDate()).padStart(2, '0'); // Jour sur 2 chiffres
+    const mois = String(today.getMonth() + 1).padStart(2, '0'); // Mois (0-indexé, donc +1)
+    const annee = today.getFullYear(); // Année
+
+    // Format jj/MM/yyyy
+    const dateFormattee = `${jour}/${mois}/${annee}`;
+
+    return dateFormattee;
 }

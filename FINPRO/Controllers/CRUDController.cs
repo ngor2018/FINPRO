@@ -142,49 +142,17 @@ namespace FINPRO.Controllers
         [HttpPost]
         public JsonResult Add_EditParam(parametre objData)
         {
-            string result = "", filtre = "";
+            string result = "";
             bool isAllValid = true;
             var niveau = objData.niveau;
-            var code = objData.code;
-            var libelle = objData.libelle;
-            var site = objData.site;
             bool statut = objData.statut;
+
             DataTable table = new DataTable();
             DataRow row;
-            object tableInstance = null;
-            // Déclaration du dictionnaire pour les champs supplémentaires
-            Dictionary<string, object> extraFields = null;
-            switch (niveau)
-            {
-                case "Pays":
-                    tableInstance = new Tables_Sto.rPays();
-                    break;
-                case "services":
-                    tableInstance = new Tables_Sto.rService();
-                    break;
-                case "groupes":
-                    tableInstance = new Tables_Sto.rGroupeFamille();
-                    break;
-                case "unite":
-                    tableInstance = new Tables_Sto.rUnite();
-                    break;
-                case "magasins":
-                    tableInstance = new Tables_Sto.rMagasin();
-                    extraFields = new Dictionary<string, object> { { "SITE", site } };
-                    break;
-            }
-            switch (niveau)
-            {
-                case "Pays":
-                case "services":
-                case "groupes":
-                case "unite":
-                    filtre = $"CODE = '{code}'";
-                    break;
-                case "magasins":
-                    filtre = $"CODE = '{code}' AND SITE = '{site}'";
-                    break;
-            }
+            var extraFields = SetExtraFields(niveau, objData);
+            var filtre = GetFiltre(objData);
+            var tableInstance = GetTableInstance(niveau);
+
             // Vérification et enregistrement
             if (tableInstance != null)
             {
@@ -206,8 +174,6 @@ namespace FINPRO.Controllers
                             {
                                 table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
                                 row = table.NewRow();
-                                row["CODE"] = code;
-                                row["LIBELLE"] = libelle;
                                 // Ajout des champs supplémentaires s'ils existent
                                 if (extraFields != null)
                                 {
@@ -223,33 +189,94 @@ namespace FINPRO.Controllers
                         default:
                             row = table.Rows[0];
                             row.BeginEdit();
-                            row["LIBELLE"] = libelle;
+                            foreach (var field in extraFields)
+                            {
+                                row[field.Key] = field.Value;
+                            }
                             row.EndEdit();
                             break;
                     }
-                    // Enregistrer si la méthode existe
-                    enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                    try
+                    {
+                        // Enregistrer si la méthode existe
+                        enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                        result = statut ? "Enregistrement modifié avec succès" : (isAllValid ? "Enregistrement ajouté avec succès" : "Code existe déjà");
+                    }
+                    catch (Exception ex)
+                    {
+                        result = ex.Message;
+                    }
                 }
             }
-            switch (statut)
-            {
-                //Edition
-                case true:
-                    result = "Enregistrement modifié avec succès";
-                    break;
-                //Ajout
-                default:
-                    if (isAllValid)
-                    {
-                        result = "Enregistrement ajouté avec succès";
-                    }
-                    else
-                    {
-                        result = "Code existe déjà";
-                    }
-                    break;
-            }
+
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+        }
+        // Génère les champs supplémentaires en fonction du niveau
+        private Dictionary<string, object> SetExtraFields(string niveau, parametre objData)
+        {
+            var fields = new Dictionary<string, object>();
+
+            if (new[] { "Pays", "services", "groupes", "unite" }.Contains(niveau))
+            {
+                fields["CODE"] = objData.code;
+                fields["LIBELLE"] = objData.libelle;
+            }
+            else if (niveau == "magasins")
+            {
+                fields["CODE"] = objData.code;
+                fields["LIBELLE"] = objData.libelle;
+                fields["SITE"] = objData.site;
+            }
+            else if (niveau == "Exercices")
+            {
+                //fields["ANNEE"] = objData.annee;
+                fields["DATEDEB"] = DateTime.Parse(objData.dateDebut);
+                fields["DATEFIN"] = DateTime.Parse(objData.dateFin);
+                fields["ENCOURS"] = objData.Encours;
+                fields["CLOTURE"] = false;
+                fields["GENERE"] = false;
+            }
+
+            return fields;
+        }
+
+        // Génère le filtre SQL en fonction du niveau
+        private string GetFiltre(parametre objData)
+        {
+            string niveau = objData.niveau,
+                code=objData.code,
+                site=objData.site,
+                annee=objData.annee;
+            switch (niveau)
+            {
+                case "Pays":
+                case "services":
+                case "groupes":
+                case "unite":
+                    return $"CODE = '{code}'";
+                case "magasins":
+                    return $"CODE = '{code}' AND SITE = '{site}'";
+                case "Exercices":
+                    return $"ANNEE = '{annee}'";
+                default:
+                    return "";
+            }
+        }
+
+
+        // Retourne l'instance de la table en fonction du niveau
+        private object GetTableInstance(string niveau)
+        {
+            switch (niveau)
+            {
+                case "Pays": return new Tables_Sto.rPays();
+                case "services": return new Tables_Sto.rService();
+                case "groupes": return new Tables_Sto.rGroupeFamille();
+                case "unite": return new Tables_Sto.rUnite();
+                case "magasins": return new Tables_Sto.rMagasin();
+                case "Exercices": return new Tables_Sto.rExercice();
+                default: return null;
+            }
         }
 
         [HttpPost]
@@ -259,6 +286,7 @@ namespace FINPRO.Controllers
             bool isAllValid = true;
             var code = objData.code;
             var site = objData.site;
+            var annee = objData.annee;
             var niveau = objData.niveau;
             object tableInstance = null;
             string tableType = "";
@@ -284,7 +312,7 @@ namespace FINPRO.Controllers
             {
                 tableType = tableInstance.GetType().Name;
             }
-            long totalCount = GetTotalOccurrences(niveau, code,site);
+            long totalCount = GetTotalOccurrences(niveau, objData);
             if (totalCount > 0)
             {
                 isAllValid = false;
@@ -303,6 +331,9 @@ namespace FINPRO.Controllers
                     case "magasins":
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "' and SITE = '" + site + "'";
                         break;
+                    case "Exercices":
+                        requete = "DELETE FROM " + tableType + " where ANNEE = '" + annee + "'";
+                        break;
                 }
                 conn.Open();
                 com.Connection = conn;
@@ -320,8 +351,9 @@ namespace FINPRO.Controllers
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
-        private long GetTotalOccurrences(string niveau, string valueCheck,string valueCheck1)
+        private long GetTotalOccurrences(string niveau,parametre objData)
         {
+
             long totalCount = 0;
             string nomColonne = "", nomColonne1 = "";
             switch (niveau)
@@ -338,6 +370,9 @@ namespace FINPRO.Controllers
                 case "unite":
                     nomColonne = "UNITE";
                     break;
+                case "Exercices":
+                    nomColonne = "ANNEE";
+                    break;
                 case "magasins":
                     nomColonne = "MAGASIN";
                     nomColonne1 = "SITE";
@@ -353,6 +388,7 @@ namespace FINPRO.Controllers
                 case "services":
                 case "groupes":
                 case "unite":
+                case "Exercies":
                     query = @"
                             DECLARE @sql NVARCHAR(MAX) = N'';
                                 DECLARE @tableName NVARCHAR(128);
@@ -438,12 +474,20 @@ namespace FINPRO.Controllers
             }
             com.CommandText = query;
             com.Parameters.AddWithValue("@nomColonne", nomColonne);
-            com.Parameters.AddWithValue("@code", valueCheck);
             switch (niveau)
             {
+                case "Pays":
+                case "services":
+                case "groupes":
+                case "unite":
+                    com.Parameters.AddWithValue("@code", objData.code);
+                    break;
+                case "Exercices":
+                    com.Parameters.AddWithValue("@code", objData.annee);
+                    break;
                 case "magasins":
                     com.Parameters.AddWithValue("@nomColonne1", nomColonne1);
-                    com.Parameters.AddWithValue("@code1", valueCheck1);
+                    com.Parameters.AddWithValue("@code1", objData.site);
                     break;
             }
             dr = com.ExecuteReader();
