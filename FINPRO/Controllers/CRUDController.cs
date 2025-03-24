@@ -20,6 +20,62 @@ namespace FINPRO.Controllers
         SqlConnection conn = new SqlConnection(GetConnexion.GetConnectionString());
         parametre parametre = new parametre();
 
+        [HttpGet]
+        public JsonResult GetDataDetailParamBPi(string page,string code)
+        {
+            List<parametre> listB = new List<parametre>();
+            List<parametre> listP = new List<parametre>();
+            DataTable objTableB = new DataTable();
+            DataTable objTableP = new DataTable();
+            object tableInstance = null;
+            string filtreB = "",filtreP="";
+            switch (page)
+            {
+                case "Monnaie":
+                    filtreB = $"MONNAIE = '{code}' and TYPE = 'B'";
+                    filtreP = $"MONNAIE = '{code}' and TYPE = 'P'";
+                    tableInstance = new Tables.MMONNAIE();
+                    break;
+            }
+            if (tableInstance != null)
+            {
+                var tableType = tableInstance.GetType();
+                var remplirDataTableMethod = tableType.GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+                if (remplirDataTableMethod != null)
+                {
+                    objTableB = ((DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtreB })).Copy();
+                    objTableP = ((DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtreP })).Copy();
+                }
+            }
+            int rowIndexB = 1;
+            int rowIndexP = 1;
+            foreach (DataRow row in objTableB.Rows)
+            {
+                listB.Add(new parametre()
+                {
+                    rowIndexB = rowIndexB,
+                    code = row["NUMENREG"].ToString(),
+                    valeur = Math.Floor(Convert.ToDecimal(row["VALEUR"])).ToString()
+                });
+                rowIndexB++;
+            }
+            foreach (DataRow row in objTableP.Rows)
+            {
+                listP.Add(new parametre()
+                {
+                    rowIndexP = rowIndexP,
+                    code = row["NUMENREG"].ToString(),
+                    valeur = Math.Floor(Convert.ToDecimal(row["VALEUR"])).ToString()
+                });
+                rowIndexP++;
+            }
+            var dataList = new
+            {
+                Billet = listB,
+                Piece = listP
+            };
+            return Json(dataList, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet]
         public JsonResult GetDataParam(string code, string site)
@@ -49,6 +105,9 @@ namespace FINPRO.Controllers
                 case "Exercices":
                     tableInstance = new Tables_Sto.rExercice();
                     break;
+                case "Monnaie":
+                    tableInstance = new Tables_Sto.rMonnaie();
+                    break;
             }
             if (tableInstance != null)
             {
@@ -59,17 +118,12 @@ namespace FINPRO.Controllers
                     objTable = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
                 }
             }
-            //DataRow firstRow = objTable.Rows[0];
-            //var codeFirst = (string)firstRow["CODE"];
-
-            //DataRow lastRow = objTable.Rows[objTable.Rows.Count - 1];
-            //var codeLast = (string)lastRow["CODE"];
             var filtre = "";
             if (code == "magasins")
             {
                 Tables.rSite rSite = new Tables.rSite();
                 DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
-
+                
                 foreach (DataRow row in tabSite.Rows)
                 {
                     listSite.Add(new parametre()
@@ -126,6 +180,18 @@ namespace FINPRO.Controllers
                             dateFin = DateTime.Parse(row["DATEFIN"].ToString()).ToString("dd/MM/yyyy"),
                             dateCloture = dateCloture,
                             statut = bool.Parse(row["ENCOURS"].ToString())
+                        });
+                    }
+                    break;
+                case "Monnaie":
+                    foreach (DataRow row in objTable.Rows)
+                    {
+                        listDataFiltre.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString(),
+                            libelleM = row["NOMDECIMALE"].ToString(),
+                            nbreDecimale = row["NBDECIMALE"].ToString()
                         });
                     }
                     break;
@@ -286,10 +352,10 @@ namespace FINPRO.Controllers
             bool isAllValid = true;
             var code = objData.code;
             var site = objData.site;
-            var annee = objData.annee;
             var niveau = objData.niveau;
             object tableInstance = null;
-            string tableType = "";
+            string tableType = "",filtre = "";
+            DataTable table = new DataTable();
             switch (niveau)
             {
                 case "Pays":
@@ -307,19 +373,23 @@ namespace FINPRO.Controllers
                 case "magasins":
                     tableInstance = new Tables_Sto.rMagasin();
                     break;
+                case "Exercices":
+                    tableInstance = new Tables_Sto.rExercice();
+                    break;
             }
             if (tableInstance != null)
             {
                 tableType = tableInstance.GetType().Name;
             }
             long totalCount = GetTotalOccurrences(niveau, objData);
+            string requete = "";
+            bool etat = true;
             if (totalCount > 0)
             {
                 isAllValid = false;
             }
             else
             {
-                string requete = "";
                 switch (niveau)
                 {
                     case "Pays":
@@ -332,22 +402,40 @@ namespace FINPRO.Controllers
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "' and SITE = '" + site + "'";
                         break;
                     case "Exercices":
-                        requete = "DELETE FROM " + tableType + " where ANNEE = '" + annee + "'";
+                        filtre = $"ANNEE = '{code}' and ENCOURS = 1";
+                        var remplirDataTableMethod = tableInstance.GetType().GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+                        table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
+                        if (table.Rows.Count > 0)
+                        {
+                            isAllValid = false;
+                            etat = false;
+                        }
+                        else
+                        {
+                            requete = "DELETE FROM " + tableType + " where ANNEE = '" + code + "'";
+                        }
                         break;
                 }
+            }
+            if (isAllValid)
+            {
+                result = "Enregistrement supprimé avec succès ";
                 conn.Open();
                 com.Connection = conn;
                 com.CommandText = requete;
                 dr = com.ExecuteReader();
                 conn.Close();
             }
-            if (isAllValid)
-            {
-                result = "Enregistrement supprimé avec succès ";
-            }
             else
             {
-                result = "Suppression impossible : Codification rattachée !!!";
+                if (!etat)
+                {
+                    result = "Suppression impossible : Exercice en Cours !!!";
+                }
+                else
+                {
+                    result = "Suppression impossible : Codification rattachée !!!";
+                }
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
@@ -388,7 +476,6 @@ namespace FINPRO.Controllers
                 case "services":
                 case "groupes":
                 case "unite":
-                case "Exercies":
                     query = @"
                             DECLARE @sql NVARCHAR(MAX) = N'';
                                 DECLARE @tableName NVARCHAR(128);
@@ -396,6 +483,45 @@ namespace FINPRO.Controllers
                                 DECLARE table_cursor CURSOR FOR 
                                 SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS 
                                 WHERE COLUMN_NAME = @nomColonne;
+
+                                OPEN table_cursor;
+                                FETCH NEXT FROM table_cursor INTO @tableName;
+
+                                WHILE @@FETCH_STATUS = 0 
+                                BEGIN
+                                    SET @sql = @sql + 
+                                    'SELECT ''' + @tableName + ''' AS TableName, COUNT(*) AS NombreOccurrences 
+                                     FROM ' + QUOTENAME(@tableName) + ' 
+                                     WHERE ' + QUOTENAME(@nomColonne) + ' IS NOT NULL 
+                                     AND LTRIM(RTRIM(CAST(' + QUOTENAME(@nomColonne) + ' AS VARCHAR(MAX)))) <> '''' 
+                                     AND CAST(' + QUOTENAME(@nomColonne) + ' AS VARCHAR(MAX)) = @code
+                                     UNION ALL ';
+
+                                    FETCH NEXT FROM table_cursor INTO @tableName;
+                                END
+
+                                CLOSE table_cursor;
+                                DEALLOCATE table_cursor;
+
+                                -- Supprimer le dernier 'UNION ALL' et exécuter la requête
+                                SET @sql = LEFT(@sql, LEN(@sql) - 10);  
+
+                                IF @sql <> ''
+                                BEGIN
+                                    SET @sql = 'SELECT SUM(NombreOccurrences) AS TotalOccurrences FROM (' + @sql + ') AS T;';
+                                    EXEC sp_executesql @sql, N'@code VARCHAR(MAX)', @code;
+                                END
+                            ";
+                    break;
+                case "Exercices":
+                    query = @"
+                            DECLARE @sql NVARCHAR(MAX) = N'';
+                                DECLARE @tableName NVARCHAR(128);
+
+                                DECLARE table_cursor CURSOR FOR 
+                                SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+                                WHERE COLUMN_NAME = @nomColonne
+                                AND TABLE_NAME <> 'REXERCICE';  -- Exclusion de la table REXERCICE;;
 
                                 OPEN table_cursor;
                                 FETCH NEXT FROM table_cursor INTO @tableName;
@@ -480,10 +606,8 @@ namespace FINPRO.Controllers
                 case "services":
                 case "groupes":
                 case "unite":
-                    com.Parameters.AddWithValue("@code", objData.code);
-                    break;
                 case "Exercices":
-                    com.Parameters.AddWithValue("@code", objData.annee);
+                    com.Parameters.AddWithValue("@code", objData.code);
                     break;
                 case "magasins":
                     com.Parameters.AddWithValue("@nomColonne1", nomColonne1);

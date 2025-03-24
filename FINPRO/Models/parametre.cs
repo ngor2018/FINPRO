@@ -9,11 +9,15 @@ namespace FINPRO.Models
     {
         public string id { get; set; }
         public string code { get; set; }
+        public long rowIndexB { get; set; }
+        public long rowIndexP { get; set; }
         public string login { get; set; }
         public string password { get; set; }
         public string site { get; set; }
         public string sigle { get; set; }
         public string libelle { get; set; }
+        public string libelleM { get; set; }
+        public string nbreDecimale { get; set; }
         public string niveau { get; set; }
         public string abreviation { get; set; }
         public string abreviationTitre { get; set; }
@@ -31,6 +35,7 @@ namespace FINPRO.Models
         public string dateDebut { get; set; }
         public string dateFin { get; set; }
         public string dateCloture { get; set; }
+        public string valeur { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
     }

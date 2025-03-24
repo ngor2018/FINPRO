@@ -1,5 +1,13 @@
-.cursorPointer:hover{
-    cursor:pointer;
+.buttonTab {
+    border: 1px solid #808080;
+    border-radius: 5px
+}
+.buttonTab:hover{
+    background-color:#0162b0;
+    color:#fff;
+}
+.cursorPointer:hover {
+    cursor: pointer;
 }
 .result_Param {
     font-weight: bold;

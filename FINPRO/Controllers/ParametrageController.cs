@@ -71,5 +71,18 @@ namespace FINPRO.Controllers
                 return View(parametre);
             }
         }
+        public ActionResult Monnaie()
+        {
+            if (Session["LOGIN"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.Projet = "Monnaie";
+                ViewBag.Controleur = "Paramétrage";
+                return View(parametre);
+            }
+        }
     }
 }

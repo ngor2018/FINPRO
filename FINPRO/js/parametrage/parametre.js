@@ -30,6 +30,9 @@ $(function () {
             case "magasins":
                 nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
                 break;
+            case "Monnaie":
+                nomTitre += "Monnaie";
+                break;
         }
         $("#titleParam_").html(nomTitre);
         // Supprimer les messages d'erreur
@@ -46,6 +49,14 @@ $(function () {
                 } else {
                     document.getElementById('checkEncours').checked = false;
                 }
+                break;
+            case "Monnaie":
+                document.getElementById('code').disabled = true;
+                document.getElementById('code').value = this.cells[0].innerHTML;
+                document.getElementById('libelle').value = this.cells[1].innerHTML;
+                document.getElementById('nomM').value = this.cells[2].innerHTML;
+                document.getElementById('nombreM').value = this.cells[3].innerHTML;
+                loadDetailDataBPi(pageName, this.cells[0].innerHTML);
                 break;
             default:
                 document.getElementById('code').disabled = true;
@@ -268,6 +279,9 @@ var Ajout = function () {
         case "Exercices":
             nomTitre += "Exercice";
             break;
+        case "Monnaie":
+            nomTitre += "Monnaie";
+            break;
     }
     $("#titleParam_").html(nomTitre);
     setTimeout(function () {
@@ -279,22 +293,30 @@ var Supprimer = function () {
     toggleForms("partieDelete");
     var nomTitre = "Suppression ";
     var nomTitreDel = "Voulez-vous supprimer Code ";
-    var code = $("#code").val();
+    var code = null;
     switch (pageName) {
         case "Pays":
+            code = $("#code").val();
             nomTitre += "Pays";
             break;
         case "services":
+            code = $("#code").val();
             nomTitre += "Service";
             break;
         case "groupes":
+            code = $("#code").val();
             nomTitre += "Groupe";
             break;
         case "unite":
+            code = $("#code").val();
             nomTitre += "Unité";
             break;
         case "magasins":
+            code = $("#code").val();
             nomTitre += "Magasin";
+        case "Exercices":
+            code = $("#annee").val();
+            nomTitre += "Exercice";
             break;
     }
     nomTitreDel += '<strong><u>' + code + '</u></strong>';
@@ -302,7 +324,14 @@ var Supprimer = function () {
     $("#messageDel").html(nomTitreDel);
 }
 var validerDel = function () {
-    var code = $("#code").val();
+    var code = null;
+    switch (pageName) {
+        case "Exercices":
+            code = $("#annee").val();
+            break;
+        default:
+            code = $("#code").val();
+    }
     var site = $("#site").val();
     const objData = {
         code: code,
@@ -368,6 +397,7 @@ function formTable(pageName) {
         case "unite":
         case "magasins":
         case "Exercices":
+        case "Monnaie":
             formHTML = `
                     <div id="partieSite">
                     </div>
@@ -464,6 +494,26 @@ function formTableau(pageName) {
                         </div> 
                     `;
             break;
+        case "Monnaie":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-bordered tabList" id="${pageName}" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Libellé</th>
+                                            <th>Nom</th>
+                                            <th>Nombre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    `;
+            break;
     }
     $("#niveauFormTableau").append(formHTML);
 }
@@ -477,8 +527,9 @@ function formPopup(pageName) {
         case "unite":
         case "magasins":
         case "Exercices":
+        case "Monnaie":
             list = `
-                    <div class="row justify-content-center" style="padding-top:12%">
+                    <div class="row justify-content-center" style="padding-top:8%">
                         <div class="col-md-8 pageView">
                             <div class="row">
                                 <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
@@ -537,6 +588,8 @@ function formPopupParieSaisie(pageName) {
             break;
         case "Exercices":
             tailleCode = 4;
+        case "Monnaie":
+            tailleCode = 3;
     }
     switch (pageName) {
         case "Pays":
@@ -612,8 +665,111 @@ function formPopupParieSaisie(pageName) {
                         </div>
                     `;
             break;
+        case "Monnaie":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <h5>Saisie</h5>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-2">
+                                <label for="code">Code</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus" />
+                                <span class='erreur'></span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-2">
+                                <label for="libelle">Libellé</label>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" name="libelle" value="" id="libelle" maxlength="250" class="input_focus" />
+                                <span class='erreur'></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Décimales et Formats</h5>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-2">
+                                <label for="nomM">Nom</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="nomM" value="" id="nomM" class="input_focus" maxlength="25"/>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="nombreM">Nombre</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="nombreM" value="" id="nombreM" class="input_focus" maxlength="1"/>
+                            </div>
+                        </div><hr />
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <div class="float-start" style="width:45%">
+                                    <div class="row mb-2 justify-content-end" style="text-align:right">
+                                        <div class="col-md-12">
+                                            <button data-table="tabBillet" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                            <button data-table="tabBillet" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" style="max-height: 150px; overflow-y: auto;">
+                                            <table class="table-bordered tabList" width="100%" id="Billet_${pageName}">
+                                                <thead class="sticky-top bg-white">
+                                                    <tr>
+                                                        <th colspan="3" style="text-align:left">Billets de</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th></th>
+                                                        <th style="width:95%"><strong>VALEUR</strong></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-end" style="width:45%">
+                                    <div class="row mb-2 justify-content-end" style="text-align:right">
+                                        <div class="col-md-12">
+                                            <button data-table="tabPiece" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                            <button data-table="tabPiece" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" style="max-height: 150px; overflow-y: auto;">
+                                            <table class="table-bordered tabList" width="100%" id="Piece_${pageName}">
+                                                <thead class="sticky-top bg-white">
+                                                    <tr>
+                                                        <th colspan="3" style="text-align:left">Pièces de</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th></th>
+                                                        <th style="width:95%"><strong>VALEUR</strong></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            break;
     }
     $("#zoneSaisie").append(formHTML); 
+    let code;
     switch (pageName) {
         case "Pays":
         case "signataire":
@@ -621,12 +777,18 @@ function formPopupParieSaisie(pageName) {
         case "services":
         case "unite":
         case "magasins":
-            const code = document.getElementById('code');
+            code = document.getElementById('code');
             formatChiffreLettreInput(code);
             break;
         case "Exercices":
-            const annee = document.getElementById('annee');
-            formatChiffreInput(annee);
+            code = document.getElementById('annee');
+            formatChiffreInput(code);
+            break;
+        case "Monnaie":
+            code = document.getElementById('code');
+            formatChiffreLettreInput(code);
+            const nombreM = document.getElementById('nombreM');
+            formatChiffreInput(nombreM);
             break;
     }
 }
@@ -679,12 +841,44 @@ function loadData(code) {
             code: code,
             site: site,
         },
-        url: '/CRUD/GetDataParam', // URL de l'API pour récupérer les données
+        url: '/CRUD/GetDataParam',
         success: function (data) {
             reportData(data);
         }
     })
 }
+function loadDetailDataBPi(pageName, code) {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: { page: pageName, code: code },
+        url: '/CRUD/GetDataDetailParamBPi',
+        success: function (data) {
+            ["Billet", "Piece"].forEach(type => {
+                if (data[type].length > 0) {
+                    let tableBody = $(`#${type}_${pageName} tbody`);
+                    tableBody.empty(); // Nettoyer avant d'ajouter
+
+                    data[type].forEach((item, index) => {
+                        let rowIndex = index + 1; // Index automatique si pas fourni
+                        let list = `<tr>
+                            <td hidden>${item.code}</td>
+                            <td style='text-align:right'>${item[`rowIndex${type.charAt(0)}`] || rowIndex}</td>
+                            <td style='text-align:right'>${separateur_mil(item.valeur)}</td>
+                        </tr>`;
+                        tableBody.append(list);
+                    });
+
+                    let firstRow = tableBody.find("tr:first");
+                    firstRow.addClass("selected").siblings().removeClass("selected");
+                }
+            });
+        }
+    });
+}
+
 function reportData(data) {
     if ($("#site").val() == "" || $("#site").val() == null) {
         $('#site').empty();
@@ -712,6 +906,15 @@ function DataTable(code, data) {
                 dateFin: "text-align: center;",
                 dateCloture: "text-align: right;",
                 statut: "text-align: center;"
+            }
+        },
+        Monnaie: {
+            columns: ["code", "libelle", "libelleM", "nbreDecimale"],
+            styles: {
+                code: "text-align: left;",
+                libelle: "text-align: left;",
+                libelleM: "text-align: left;",
+                nbreDecimale: "text-align: right;",
             }
         }
     };
@@ -774,6 +977,7 @@ function resetForm() {
         case "services":
         case "unite":
         case "magasins":
+        case "Monnaie":
             document.getElementById('code').disabled = false;
             break;
         case "Exercices":
@@ -869,4 +1073,16 @@ function afficherDateddMMyyyy(date) {
     const dateFormattee = `${jour}/${mois}/${annee}`;
 
     return dateFormattee;
+}
+////Appliquer un séparateur de millier
+function separateur_mil(nStr) {
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ' ' + '$2');
+    }
+    return x1 + x2;
 }
