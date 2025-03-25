@@ -22,6 +22,7 @@ namespace FINPRO.Models
         public string abreviation { get; set; }
         public string abreviationTitre { get; set; }
         public string format { get; set; }
+        public string tabID { get; set; }
         public string titre { get; set; }
         public string typeBase { get; set; }
         public string nomServeur { get; set; }

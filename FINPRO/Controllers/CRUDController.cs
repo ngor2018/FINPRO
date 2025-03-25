@@ -206,6 +206,58 @@ namespace FINPRO.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
+        public JsonResult AddOrEditMonnaie(parametre objData)
+        {
+            var tabID = objData.tabID;
+            var valeur = objData.valeur;
+            var code = objData.code;
+            string filtre = "", result = "";
+            bool isAllValid = true;
+            Tables.MMONNAIE mMONNAIE = new Tables.MMONNAIE();
+            DataTable objTab = new DataTable();
+            switch (tabID)
+            {
+                case "Billet_Monnaie":
+                    filtre = $"TYPE = 'B' and VALEUR = ${valeur}";
+                    break;
+                case "Piece_Monnaie":
+                    filtre = $"TYPE = 'P' and VALEUR = ${valeur}";
+                    break;
+            }
+            objTab = mMONNAIE.RemplirDataTable(filtre);
+            if (objTab.Rows.Count > 0)
+            {
+                isAllValid = false;
+            }
+            else
+            {
+                objTab = mMONNAIE.RemplirDataTable();
+                DataRow newRow = objTab.NewRow();
+                newRow["MONNAIE"] = code;
+                newRow["VALEUR"] = valeur;
+                switch (tabID)
+                {
+                    case "Billet_Monnaie":
+                        newRow["TYPE"] = "B";
+                        break;
+                    case "Piece_Monnaie":
+                        newRow["TYPE"] = "P";
+                        break;
+                }
+                objTab.Rows.Add(newRow);
+                mMONNAIE.Enregistrer(objTab);
+            }
+            if (isAllValid)
+            {
+                result = "Monnaie ajoutée avec succès";
+            }
+            else
+            {
+                result = "Ce code existe déjà";
+            }
+            return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
         public JsonResult Add_EditParam(parametre objData)
         {
             string result = "";

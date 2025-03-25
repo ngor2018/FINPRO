@@ -79,6 +79,7 @@ $(function () {
         }
     })
     $(".selectChoix").select2();
+    initTableInteractions();
 })
 var Enregistrer = function () {
     var isAllValid = true;
@@ -529,7 +530,7 @@ function formPopup(pageName) {
         case "Exercices":
         case "Monnaie":
             list = `
-                    <div class="row justify-content-center" style="padding-top:8%">
+                    <div class="row justify-content-center" style="padding-top:4%">
                         <div class="col-md-8 pageView">
                             <div class="row">
                                 <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
@@ -714,12 +715,13 @@ function formPopupParieSaisie(pageName) {
                                 <div class="float-start" style="width:45%">
                                     <div class="row mb-2 justify-content-end" style="text-align:right">
                                         <div class="col-md-12">
-                                            <button data-table="tabBillet" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
-                                            <button data-table="tabBillet" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                            <button data-table="Billet_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                            <button data-table="Billet_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
+                                            <button data-table="Billet_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-12" style="max-height: 150px; overflow-y: auto;">
+                                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
                                             <table class="table-bordered tabList" width="100%" id="Billet_${pageName}">
                                                 <thead class="sticky-top bg-white">
                                                     <tr>
@@ -740,12 +742,13 @@ function formPopupParieSaisie(pageName) {
                                 <div class="float-end" style="width:45%">
                                     <div class="row mb-2 justify-content-end" style="text-align:right">
                                         <div class="col-md-12">
-                                            <button data-table="tabPiece" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
-                                            <button data-table="tabPiece" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                            <button data-table="Piece_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                            <button data-table="Piece_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
+                                            <button data-table="Piece_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-12" style="max-height: 150px; overflow-y: auto;">
+                                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
                                             <table class="table-bordered tabList" width="100%" id="Piece_${pageName}">
                                                 <thead class="sticky-top bg-white">
                                                     <tr>
@@ -866,13 +869,13 @@ function loadDetailDataBPi(pageName, code) {
                         let list = `<tr>
                             <td hidden>${item.code}</td>
                             <td style='text-align:right'>${item[`rowIndex${type.charAt(0)}`] || rowIndex}</td>
-                            <td style='text-align:right'>${separateur_mil(item.valeur)}</td>
+                            <td style='text-align:right'>${item.valeur}</td>
                         </tr>`;
                         tableBody.append(list);
                     });
 
-                    let firstRow = tableBody.find("tr:first");
-                    firstRow.addClass("selected").siblings().removeClass("selected");
+                    //let firstRow = tableBody.find("tr:first");
+                    //firstRow.addClass("selected").siblings().removeClass("selected");
                 }
             });
         }
@@ -968,6 +971,144 @@ function DataTable(code, data) {
     });
     $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
 
+}
+function initTableInteractions() {
+    ["Billet", "Piece"].forEach(type => {
+        let tableBody = document.querySelector(`#${type}_${pageName} tbody`);
+
+        if (tableBody) {
+            // Gestion de l'édition avec le bouton "Éditer"
+            document.querySelectorAll(`.btn-editer[data-table="${type}_${pageName}"]`).forEach(button => {
+                button.addEventListener("click", function () {
+                    let selectedRow = tableBody.querySelector("tr.selected");
+                    if (!selectedRow) {
+                        alert("Veuillez sélectionner une ligne à modifier.");
+                        return;
+                    }
+                    editCell(selectedRow.cells[2], tableBody);
+                });
+            });
+
+            // Sélection d'une ligne sur clic
+            tableBody.addEventListener("click", function (event) {
+                let row = event.target.closest("tr");
+                if (!row) return;
+
+                // Vérifier si la ligne est déjà sélectionnée
+                let isSelected = row.classList.contains("selected");
+
+                // Désélectionner toutes les lignes
+                tableBody.querySelectorAll("tr").forEach(r => r.classList.remove("selected"));
+
+                // Si elle n'était pas sélectionnée, la sélectionner
+                if (!isSelected) {
+                    row.classList.add("selected");
+                }
+            });
+
+            // Gestion de la suppression
+            document.querySelector(`.btn-supprimer[data-table="${type}_${pageName}"]`)?.addEventListener("click", function () {
+                let selectedRow = tableBody.querySelector("tr.selected");
+                if (!selectedRow) {
+                    alert("Veuillez sélectionner une ligne à supprimer.");
+                    return;
+                }
+                let code = selectedRow.cells[0].textContent.trim(); // Récupérer code
+                selectedRow.remove();
+                console.log(`Ligne avec code ${code} supprimée.`);
+            });
+            // Gestion de l'ajout d'une nouvelle ligne
+            document.querySelector(`.btn-ajout[data-table="${type}_${pageName}"]`)?.addEventListener("click", function () {
+                let rowIndex = tableBody.children.length + 1; // Numéro de ligne
+                let newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td hidden></td> <!-- Code (peut être ajouté plus tard) -->
+                    <td style='text-align:right'>${rowIndex}</td> <!-- Index -->
+                    <td style='text-align:right'></td> <!-- Valeur vide, éditable -->
+                `;
+
+                tableBody.appendChild(newRow);
+                console.log("Nouvelle ligne ajoutée.");
+            });
+        }
+    });
+}
+
+// Fonction d'édition d'une cellule
+function editCell(td, tbody) {
+    if (!td || td.querySelector("input")) return;
+
+    let oldValue = td.textContent.trim();
+    let input = document.createElement("input");
+    input.type = "text";
+    input.value = oldValue;
+    input.style.width = "100%";
+    input.style.textAlign = "right";
+
+    // Appliquer la restriction pour n'accepter que des chiffres
+    formatChiffreInput(input);
+
+    input.addEventListener("blur", function () {
+        let newValue = input.value.trim();
+        if (newValue === "") {
+            td.closest("tr").remove(); // Supprime la ligne si vide
+        } else {
+            // Vérifier si la valeur existe déjà
+            if (checkDuplicateValue(tbody, newValue)) {
+                alert("Cette valeur existe déjà !");
+                td.textContent = oldValue;
+            } else {
+                td.textContent = newValue;
+                //Faire Traitement dans la BDD
+                // Récupérer l'ID du tableau parent
+                let tableId = td.closest("table")?.id || "ID introuvable";
+                if (newValue != oldValue) {
+                    // Afficher les alertes
+                    //alert(`Nouvelle valeur : ${newValue} dans tableau concerné id=${tableId}`);
+                    AddOrEditMonnaie(tableId, newValue);
+                }
+            }
+        }
+    });
+
+    input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            input.blur();
+        } else if (event.key === "Escape") {
+            td.textContent = oldValue;
+        }
+    });
+
+    td.textContent = "";
+    td.appendChild(input);
+    input.focus();
+}
+
+// Vérification des doublons
+function checkDuplicateValue(tbody, value) {
+    return Array.from(tbody.querySelectorAll("td:nth-child(3)")).some(td => td.textContent.trim() === value);
+}
+function AddOrEditMonnaie(tabID, value) {
+    var codeM = $("#code").val();
+    const objData = {
+        code: codeM,
+        tabID: tabID,
+        valeur:value
+    }
+    $.ajax({
+        url: "/CRUD/AddOrEditMonnaie",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(objData),
+        success: function (data) {
+            alert(data.message)
+        },
+
+        error: function (error) {
+            alert("Erreur lors de l'envoi des données.");
+            console.error(error);
+        }
+    });
 }
 function resetForm() {
     switch (pageName) {
