@@ -206,54 +206,71 @@ namespace FINPRO.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult AddOrEditMonnaie(parametre objData)
+        public JsonResult CRUDMonnaie(parametre objData)
         {
             var tabID = objData.tabID;
             var valeur = objData.valeur;
-            var code = objData.code;
+            var MONNAIE = objData.code;
             string filtre = "", result = "";
             bool isAllValid = true;
+            var statut = objData.statut;
+            DataRow row;
             Tables.MMONNAIE mMONNAIE = new Tables.MMONNAIE();
             DataTable objTab = new DataTable();
             switch (tabID)
             {
                 case "Billet_Monnaie":
-                    filtre = $"TYPE = 'B' and VALEUR = ${valeur}";
+                    filtre = $"TYPE = 'B' and VALEUR = '{valeur}' and MONNAIE = '{MONNAIE}'";
                     break;
                 case "Piece_Monnaie":
-                    filtre = $"TYPE = 'P' and VALEUR = ${valeur}";
+                    filtre = $"TYPE = 'P' and VALEUR = '{valeur}' and MONNAIE = '{MONNAIE}'";
                     break;
             }
             objTab = mMONNAIE.RemplirDataTable(filtre);
-            if (objTab.Rows.Count > 0)
+            if (statut) //Si Suppression
             {
-                isAllValid = false;
-            }
-            else
-            {
-                objTab = mMONNAIE.RemplirDataTable();
-                DataRow newRow = objTab.NewRow();
-                newRow["MONNAIE"] = code;
-                newRow["VALEUR"] = valeur;
-                switch (tabID)
+                if (objTab.Rows.Count > 0)
                 {
-                    case "Billet_Monnaie":
-                        newRow["TYPE"] = "B";
-                        break;
-                    case "Piece_Monnaie":
-                        newRow["TYPE"] = "P";
-                        break;
+                    objTab.Rows[0].Delete();
+                    mMONNAIE.Enregistrer(objTab);
+                    result = "Monnaie supprimée avec succès";
                 }
-                objTab.Rows.Add(newRow);
-                mMONNAIE.Enregistrer(objTab);
+                else
+                {
+                    isAllValid = false;
+                    result = "Monnaie introuvable";
+                }
             }
-            if (isAllValid)
+            else //Si ajout/modification
             {
-                result = "Monnaie ajoutée avec succès";
-            }
-            else
-            {
-                result = "Ce code existe déjà";
+                if (objTab.Rows.Count > 0) //Edition
+                {
+                    result = "Cette monnaie existe déjà";
+                    row = objTab.Rows[0];
+                    row.BeginEdit();
+                    row["VALEUR"] = valeur;
+                    row.EndEdit();
+                    mMONNAIE.Enregistrer(objTab);
+                }
+                else //Ajout
+                {
+                    objTab = mMONNAIE.RemplirDataTable();
+                    row = objTab.NewRow();
+                    row["MONNAIE"] = MONNAIE;
+                    row["VALEUR"] = valeur;
+                    switch (tabID)
+                    {
+                        case "Billet_Monnaie":
+                            row["TYPE"] = "B";
+                            break;
+                        case "Piece_Monnaie":
+                            row["TYPE"] = "P";
+                            break;
+                    }
+                    objTab.Rows.Add(row);
+                    mMONNAIE.Enregistrer(objTab);
+                    result = "Monnaie ajoutée avec succès";
+                }
             }
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
@@ -354,6 +371,13 @@ namespace FINPRO.Controllers
                 fields["CLOTURE"] = false;
                 fields["GENERE"] = false;
             }
+            else if (niveau == "Monnaie")
+            {
+                fields["CODE"] = objData.code;
+                fields["LIBELLE"] = objData.libelle;
+                fields["NOMDECIMALE"] = objData.libelleM;
+                fields["NBDECIMALE"] = objData.valeur;
+            }
 
             return fields;
         }
@@ -362,15 +386,16 @@ namespace FINPRO.Controllers
         private string GetFiltre(parametre objData)
         {
             string niveau = objData.niveau,
-                code=objData.code,
-                site=objData.site,
-                annee=objData.annee;
+                    code = objData.code,
+                    site = objData.site,
+                    annee = objData.annee;
             switch (niveau)
             {
                 case "Pays":
                 case "services":
                 case "groupes":
                 case "unite":
+                case "Monnaie":
                     return $"CODE = '{code}'";
                 case "magasins":
                     return $"CODE = '{code}' AND SITE = '{site}'";
@@ -393,6 +418,7 @@ namespace FINPRO.Controllers
                 case "unite": return new Tables_Sto.rUnite();
                 case "magasins": return new Tables_Sto.rMagasin();
                 case "Exercices": return new Tables_Sto.rExercice();
+                case "Monnaie": return new Tables_Sto.rMonnaie();
                 default: return null;
             }
         }
@@ -428,6 +454,9 @@ namespace FINPRO.Controllers
                 case "Exercices":
                     tableInstance = new Tables_Sto.rExercice();
                     break;
+                case "Monnaie":
+                    tableInstance = new Tables_Sto.rMonnaie();
+                    break;
             }
             if (tableInstance != null)
             {
@@ -448,6 +477,7 @@ namespace FINPRO.Controllers
                     case "services":
                     case "groupes":
                     case "unite":
+                    case "Monnaie":
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "'";
                         break;
                     case "magasins":
@@ -513,6 +543,9 @@ namespace FINPRO.Controllers
                 case "Exercices":
                     nomColonne = "ANNEE";
                     break;
+                case "Monnaie":
+                    nomColonne = "MONNAIE";
+                    break;
                 case "magasins":
                     nomColonne = "MAGASIN";
                     nomColonne1 = "SITE";
@@ -528,6 +561,7 @@ namespace FINPRO.Controllers
                 case "services":
                 case "groupes":
                 case "unite":
+                case "Monnaie":
                     query = @"
                             DECLARE @sql NVARCHAR(MAX) = N'';
                                 DECLARE @tableName NVARCHAR(128);
@@ -659,6 +693,7 @@ namespace FINPRO.Controllers
                 case "groupes":
                 case "unite":
                 case "Exercices":
+                case "Monnaie":
                     com.Parameters.AddWithValue("@code", objData.code);
                     break;
                 case "magasins":

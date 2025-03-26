@@ -20,6 +20,20 @@ namespace FINPRO.Controllers
         SqlConnection conn = new SqlConnection(GetConnexion.GetConnectionString());
         parametre parametre = new parametre();
 
+        public ActionResult Structures()
+        {
+            if (Session["LOGIN"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.NameTitrecontroller = "FINSTOCK";
+                ViewBag.Projet = "Structures";
+                ViewBag.Controleur = "Paramétrage";
+                return View(parametre);
+            }
+        }
         public ActionResult groupes()
         {
             if (Session["LOGIN"] == null)

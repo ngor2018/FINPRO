@@ -482,6 +482,7 @@
     <Content Include="Views\Parametrage\EnteteProjet.cshtml" />
     <Content Include="Views\Parametrage\Exercices.cshtml" />
     <Content Include="Views\Parametrage\Monnaie.cshtml" />
+    <Content Include="Views\FINSTOCKParam\Structures.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

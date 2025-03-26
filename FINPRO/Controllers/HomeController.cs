@@ -220,7 +220,7 @@ namespace FINPRO.Controllers {
         {
             Tables.rUser rUser = new Tables.rUser();
             var login = user.login;
-            string password = rUser.CryptagePassword(user.password);
+            string password = rUser.CryptagePasswordBis(user.password);
             BDD.Connexion.Serveur = BDD.Connexion.enumServeur.WEB;
             FinproConfig objConfig = new FinproConfig();
             FinproXmlFile objFinproXml = new FinproXmlFile();

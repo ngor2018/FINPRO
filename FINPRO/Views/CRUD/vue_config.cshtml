@@ -1,6 +1,11 @@
 ﻿@{
     var action = ViewContext.RouteData.Values["action"].ToString();
 }
+<div class="row">
+    <div class="col-md-12">
+        <h4 id="nameTitre"></h4>
+    </div>
+</div>
 @switch (action)
 {
     case "Pays":
@@ -10,11 +15,6 @@
     case "groupes":
     case "Exercices":
     case "Monnaie":
-        <div class="row">
-            <div class="col-md-12">
-                <h4 id="nameTitre"></h4>
-            </div>
-        </div>
         <div id="formParam">
 
         </div>
@@ -27,6 +27,121 @@
             </div>
         </div>
 
-        <script src="~/js/parametrage/parametre.js"></script>
+        break;
+    case "Structures":
+        <div class="row" style="padding-top:15px">
+            <div class="col-md-12">
+                <div class="row justify-content-center" style="text-align:center">
+                    <div class="col-md-6" style="background-color: #77B5FE;padding:4px">
+                        <h5 style="color:#fff">STRUCTURE DES CODES</h5>
+                    </div>
+                </div><hr />
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <h5><u>Code</u></h5>
+                    </div>
+                </div>
+                <div class="row justify-content-center" style="text-align:center">
+                    <div class="col-md-12">
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="pays">Pays</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="pays" value="" id="pays" class="input_focus structCode" />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="monnaie">Monnaie</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="monnaie" value="" id="monnaie" class="input_focus structCode" />
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="magasin">Magasin</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="magasin" value="" id="magasin" class="input_focus structCode" />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="groupe">Groupe</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="groupe" value="" id="groupe" class="input_focus structCode" />
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="famille">Famille</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="famille" value="" id="famille" class="input_focus structCode" />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="service">Service</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="service" value="" id="service" class="input_focus structCode" />
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="consommateur">Consommateur</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="consommateur" value="" id="consommateur" class="input_focus structCode" />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="unite">Unité</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="unite" value="" id="unite" class="input_focus structCode" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <h5>Autres paramétres</h5>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="row mb-1">
+                            <div class="col-md-12">
+                                <div class="float-start">
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="groupeG" type="radio" name="paramAutre" checked="" value="groupeG">
+                                        <label class="form-check-label" for="groupeG">Groupe (G)</label>
+                                    </div>
+                                </div>
+                                <div class="float-end">
+                                    <button class="btn btn-sm">==></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-12">
+                                <div class="float-start">
+                                    <div class="form-check">
+                                        <input class="form-check-input" id="familleF" type="radio" name="paramAutre">
+                                        <label class="form-check-label" for="familleF">Famille (F)</label>
+                                    </div>
+                                </div>
+                                <div class="float-end">
+                                    <button class="btn btn-sm"><==</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+
+                    </div>
+                </div>
+            </div>
+        </div>
         break;
 }
+<script src="~/js/parametrage/parametre.js"></script>

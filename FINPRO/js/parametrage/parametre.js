@@ -1,4 +1,5 @@
 ﻿var pageName = $("#pageName").val();
+var isDelete = false;
 $(function () {
     paramater();
     $("#code").keyup(function () {
@@ -6,6 +7,12 @@ $(function () {
     })
     $("#fermer").click(function () {
         document.getElementById('fullscreen_popup').style.display = "none";
+        switch (pageName) {
+            case "Monnaie":
+                $("#Billet_" + pageName + " tbody").empty();
+                $("#Piece_" + pageName + " tbody").empty();
+                break;
+        }
     })
     $("#" + pageName + " tbody").on("click", "tr", function () {
         $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
@@ -32,6 +39,7 @@ $(function () {
                 break;
             case "Monnaie":
                 nomTitre += "Monnaie";
+                document.getElementById('partieBilletPiece').style.display = "block";
                 break;
         }
         $("#titleParam_").html(nomTitre);
@@ -87,10 +95,11 @@ var Enregistrer = function () {
     var libelle = $("#libelle").val();
     var site = $("#site").val();
 
-    //Exercice
     var annee = $("#annee").val();
     var dateDebut = $("#DebutDate").val();
     var dateFin = $("#FinDate").val();
+    var nomM = $("#nomM").val();
+    var nombre = $("#nombreM").val();
     var EnCours = document.getElementById('checkEncours')?.checked ?? false;
     switch (pageName) {
         case "Pays":
@@ -152,6 +161,19 @@ var Enregistrer = function () {
                 }
             }
             break;
+        case "Monnaie":
+            if (code.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#code", "champ obligatoire", isAllValid);
+            }
+            if (libelle.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#libelle", "champ obligatoire", isAllValid);
+            }
+            if (nombre.trim() == '') {
+                nombre = 0;
+            }
+            break;
     }
     if (isAllValid) {
         var EtatCod = null;
@@ -163,6 +185,7 @@ var Enregistrer = function () {
             case "services":
             case "unite":
             case "magasins":
+            case "Monnaie":
                 EtatCod = document.getElementById('code');
                 break;
             case "Exercices":
@@ -189,6 +212,10 @@ var Enregistrer = function () {
             Encours: EnCours,
             dateDebut: dateDebut,
             dateFin: dateFin,
+
+            libelleM: nomM,
+            valeur: nombre,
+
         }
 
         $.ajax({
@@ -259,7 +286,6 @@ var Enregistrer = function () {
 }
 var Ajout = function () {
     toggleForms("partieUnique");
-    resetForm();
     var nomTitre = "Ajout ";
     switch (pageName) {
         case "Pays":
@@ -289,6 +315,7 @@ var Ajout = function () {
         $("#code").focus();
         $("#annee").focus();
     }, 500)
+    resetForm();
 }
 var Supprimer = function () {
     toggleForms("partieDelete");
@@ -318,6 +345,10 @@ var Supprimer = function () {
         case "Exercices":
             code = $("#annee").val();
             nomTitre += "Exercice";
+            break;
+        case "Monnaie":
+            code = $("#code").val();
+            nomTitre += "Monnaie";
             break;
     }
     nomTitreDel += '<strong><u>' + code + '</u></strong>';
@@ -375,17 +406,41 @@ var closeDel = function () {
     $("#errorCodif").html('');
 }
 function paramater() {
+    var pageNameTitreController = $("#pageNameTitreController").val();
     var pageNameController = $("#pageNameController").val();
     var pageNameProjet = $("#pageNameProjet").val();
     var titre = $("#nameTitre");
-    titre.html(`
-        <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">${pageNameController}</li>
-            <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
-          </ol>
-        </nav>
-    `);
+    var FormHTML = "";
+    switch (pageName) {
+        case "Pays":
+        case "unite":
+        case "magasins":
+        case "services":
+        case "groupes":
+        case "Exercices":
+        case "Monnaie":
+            FormHTML = `
+                        <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+                          <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">${pageNameController}</li>
+                            <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
+                          </ol>
+                        </nav>
+                        `;
+            break;
+        case "Structures":
+            FormHTML = `
+                        <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+                          <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><u>${pageNameTitreController}</u></li>
+                            <li class="breadcrumb-item active" aria-current="page">${pageNameController}</li>
+                            <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
+                          </ol>
+                        </nav>
+                        `;
+            break;
+    }
+    titre.html(FormHTML);
     formTable(pageName);
 }
 function formTable(pageName) {
@@ -415,15 +470,15 @@ function formTable(pageName) {
                     <div id="niveauImpression"></div>
                     <div id="niveauFormTableau"></div>                    
                     `;
+            $("#formParam").append(formHTML);
+            formTableTOP(pageName);
+            formTableau(pageName);
+            loadData(pageName);
+            formPopup(pageName);
+            formPopupParieSaisie(pageName);
+            formDel();
             break;
     }
-    $("#formParam").append(formHTML);
-    formTableTOP(pageName);
-    formTableau(pageName);
-    loadData(pageName);
-    formPopup(pageName);
-    formPopupParieSaisie(pageName);
-    formDel();
 }
 function formTableTOP(pageName) {
     let formHTML = "";
@@ -710,59 +765,61 @@ function formPopupParieSaisie(pageName) {
                                 <input type="text" name="nombreM" value="" id="nombreM" class="input_focus" maxlength="1"/>
                             </div>
                         </div><hr />
-                        <div class="row mb-2">
-                            <div class="col-md-12">
-                                <div class="float-start" style="width:45%">
-                                    <div class="row mb-2 justify-content-end" style="text-align:right">
-                                        <div class="col-md-12">
-                                            <button data-table="Billet_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
-                                            <button data-table="Billet_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
-                                            <button data-table="Billet_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                        <div id="partieBilletPiece" style="display:none">
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <div class="float-start" style="width:45%">
+                                        <div class="row mb-2 justify-content-end" style="text-align:right">
+                                            <div class="col-md-12">
+                                                <button data-table="Billet_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                                <button data-table="Billet_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
+                                                <button data-table="Billet_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
+                                                <table class="table-bordered tabList" width="100%" id="Billet_${pageName}">
+                                                    <thead class="sticky-top bg-white">
+                                                        <tr>
+                                                            <th colspan="3" style="text-align:left">Billets de</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th hidden></th>
+                                                            <th></th>
+                                                            <th style="width:95%"><strong>VALEUR</strong></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
-                                            <table class="table-bordered tabList" width="100%" id="Billet_${pageName}">
-                                                <thead class="sticky-top bg-white">
-                                                    <tr>
-                                                        <th colspan="3" style="text-align:left">Billets de</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th hidden></th>
-                                                        <th></th>
-                                                        <th style="width:95%"><strong>VALEUR</strong></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                </tbody>
-                                            </table>
+                                    <div class="float-end" style="width:45%">
+                                        <div class="row mb-2 justify-content-end" style="text-align:right">
+                                            <div class="col-md-12">
+                                                <button data-table="Piece_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
+                                                <button data-table="Piece_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
+                                                <button data-table="Piece_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="float-end" style="width:45%">
-                                    <div class="row mb-2 justify-content-end" style="text-align:right">
-                                        <div class="col-md-12">
-                                            <button data-table="Piece_${pageName}" class="btn-ajout buttonTab" title="Ajouter"><i class="uil-focus-add"></i></button>
-                                            <button data-table="Piece_${pageName}" class="btn-editer buttonTab" title="Editer"><i class="uil-edit-alt"></i></button>
-                                            <button data-table="Piece_${pageName}" class="btn-supprimer buttonTab" title="Supprimer"><i class="uil-trash-alt"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
-                                            <table class="table-bordered tabList" width="100%" id="Piece_${pageName}">
-                                                <thead class="sticky-top bg-white">
-                                                    <tr>
-                                                        <th colspan="3" style="text-align:left">Pièces de</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th hidden></th>
-                                                        <th></th>
-                                                        <th style="width:95%"><strong>VALEUR</strong></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                </tbody>
-                                            </table>
+                                        <div class="row">
+                                            <div class="col-md-12" style="max-height: 200px; overflow-y: auto;">
+                                                <table class="table-bordered tabList" width="100%" id="Piece_${pageName}">
+                                                    <thead class="sticky-top bg-white">
+                                                        <tr>
+                                                            <th colspan="3" style="text-align:left">Pièces de</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th hidden></th>
+                                                            <th></th>
+                                                            <th style="width:95%"><strong>VALEUR</strong></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -860,22 +917,25 @@ function loadDetailDataBPi(pageName, code) {
         url: '/CRUD/GetDataDetailParamBPi',
         success: function (data) {
             ["Billet", "Piece"].forEach(type => {
-                if (data[type].length > 0) {
-                    let tableBody = $(`#${type}_${pageName} tbody`);
-                    tableBody.empty(); // Nettoyer avant d'ajouter
+                let tableBody = $(`#${type}_${pageName} tbody`);
 
-                    data[type].forEach((item, index) => {
-                        let rowIndex = index + 1; // Index automatique si pas fourni
-                        let list = `<tr>
-                            <td hidden>${item.code}</td>
-                            <td style='text-align:right'>${item[`rowIndex${type.charAt(0)}`] || rowIndex}</td>
-                            <td style='text-align:right'>${item.valeur}</td>
-                        </tr>`;
-                        tableBody.append(list);
-                    });
+                if (tableBody.length > 0) {
+                    tableBody.html(""); // Nettoyer le tbody avec une méthode plus sûre
 
-                    //let firstRow = tableBody.find("tr:first");
-                    //firstRow.addClass("selected").siblings().removeClass("selected");
+                    if (data[type].length > 0) {
+                        data[type].forEach((item, index) => {
+                            let rowIndex = index + 1; // Index automatique si non fourni
+                            let list = `<tr>
+                                <td hidden>${item.code}</td>
+                                <td style='text-align:right'>${item[`rowIndex${type.charAt(0)}`] || rowIndex}</td>
+                                <td style='text-align:right'>${item.valeur}</td>
+                            </tr>`;
+                            tableBody.append(list);
+                        });
+
+                        // Sélectionner automatiquement la première ligne
+                        tableBody.find("tr:first").addClass("selected");
+                    }
                 }
             });
         }
@@ -985,6 +1045,7 @@ function initTableInteractions() {
                         alert("Veuillez sélectionner une ligne à modifier.");
                         return;
                     }
+                    isDelete = false;
                     editCell(selectedRow.cells[2], tableBody);
                 });
             });
@@ -1013,9 +1074,13 @@ function initTableInteractions() {
                     alert("Veuillez sélectionner une ligne à supprimer.");
                     return;
                 }
+                isDelete = true;
                 let code = selectedRow.cells[0].textContent.trim(); // Récupérer code
+                let valeur = selectedRow.cells[2].textContent.trim(); // Récupérer Valeur
+                let tableId = selectedRow.closest("table")?.id || "ID introuvable";
+                CRUDMonnaie(tableId, valeur)
                 selectedRow.remove();
-                console.log(`Ligne avec code ${code} supprimée.`);
+                //console.log(`Ligne avec code ${code} supprimée.`);
             });
             // Gestion de l'ajout d'une nouvelle ligne
             document.querySelector(`.btn-ajout[data-table="${type}_${pageName}"]`)?.addEventListener("click", function () {
@@ -1065,7 +1130,7 @@ function editCell(td, tbody) {
                 if (newValue != oldValue) {
                     // Afficher les alertes
                     //alert(`Nouvelle valeur : ${newValue} dans tableau concerné id=${tableId}`);
-                    AddOrEditMonnaie(tableId, newValue);
+                    CRUDMonnaie(tableId, newValue);
                 }
             }
         }
@@ -1088,15 +1153,16 @@ function editCell(td, tbody) {
 function checkDuplicateValue(tbody, value) {
     return Array.from(tbody.querySelectorAll("td:nth-child(3)")).some(td => td.textContent.trim() === value);
 }
-function AddOrEditMonnaie(tabID, value) {
+function CRUDMonnaie(tabID, value) {
     var codeM = $("#code").val();
     const objData = {
         code: codeM,
         tabID: tabID,
-        valeur:value
+        valeur: value,
+        statut: isDelete //Suppression active ou desactive
     }
     $.ajax({
-        url: "/CRUD/AddOrEditMonnaie",
+        url: "/CRUD/CRUDMonnaie",
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(objData),
@@ -1118,13 +1184,18 @@ function resetForm() {
         case "services":
         case "unite":
         case "magasins":
-        case "Monnaie":
             document.getElementById('code').disabled = false;
             break;
         case "Exercices":
             document.getElementById('annee').disabled = false;
             $('.DateSaisie').val('').attr('type', 'text').attr('type', 'date');
             $("#ControleDateSup").html('');
+            break;
+        case "Monnaie":
+            document.getElementById('code').disabled = false;
+            document.getElementById('partieBilletPiece').style.display = "none";
+            $("#Billet_" + pageName + " tbody").empty();
+            $("#Piece_" + pageName + " tbody").empty();
             break;
     }
     $(".input_focus").val('');
