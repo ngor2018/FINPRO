@@ -16,7 +16,6 @@
     case "Exercices":
     case "Monnaie":
         <div id="formParam">
-
         </div>
         <div id="fullscreen_popup" style="display:none;z-index:3000;overflow-y:hidden">
             <div class="forme" id="partieUnique">
@@ -43,7 +42,7 @@
                 </div>
                 <div class="row justify-content-center" style="text-align:center">
                     <div class="col-md-12">
-                        <div class="row mb-1">
+                        <div class="row mb-1" style="text-align:left">
                             <div class="col-md-3">
                                 <label for="pays">Pays</label>
                             </div>
@@ -57,7 +56,7 @@
                                 <input type="text" name="monnaie" value="" id="monnaie" class="input_focus structCode" />
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-1" style="text-align:left">
                             <div class="col-md-3">
                                 <label for="magasin">Magasin</label>
                             </div>
@@ -71,7 +70,7 @@
                                 <input type="text" name="groupe" value="" id="groupe" class="input_focus structCode" />
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-1" style="text-align:left">
                             <div class="col-md-3">
                                 <label for="famille">Famille</label>
                             </div>
@@ -85,7 +84,7 @@
                                 <input type="text" name="service" value="" id="service" class="input_focus structCode" />
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-1" style="text-align:left">
                             <div class="col-md-3">
                                 <label for="consommateur">Consommateur</label>
                             </div>
@@ -113,8 +112,8 @@
                             <div class="col-md-12">
                                 <div class="float-start">
                                     <div class="form-check">
-                                        <input class="form-check-input" id="groupeG" type="radio" name="paramAutre" checked="" value="groupeG">
-                                        <label class="form-check-label" for="groupeG">Groupe (G)</label>
+                                        <input class="form-check-input cursorPointer" id="groupeG" type="radio" name="paramAutre" checked="" value="groupeG">
+                                        <label class="form-check-label cursorPointer" for="groupeG">Groupe (G)</label>
                                     </div>
                                 </div>
                                 <div class="float-end">
@@ -126,8 +125,8 @@
                             <div class="col-md-12">
                                 <div class="float-start">
                                     <div class="form-check">
-                                        <input class="form-check-input" id="familleF" type="radio" name="paramAutre">
-                                        <label class="form-check-label" for="familleF">Famille (F)</label>
+                                        <input class="form-check-input cursorPointer" id="familleF" type="radio" name="paramAutre">
+                                        <label class="form-check-label cursorPointer" for="familleF">Famille (F)</label>
                                     </div>
                                 </div>
                                 <div class="float-end">
@@ -137,7 +136,50 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" name="groupeFamille" value="" id="groupeFamille" class="input_focus"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="serie">Série</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" name="serie" value="" id="serie" class="input_focus" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input cursorPointer" id="checkAuto" type="checkbox" value="" />
+                                    <label class="form-check-label cursorPointer" for="checkAuto">Automatique</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><hr />
+                <div class="row mb-1">
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input cursorPointer" id="dernierPrix" type="radio" value="dernierPrix" name="priceStruct" checked="">
+                            <label class="form-check-label cursorPointer" for="dernierPrix">Dernier prix d'achat</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input cursorPointer" id="PrixMoyen" type="radio" value="PrixMoyen" name="priceStruct">
+                            <label class="form-check-label cursorPointer" for="PrixMoyen">Prix moyen pondéré</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center" style="text-align:center">
+                    <div class="col-md-12">
+                        <button class="btn btn-sm btn-success" onclick="Enregistrer()" id="Enregistrer">Enregistrer</button>
                     </div>
                 </div>
             </div>

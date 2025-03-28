@@ -81,9 +81,11 @@ namespace FINPRO.Controllers
         public JsonResult GetDataParam(string code, string site)
         {
             List<parametre> listDataFiltre = new List<parametre>();
+            List<parametre> listParamMaxLengthCode = new List<parametre>();
             List<parametre> listSite = new List<parametre>();
             DataTable objTabFiltre = new DataTable();
             DataTable objTable = new DataTable();
+            DataTable objTabCodeMaxLength = new DataTable();
             object tableInstance = null;
             switch (code)
             {
@@ -107,6 +109,9 @@ namespace FINPRO.Controllers
                     break;
                 case "Monnaie":
                     tableInstance = new Tables_Sto.rMonnaie();
+                    break;
+                case "Structures":
+                    tableInstance = new Tables_Sto.rStructure();
                     break;
             }
             if (tableInstance != null)
@@ -195,11 +200,53 @@ namespace FINPRO.Controllers
                         });
                     }
                     break;
+                case "Structures":
+                    if (objTable.Rows.Count > 0)
+                    {
+                        var row = objTable.Rows[0];
+                        listDataFiltre.Add(new parametre()
+                        {
+                            pmp = (bool)row["PMP"],
+                            magasin = row["MAGASIN"].ToString(),
+                            groupe = row["GROUPE"].ToString(),
+                            famille = row["FAMILLE"].ToString(),
+                            service = row["SERVICE"].ToString(),
+                            consommateur = row["CONSOMMATEUR"].ToString(),
+                            unite = row["UNITE"].ToString(),
+                            monnaie = row["MONNAIE"].ToString(),
+                            pays = row["PAYS"].ToString(),
+                            serie = row["SERIE"].ToString(),
+                            serieAUTO = (bool)row["SERIEAUTO"],
+                            codifArticle = row["CODIFARTICLE"].ToString()
+                        });
+                    }
+                    break;
             }
-
+            Tables_Sto.rStructure rStructure = new Tables_Sto.rStructure();
+            objTabCodeMaxLength = rStructure.RemplirDataTable();
+            if (objTabCodeMaxLength.Rows.Count > 0)
+            {
+                var row = objTabCodeMaxLength.Rows[0];
+                listParamMaxLengthCode.Add(new parametre()
+                {
+                    pmp = (bool)row["PMP"],
+                    magasin = row["MAGASIN"].ToString(),
+                    groupe = row["GROUPE"].ToString(),
+                    famille = row["FAMILLE"].ToString(),
+                    service = row["SERVICE"].ToString(),
+                    consommateur = row["CONSOMMATEUR"].ToString(),
+                    unite = row["UNITE"].ToString(),
+                    monnaie = row["MONNAIE"].ToString(),
+                    pays = row["PAYS"].ToString(),
+                    serie = row["SERIE"].ToString(),
+                    serieAUTO = (bool)row["SERIEAUTO"],
+                    codifArticle = row["CODIFARTICLE"].ToString()
+                });
+            }
 
             var data = new
             {
+                listLengthCode = listParamMaxLengthCode,
                 listData = listDataFiltre, // Contient toutes les données sauf pour magasins où c'est filtré
                 listDataSite = listSite    // Contient les sites uniquement si code == "magasins"
             };

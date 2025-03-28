@@ -1,5 +1,6 @@
 ﻿var pageName = $("#pageName").val();
 var isDelete = false;
+var isEditing = false;
 $(function () {
     paramater();
     $("#code").keyup(function () {
@@ -15,6 +16,7 @@ $(function () {
         }
     })
     $("#" + pageName + " tbody").on("click", "tr", function () {
+        if (isEditing) return; // Désactiver si en mode édition
         $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
         toggleForms("partieUnique");
         var nomTitre = "Editer ";
@@ -342,6 +344,7 @@ var Supprimer = function () {
         case "magasins":
             code = $("#code").val();
             nomTitre += "Magasin";
+            break;
         case "Exercices":
             code = $("#annee").val();
             nomTitre += "Exercice";
@@ -467,18 +470,23 @@ function formTable(pageName) {
                             </div>
                         </div>
                     </div>
+                    <div class="row mb-2 justify-content-center" style="text-align:center">
+                        <div class="col-md-12">
+                            <h4 id='messageStruct' style='color:red'></h4>
+                        </div>
+                    </div>
                     <div id="niveauImpression"></div>
                     <div id="niveauFormTableau"></div>                    
                     `;
             $("#formParam").append(formHTML);
             formTableTOP(pageName);
             formTableau(pageName);
-            loadData(pageName);
             formPopup(pageName);
             formPopupParieSaisie(pageName);
             formDel();
             break;
     }
+    loadData(pageName);
 }
 function formTableTOP(pageName) {
     let formHTML = "";
@@ -622,31 +630,7 @@ function formPopup(pageName) {
     $("#partieUnique").append(list);
 }
 function formPopupParieSaisie(pageName) {
-    let formHTML = "", tailleCode = 0;
-    switch (pageName) {
-        case "Pays":
-            tailleCode = 3;
-            break;
-        case "signataire":
-            tailleCode = 10;
-            break;
-        case "groupes":
-            tailleCode = 2;
-            break;
-        case "services":
-            tailleCode = 5;
-            break;
-        case "unite":
-            tailleCode = 10;
-            break;
-        case "magasins":
-            tailleCode = 2;
-            break;
-        case "Exercices":
-            tailleCode = 4;
-        case "Monnaie":
-            tailleCode = 3;
-    }
+    let formHTML = "";
     switch (pageName) {
         case "Pays":
         case "signataire":
@@ -660,7 +644,7 @@ function formPopupParieSaisie(pageName) {
                                 <label for="code">Code</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus" />
+                                <input type="text" name="code" value="" id="code" class="input_focus" />
                                 <span class='erreur'></span>
                             </div>
                         </div>
@@ -682,7 +666,7 @@ function formPopupParieSaisie(pageName) {
                                 <label for="annee">Année</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="annee" value="" maxlength="${tailleCode}" id="annee" class="input_focus"/>
+                                <input type="text" name="annee" value="" id="annee" class="input_focus"/>
                                 <span class='erreur'></span>
                             </div>
                             <div class="col-md-4"></div>
@@ -733,7 +717,7 @@ function formPopupParieSaisie(pageName) {
                                 <label for="code">Code</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="code" value="" id="code" maxlength="${tailleCode}" class="input_focus" />
+                                <input type="text" name="code" value="" id="code" class="input_focus" />
                                 <span class='erreur'></span>
                             </div>
                         </div>
@@ -952,85 +936,160 @@ function reportData(data) {
     DataTable(pageName, data);
 }
 function DataTable(code, data) {
+    var itemCode = data.listLengthCode[0];
+    var countStruct = data.listLengthCode.length;
+    switch (code) {
+        case "Structures":
+            var item = data.listData[0];
+            $("#pays").val(item.pays);
+            $("#monnaie").val(item.monnaie);
+            $("#magasin").val(item.magasin);
+            $("#groupe").val(item.groupe);
+            $("#famille").val(item.famille);
+            $("#service").val(item.service);
+            $("#consommateur").val(item.consommateur);
+            $("#unite").val(item.unite);
+            $("#groupeFamille").val(item.codifArticle);
+            $("#serie").val(item.serie);
+            document.getElementById('checkAuto').checked = !!item.serieAUTO;
+            document.getElementById('PrixMoyen').checked = !!item.pmp;
+            document.getElementById('dernierPrix').checked = !item.pmp;
+            var inputs = document.querySelectorAll(".structCode");
 
-    // Vérifier si la table existe déjà et la réinitialiser
-    if ($.fn.DataTable.isDataTable('#' + code)) {
-        $('#' + code).DataTable().destroy();
-        $("#" + code + " tbody").empty();
-    }
-    // Configuration des colonnes pour chaque type de table
-    const config = {
-        default: { columns: ["code", "libelle"], styles: {} },
-        Exercices: {
-            columns: ["annee", "dateDebut", "dateFin", "statut", "dateCloture"],
-            styles: {
-                annee: "text-align: right;",
-                dateDebut: "text-align: center;",
-                dateFin: "text-align: center;",
-                dateCloture: "text-align: right;",
-                statut: "text-align: center;"
+            inputs.forEach(input => {
+                formatChiffreInput(input);
+                setMaxLength(input, 1);
+            });
+            break;
+        default:
+            if (countStruct > 0) {
+                document.getElementById('Ajout').disabled = false;
+                document.getElementById('Imprimer').disabled = false;
+                document.getElementById('messageStruct').textContent = "";
+                isEditing = false;
+            } else {
+                document.getElementById('Ajout').disabled = true;
+                document.getElementById('Imprimer').disabled = true;
+                $('#messageStruct').html("Veuillez paramétrer la Structure des Codes <button class='btn btn-sm btn-warning' onclick='location.reload();' title='Actualiser'><i class='uil-refresh'></i></button>");
+                isEditing = true;
             }
-        },
-        Monnaie: {
-            columns: ["code", "libelle", "libelleM", "nbreDecimale"],
-            styles: {
-                code: "text-align: left;",
-                libelle: "text-align: left;",
-                libelleM: "text-align: left;",
-                nbreDecimale: "text-align: right;",
+            if (data.listData.length > 0) {
+                document.getElementById('Imprimer').disabled = false;
+            } else {
+                document.getElementById('Imprimer').disabled = true;
             }
-        }
-    };
-
-    // Générer une ligne HTML en fonction des colonnes définies
-    function generateRow(item, columns,styles) {
-        return `<tr>` +
-                columns.map(col => {
-                    let style = styles[col] ? ` style='${styles[col]}'` : "";
-                    return `<td${style}>${col === "statut" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`;
-                }).join('') +
-            `</tr>`;
-    }
-
-    // Générer un champ checkbox pour l'état (statut)
-    function generateEtatCheckbox(status) {
-        return `
-            <input class="" disabled type="checkbox" ${status ? "checked" : ""} />
-        `;
-    }
-    // Déterminer les colonnes et styles à utiliser
-    const { columns, styles } = config[code] || config.default;
-
-    // Générer les lignes et les insérer dans le tableau
-    const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
-    $("#" + code + " tbody").append(rows);
-
-    // Initialisation de DataTable
-    $('#' + code).DataTable({
-        "pageLength": 10,
-        "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
-        "responsive": true,
-        "lengthChange": true,
-        "ordering": false,
-        "language": {
-            "lengthMenu": "Afficher _MENU_ entrées",
-            "emptyTable": "Aucun élément trouvé",
-            "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
-            "loadingRecords": "Chargement...",
-            "processing": "En cours...",
-            "search": '<i class="fa fa-search" aria-hidden="true"></i>',
-            "searchPlaceholder": "Rechercher...",
-            "zeroRecords": "Aucun élément correspondant trouvé",
-            "paginate": {
-                "first": "Premier",
-                "last": "Dernier",
-                "next": "Suivant",
-                "previous": "Précédent"
+            // Vérifier si la table existe déjà et la réinitialiser
+            if ($.fn.DataTable.isDataTable('#' + code)) {
+                $('#' + code).DataTable().destroy();
+                $("#" + code + " tbody").empty();
             }
-        }
-    });
-    $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
+            // Configuration des colonnes pour chaque type de table
+            const config = {
+                default: { columns: ["code", "libelle"], styles: {} },
+                Exercices: {
+                    columns: ["annee", "dateDebut", "dateFin", "statut", "dateCloture"],
+                    styles: {
+                        annee: "text-align: right;",
+                        dateDebut: "text-align: center;",
+                        dateFin: "text-align: center;",
+                        dateCloture: "text-align: right;",
+                        statut: "text-align: center;"
+                    }
+                },
+                Monnaie: {
+                    columns: ["code", "libelle", "libelleM", "nbreDecimale"],
+                    styles: {
+                        code: "text-align: left;",
+                        libelle: "text-align: left;",
+                        libelleM: "text-align: left;",
+                        nbreDecimale: "text-align: right;",
+                    }
+                }
+            };
 
+            // Générer une ligne HTML en fonction des colonnes définies
+            function generateRow(item, columns, styles) {
+                return `<tr>` +
+                    columns.map(col => {
+                        let style = styles[col] ? ` style='${styles[col]}'` : "";
+                        return `<td${style}>${col === "statut" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`;
+                    }).join('') +
+                    `</tr>`;
+            }
+
+            // Générer un champ checkbox pour l'état (statut)
+            function generateEtatCheckbox(status) {
+                return `<input class="" disabled type="checkbox" ${status ? "checked" : ""} />`;
+            }
+            // Déterminer les colonnes et styles à utiliser
+            const { columns, styles } = config[code] || config.default;
+
+            // Générer les lignes et les insérer dans le tableau
+            const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
+            $("#" + code + " tbody").append(rows);
+
+            // Initialisation de DataTable
+            $('#' + code).DataTable({
+                "pageLength": 10,
+                "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+                "responsive": true,
+                "lengthChange": true,
+                "ordering": false,
+                "language": {
+                    "lengthMenu": "Afficher _MENU_ entrées",
+                    "emptyTable": "Aucun élément trouvé",
+                    "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
+                    "loadingRecords": "Chargement...",
+                    "processing": "En cours...",
+                    "search": '<i class="fa fa-search" aria-hidden="true"></i>',
+                    "searchPlaceholder": "Rechercher...",
+                    "zeroRecords": "Aucun élément correspondant trouvé",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }
+            });
+            $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
+
+            //Controller le maxlength
+            var codeLength = null;
+            var tailleCode = 0;
+            switch (code) {
+                case "Pays":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.pays);
+                    break;
+                case "services":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.service);
+                    break;
+                case "groupes":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.groupe);
+                    break;
+                case "unite":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.unite);
+                    break;
+                case "magasins":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.magasin);
+                    break;
+                case "Exercices":
+                    codeLength = document.getElementById("annee");
+                    tailleCode = 4;
+                    break;
+                case "Monnaie":
+                    codeLength = document.getElementById("code");
+                    tailleCode = parseInt(itemCode.monnaie);
+                    break;
+            }
+            setMaxLength(codeLength, tailleCode);
+            break;
+    }
 }
 function initTableInteractions() {
     ["Billet", "Piece"].forEach(type => {
@@ -1267,6 +1326,13 @@ function formatChiffreLettreInput(input) {
 
         if (!isAllowedKey) {
             event.preventDefault();
+        }
+    });
+}
+function setMaxLength(input, length) {
+    input.addEventListener('input', function () {
+        if (this.value.length > length) {
+            this.value = this.value.substring(0, length); // Coupe le texte à la longueur maximale
         }
     });
 }

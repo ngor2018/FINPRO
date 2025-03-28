@@ -37,6 +37,18 @@ namespace FINPRO.Models
         public string dateFin { get; set; }
         public string dateCloture { get; set; }
         public string valeur { get; set; }
+        public bool pmp { get; set; }
+        public string magasin { get; set; }
+        public string groupe { get; set; }
+        public string famille { get; set; }
+        public string service { get; set; }
+        public string consommateur { get; set; }
+        public string unite { get; set; }
+        public string monnaie { get; set; }
+        public string pays { get; set; }
+        public string serie { get; set; }
+        public bool serieAUTO { get; set; }
+        public string codifArticle { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
     }
