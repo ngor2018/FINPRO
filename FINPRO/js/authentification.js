@@ -139,10 +139,6 @@
         }
     })
 })
-var Connexion = function () {
-    
-
-}
 function password() {
     var login = $("#login").val();
     var NomServeur = $("#NomServeur").val();

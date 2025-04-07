@@ -108,7 +108,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\TABLES.dll</HintPath>
     </Reference>
-    <Reference Include="Tables_Sto, Version=1.0.9186.19240, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Tables_Sto, Version=1.0.9216.18818, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Tables_Sto.dll</HintPath>
     </Reference>
@@ -483,6 +483,7 @@
     <Content Include="Views\Parametrage\Exercices.cshtml" />
     <Content Include="Views\Parametrage\Monnaie.cshtml" />
     <Content Include="Views\FINSTOCKParam\Structures.cshtml" />
+    <Content Include="Views\FINSTOCKSaisie\Articles.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -499,6 +500,7 @@
     <Compile Include="Controllers\CodificationsController.cs" />
     <Compile Include="Controllers\CRUDController.cs" />
     <Compile Include="Controllers\FINSTOCKParamController.cs" />
+    <Compile Include="Controllers\FINSTOCKSaisieController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ParametrageController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />

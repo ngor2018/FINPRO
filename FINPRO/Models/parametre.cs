@@ -47,6 +47,9 @@ namespace FINPRO.Models
         public string monnaie { get; set; }
         public string pays { get; set; }
         public string serie { get; set; }
+        public string reference { get; set; }
+        public string prixUnitaire { get; set; }
+        public string codeBarre { get; set; }
         public bool serieAUTO { get; set; }
         public string codifArticle { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }

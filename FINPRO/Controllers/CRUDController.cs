@@ -78,11 +78,29 @@ namespace FINPRO.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetDataParam(string code, string site)
+        public JsonResult GetSerieArticle(string code, string code1, string code2)
+        {
+            Tables_Sto.rStkArticle article = new Tables_Sto.rStkArticle();
+            DataTable objTab = new DataTable();
+            var filtre = "";
+            switch (code)
+            {
+                case "Articles":
+                    filtre = $"GROUPE = '{code1}' and FAMILLE = '{code2}'";
+                    break;
+            }
+            objTab = article.RemplirDataTable(filtre);
+            DataRow lastRow = objTab.Rows[objTab.Rows.Count];
+            var codeLast = Convert.ToInt32(lastRow["CODE"]);
+            return Json(new { code = codeLast }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public JsonResult GetDataParam(string code, string code1,string code2)
         {
             List<parametre> listDataFiltre = new List<parametre>();
             List<parametre> listParamMaxLengthCode = new List<parametre>();
             List<parametre> listSite = new List<parametre>();
+            List<parametre> listSite2 = new List<parametre>();
             DataTable objTabFiltre = new DataTable();
             DataTable objTable = new DataTable();
             DataTable objTabCodeMaxLength = new DataTable();
@@ -90,7 +108,7 @@ namespace FINPRO.Controllers
             switch (code)
             {
                 case "Pays":
-                    tableInstance = new Tables_Sto.rPays();
+                    tableInstance = new Tables.rPays();
                     break;
                 case "services":
                     tableInstance = new Tables_Sto.rService();
@@ -99,19 +117,22 @@ namespace FINPRO.Controllers
                     tableInstance = new Tables_Sto.rGroupeFamille();
                     break;
                 case "unite":
-                    tableInstance = new Tables_Sto.rUnite();
+                    tableInstance = new Tables.rUnite();
                     break;
                 case "magasins":
                     tableInstance = new Tables_Sto.rMagasin();
                     break;
                 case "Exercices":
-                    tableInstance = new Tables_Sto.rExercice();
+                    tableInstance = new Tables.rExercice();
                     break;
                 case "Monnaie":
-                    tableInstance = new Tables_Sto.rMonnaie();
+                    tableInstance = new Tables.rMonnaie();
                     break;
                 case "Structures":
                     tableInstance = new Tables_Sto.rStructure();
+                    break;
+                case "Articles":
+                    tableInstance = new Tables_Sto.rStkArticle();
                     break;
             }
             if (tableInstance != null)
@@ -124,34 +145,85 @@ namespace FINPRO.Controllers
                 }
             }
             var filtre = "";
-            if (code == "magasins")
+            switch (code)
             {
-                Tables.rSite rSite = new Tables.rSite();
-                DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
-                
-                foreach (DataRow row in tabSite.Rows)
-                {
-                    listSite.Add(new parametre()
-                    {
-                        code = row["code"].ToString(),
-                        libelle = row["libelle"].ToString()
-                    });
-                }
+                case "magasins":
+                    Tables.rSite rSite = new Tables.rSite();
+                    DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
 
-                if (tabSite.Rows.Count > 0)
-                {
-                    DataRow firstRowS = tabSite.Rows[0];
-                    var codeFirstS = firstRowS["CODE"].ToString();
-
-                    if (string.IsNullOrEmpty(site))
+                    foreach (DataRow row in tabSite.Rows)
                     {
-                        site = codeFirstS;
+                        listSite.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString()
+                        });
                     }
 
-                    filtre = $"SITE = '{site}'";
-                    DataRow[] rowsFilters = objTable.Select(filtre);
-                    objTable = rowsFilters.Length > 0 ? rowsFilters.CopyToDataTable() : objTable.Clone();
-                }
+                    if (tabSite.Rows.Count > 0)
+                    {
+                        DataRow firstRowS = tabSite.Rows[0];
+                        var codeFirstS = firstRowS["CODE"].ToString();
+
+                        if (string.IsNullOrEmpty(code1))
+                        {
+                            code1 = codeFirstS;
+                        }
+
+                        filtre = $"SITE = '{code1}'";
+                        DataRow[] rowsFilters = objTable.Select(filtre);
+                        objTable = rowsFilters.Length > 0 ? rowsFilters.CopyToDataTable() : objTable.Clone();
+                    }
+                    break;
+                case "Articles":
+                    Tables_Sto.rGroupeFamille rGroup = new Tables_Sto.rGroupeFamille();
+                    DataTable tabGr = rGroup.RemplirDataTable();
+
+                    foreach (DataRow row in tabGr.Rows)
+                    {
+                        listSite.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString()
+                        });
+                    }
+                    if (tabGr.Rows.Count > 0)
+                    {
+                        DataRow firstRowGr = tabGr.Rows[0];
+                        var FisrtCodeGr = firstRowGr["CODE"].ToString();
+                        if (string.IsNullOrEmpty(code1))
+                        {
+                            code1 = FisrtCodeGr;
+                        }
+                        var filtreFam = $"GROUPE = '{code1}'";
+                        Tables_Sto.rFamille rFamille = new Tables_Sto.rFamille();
+                        DataTable tabFam = rFamille.RemplirDataTable(filtreFam);
+                        foreach (DataRow row in tabFam.Rows)
+                        {
+                            listSite2.Add(new parametre()
+                            {
+                                code = row["code"].ToString(),
+                                libelle = row["libelle"].ToString()
+                            });
+                        }
+                        if (tabFam.Rows.Count > 0)
+                        {
+                            DataRow firstRowFam = tabFam.Rows[0];
+                            var FisrtCodeFam = firstRowFam["CODE"].ToString();
+                            if (string.IsNullOrEmpty(code2))
+                            {
+                                code2 = FisrtCodeFam;
+                            }
+                            filtre = $"GROUPE = '{code1}' and FAMILLE = '{code2}'";
+                        }
+                        else
+                        {
+                            filtre = $"GROUPE = '{code1}'";
+                        }
+                        DataRow[] rowsFiltersAr = objTable.Select(filtre);
+                        objTable = rowsFiltersAr.Length > 0 ? rowsFiltersAr.CopyToDataTable() : objTable.Clone();
+                    }
+                    break;
             }
 
             // Remplissage de la liste
@@ -221,6 +293,23 @@ namespace FINPRO.Controllers
                         });
                     }
                     break;
+                case "Articles":
+                    foreach (DataRow row in objTable.Rows)
+                    {
+                        listDataFiltre.Add(new parametre()
+                        {
+                            code = row["CODE"].ToString(),
+                            libelle = row["LIBELLE"].ToString(),
+                            groupe = row["GROUPE"].ToString(),
+                            famille = row["FAMILLE"].ToString(),
+                            serie = row["SERIE"].ToString(),
+                            reference = row["REFERENCE"].ToString(),
+                            unite = row["UNITE"].ToString(),
+                            prixUnitaire = row["PU"].ToString(),
+                            codeBarre = row["CodeBarre"].ToString()
+                        });
+                    }
+                    break;
             }
             Tables_Sto.rStructure rStructure = new Tables_Sto.rStructure();
             objTabCodeMaxLength = rStructure.RemplirDataTable();
@@ -248,7 +337,8 @@ namespace FINPRO.Controllers
             {
                 listLengthCode = listParamMaxLengthCode,
                 listData = listDataFiltre, // Contient toutes les données sauf pour magasins où c'est filtré
-                listDataSite = listSite    // Contient les sites uniquement si code == "magasins"
+                listDataSite = listSite,
+                listDataSite2 = listSite2,
             };
             return Json(data, JsonRequestBehavior.AllowGet);
         }

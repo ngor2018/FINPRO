@@ -47,8 +47,8 @@
             case classes.contains("FINSTOCKParam"):
                 controller = "FINSTOCKParam";
                 break;
-            case classes.contains("Saisie"):
-                controller = "Saisie";
+            case classes.contains("FINSTOCKSaisie"):
+                controller = "FINSTOCKSaisie";
                 break;
             case classes.contains("Exploitations"):
                 controller = "Exploitations";

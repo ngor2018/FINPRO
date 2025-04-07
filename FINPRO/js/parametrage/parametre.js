@@ -6,6 +6,19 @@ $(function () {
     $("#code").keyup(function () {
         this.value = this.value.toUpperCase();
     })
+    $("#code1").change(function () {
+        //alert("Code1 changé !");
+        if (pageName === "Articles") {
+            $("#code2").off('change').val(null).trigger('change');
+            setTimeout(() => {
+                $("#code2").on('change', function () {
+                    //alert("Code2 changé !");
+                    loadData(pageName);
+                });
+            }, 10);
+        }
+        loadData(pageName);
+    });
     $("#fermer").click(function () {
         document.getElementById('fullscreen_popup').style.display = "none";
         switch (pageName) {
@@ -37,7 +50,7 @@ $(function () {
                 nomTitre += "Exercice";
                 break;
             case "magasins":
-                nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
+                nomTitre += "Magasin (" + $("#code1 option:selected").text() + ")";
                 break;
             case "Monnaie":
                 nomTitre += "Monnaie";
@@ -95,7 +108,7 @@ var Enregistrer = function () {
     var isAllValid = true;
     var code = $("#code").val();
     var libelle = $("#libelle").val();
-    var site = $("#site").val();
+    var code1 = $("#code1").val();
 
     var annee = $("#annee").val();
     var dateDebut = $("#DebutDate").val();
@@ -206,7 +219,7 @@ var Enregistrer = function () {
         const objData = {
             code: code,
             libelle: libelle,
-            site: site,
+            code1: code1,
             niveau: pageName,
             statut: etat,
 
@@ -303,7 +316,19 @@ var Ajout = function () {
             nomTitre += "Unité";
             break;
         case "magasins":
-            nomTitre += "Magasin (" + $("#site option:selected").text() + ")";
+            var code = $("#code1 option:selected").text();
+            nomTitre += "Magasin (" + code + ")";
+            break;
+        case "Articles":
+            var groupe = $("#code1 option:selected").text();
+            var famille = $("#code2 option:selected").text();
+            nomTitre += "Groupe (" + groupe + " " + famille + ")";
+            
+            document.getElementById('pdf_box').style.display = "none";
+            const randomValue = generateRandomValue();
+            $("#articleCodeBar").val(randomValue);
+            var text = document.getElementById('articleCodeBar');
+            genererCodeBar(text);
             break;
         case "Exercices":
             nomTitre += "Exercice";
@@ -367,10 +392,10 @@ var validerDel = function () {
         default:
             code = $("#code").val();
     }
-    var site = $("#site").val();
+    var code1 = $("#code1").val();
     const objData = {
         code: code,
-        site: site,
+        code1: code1,
         niveau:pageName
     }
     $.ajax({
@@ -432,6 +457,7 @@ function paramater() {
                         `;
             break;
         case "Structures":
+        case "Articles":
             FormHTML = `
                         <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
                           <ol class="breadcrumb mb-0">
@@ -439,7 +465,7 @@ function paramater() {
                             <li class="breadcrumb-item active" aria-current="page">${pageNameController}</li>
                             <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
                           </ol>
-                        </nav>
+                        </nav><br>
                         `;
             break;
     }
@@ -457,9 +483,8 @@ function formTable(pageName) {
         case "magasins":
         case "Exercices":
         case "Monnaie":
+        case "Articles":
             formHTML = `
-                    <div id="partieSite">
-                    </div>
                     <div class="row">
                         <div class="col-md-12" style="padding-bottom:10px">
                             <div class="float-start">
@@ -469,6 +494,8 @@ function formTable(pageName) {
                                 <button class="btn btn-sm btn-primary" id="Ajout" onclick="Ajout()"> <i class="fas fa-plus mr-2"></i>Ajouter</button>
                             </div>
                         </div>
+                    </div>
+                    <div id="partieSite">
                     </div>
                     <div class="row mb-2 justify-content-center" style="text-align:center">
                         <div class="col-md-12">
@@ -490,23 +517,42 @@ function formTable(pageName) {
 }
 function formTableTOP(pageName) {
     let formHTML = "";
-    formHTML = `
+    switch (pageName) {
+        case "magasins":
+            formHTML = `
                     <div class="row">
                         <div class="col-md-2">
-                            <label for="site" id="nameLabel"></label>
+                            <label for="code1">Site</label>
                         </div>
                         <div class="col-md-4">
-                            <select id="site" style="width:100%" class="selectChoix">
+                            <select id="code1" style="width:100%" class="selectChoix">
                             </select>
                         </div>
                     </div>
                 `;
-    switch (pageName) {
-        case "magasins":
-            $("#partieSite").append(formHTML);
-            document.getElementById('nameLabel').textContent = "Site";
+            break;
+        case "Articles":
+            formHTML = `
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="code1">Groupe</label>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="code1" style="width:100%" class="selectChoix">
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="code2">Famille</label>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="code2" style="width:100%" class="selectChoix">
+                            </select>
+                        </div>
+                    </div>
+                `;
             break;
     }
+    $("#partieSite").append(formHTML);
 }
 function formTableau(pageName) {
     let formHTML = "";
@@ -525,6 +571,26 @@ function formTableau(pageName) {
                                         <tr>
                                             <th>Code</th>
                                             <th>Libellé</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    `;
+            break;
+        case "Articles":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-bordered tabList" id="${pageName}" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Libellé</th>
+                                            <th>Référence</th>
+                                            <th>Unité</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -592,6 +658,7 @@ function formPopup(pageName) {
         case "magasins":
         case "Exercices":
         case "Monnaie":
+        case "Articles":
             list = `
                     <div class="row justify-content-center" style="padding-top:4%">
                         <div class="col-md-8 pageView">
@@ -811,6 +878,83 @@ function formPopupParieSaisie(pageName) {
                         </div>
                     `;
             break;
+        case "Articles":
+            formHTML = `
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="serie">Série</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="serie" value="" id="serie" class="input_focus"/>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="codeArticle">Code article</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="codeArticle" value="" id="codeArticle" class="input_focus"/>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="libelle">Libellé</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="libelle" value="" id="libelle" class="input_focus" maxlength="250"/>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="reference">Référence</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="reference" value="" id="reference" class="input_focus" maxlength="50"/>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="unite">Unité</label>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="selectChoix" style="width:100%" id="unite" style="z-index:3500 !important;position: relative !important;">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="articleCodeBar" />
+                            <div class="col-md-6">
+                                <div class="row justify-content-center" style="text-align:center">
+                                    <div class="col-md-6">
+                                        <div id="parent_box">
+                                            <div id="box_">
+
+                                            </div>
+                                            <div id="box" style="width:50%;margin-left:75px">
+                                            </div>
+                                        </div>
+                                        <div id="pdf_box" style="padding-top:8px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="prixUnitaire">Prix Unitaire</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="prixUnitaire" value="" id="prixUnitaire" class="input_focus"/>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <label for="observation">Observation</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="observation" value="" id="observation" class="input_focus"/>
+                            </div>
+                        </div>
+                        `;
     }
     $("#zoneSaisie").append(formHTML); 
     let code;
@@ -874,8 +1018,62 @@ function formDel() {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
+function genererPDF() {
+    var fileName = "G1F1245"; // Si aucun nom n'est saisi, utiliser 'document' par défaut
+    var options = {
+        margin: 1,
+        filename: fileName + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    var contenue = "G1F1245";
+    $("#box_").append(contenue);
+    html2pdf().from(document.getElementById('parent_box')).set(options).save();
+    setTimeout(function () {
+        $("#box_").empty();
+    }, 10)
+}
+function generateRandomValue() {
+    const currentDate = new Date();
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const year = String(currentDate.getFullYear());
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+    let randomValue = day + month + year + seconds;
+    while (randomValue.length < 13) {
+        randomValue += Math.floor(Math.random() * 10);
+    }
+
+    return randomValue;
+}
+function genererCodeBar(text) {
+    //generer le code-barres
+    var box = document.getElementById('box');
+    box.innerHTML = "<svg id='barcode'></svg>";
+    JsBarcode("#barcode", text.value);
+    box.style.border = '1px solid #999';
+}
+function numSerieArticle(pageName, code1, code2) {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            code: pageName,
+            code1: code1,
+            code2: code2,
+        },
+        url: '/CRUD/GetSerieArticle',
+        success: function (data) {
+            $("#site").val(data);
+        }
+    })
+}
 function loadData(code) {
-    var site = $("#site").val();
+    var code1 = $("#code1").val();
+    var code2 = $("#code2").val();
     $.ajax({
         async: true,
         type: 'GET',
@@ -883,7 +1081,8 @@ function loadData(code) {
         contentType: 'application/json; charset=utf-8',
         data: {
             code: code,
-            site: site,
+            code1: code1,
+            code2: code2,
         },
         url: '/CRUD/GetDataParam',
         success: function (data) {
@@ -927,10 +1126,16 @@ function loadDetailDataBPi(pageName, code) {
 }
 
 function reportData(data) {
-    if ($("#site").val() == "" || $("#site").val() == null) {
-        $('#site').empty();
+    if ($("#code1").val() == "" || $("#code1").val() == null) {
+        $('#code1').empty();
         $.each(data.listDataSite, function (index, row) {
-            $("#site").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+            $("#code1").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+        })
+    }
+    if ($("#code2").val() == "" || $("#code2").val() == null) {
+        $('#code2').empty();
+        $.each(data.listDataSite2, function (index, row) {
+            $("#code2").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
         })
     }
     DataTable(pageName, data);
@@ -962,16 +1167,18 @@ function DataTable(code, data) {
             });
             break;
         default:
-            if (countStruct > 0) {
-                document.getElementById('Ajout').disabled = false;
-                document.getElementById('Imprimer').disabled = false;
-                document.getElementById('messageStruct').textContent = "";
-                isEditing = false;
-            } else {
-                document.getElementById('Ajout').disabled = true;
-                document.getElementById('Imprimer').disabled = true;
-                $('#messageStruct').html("Veuillez paramétrer la Structure des Codes <button class='btn btn-sm btn-warning' onclick='location.reload();' title='Actualiser'><i class='uil-refresh'></i></button>");
-                isEditing = true;
+            if (code != "Articles") {
+                if (countStruct > 0) {
+                    document.getElementById('Ajout').disabled = false;
+                    document.getElementById('Imprimer').disabled = false;
+                    document.getElementById('messageStruct').textContent = "";
+                    isEditing = false;
+                } else {
+                    document.getElementById('Ajout').disabled = true;
+                    document.getElementById('Imprimer').disabled = true;
+                    $('#messageStruct').html("Veuillez paramétrer la Structure des Codes <button class='btn btn-sm btn-warning' onclick='location.reload();' title='Actualiser'><i class='uil-refresh'></i></button>");
+                    isEditing = true;
+                }
             }
             if (data.listData.length > 0) {
                 document.getElementById('Imprimer').disabled = false;
@@ -1004,6 +1211,10 @@ function DataTable(code, data) {
                         libelleM: "text-align: left;",
                         nbreDecimale: "text-align: right;",
                     }
+                },
+                Articles: {
+                    columns: ["code", "libelle", "reference","unite"],
+                    styles: {}
                 }
             };
 
@@ -1012,7 +1223,15 @@ function DataTable(code, data) {
                 return `<tr>` +
                     columns.map(col => {
                         let style = styles[col] ? ` style='${styles[col]}'` : "";
-                        return `<td${style}>${col === "statut" ? generateEtatCheckbox(item[col]) : item[col] || ""}</td>`;
+                        let value = item[col] || "";
+
+                        // Si la colonne est "libelle", tronquer à 87 caractères et ajouter un tooltip
+                        if (col === "libelle" && value.length > 87) {
+                            let truncatedValue = value.substring(0, 87) + "...";
+                            return `<td${style} title="${value}" data-toggle="tooltip">${truncatedValue}</td>`;
+                        } else {
+                            return `<td${style}>${col === "statut" ? generateEtatCheckbox(value) : value}</td>`;
+                        }
                     }).join('') +
                     `</tr>`;
             }
@@ -1053,7 +1272,7 @@ function DataTable(code, data) {
                 }
             });
             $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
-
+            $('[data-toggle="tooltip"]').tooltip();
             //Controller le maxlength
             var codeLength = null;
             var tailleCode = 0;
@@ -1061,33 +1280,39 @@ function DataTable(code, data) {
                 case "Pays":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.pays);
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "services":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.service);
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "groupes":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.groupe);
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "unite":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.unite);
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "magasins":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.magasin);
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "Exercices":
                     codeLength = document.getElementById("annee");
                     tailleCode = 4;
+                    setMaxLength(codeLength, tailleCode);
                     break;
                 case "Monnaie":
                     codeLength = document.getElementById("code");
                     tailleCode = parseInt(itemCode.monnaie);
+                    setMaxLength(codeLength, tailleCode);
                     break;
             }
-            setMaxLength(codeLength, tailleCode);
             break;
     }
 }

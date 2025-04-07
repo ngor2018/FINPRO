@@ -30,10 +30,10 @@
     <!-- ===============================================-->
     <!--    Favicons-->
     <!-- ===============================================-->
-    <link rel="apple-touch-icon" sizes="180x180" href="~/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon-16x16.png">
-    <link rel="shortcut icon" type="image/x-icon" href="~/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/images/2DBC.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/2DBC.png">
+    @*<link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon-16x16.png">*@
+    @*<link rel="shortcut icon" type="image/x-icon" href="~/images/favicon.ico">*@
     <link rel="manifest" href="~/images/manifest.json">
     <meta name="msapplication-TileImage" content="~/images/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
@@ -501,13 +501,13 @@
                                 </div>
                             </div>
                             <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1" href="#appFinStock" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "FINSTOCKParam"?"true":"false")" aria-controls="appFinStock">
+                                <a class="nav-link dropdown-indicator label-1" href="#appFinStock" role="button" data-bs-toggle="collapse" aria-expanded="@(NameTitrecontroller == "FINSTOCK"?"true":"false")" aria-controls="appFinStock">
                                     <div class="d-flex align-items-center">
                                         <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><i class="fa fa-cog"></i></span><span class="nav-link-text">FINSTOCK</span><span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                                     </div>
                                 </a>
                                 <div class="parent-wrapper label-1">
-                                    <ul class="nav collapse parent @(Namecontroller == "FINSTOCKParam"?"show":"")" data-bs-parent="#navbarVerticalCollapse" id="appFinStock">
+                                    <ul class="nav collapse parent @(NameTitrecontroller == "FINSTOCK"?"show":"")" data-bs-parent="#navbarVerticalCollapse" id="appFinStock">
                                         <li class="collapsed-nav-item-title d-none">FINSTOCK</li>
                                         <li class="nav-item">
                                             <a class="nav-link dropdown-indicator" href="#nv-events8" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "FINSTOCKParam"?"true":"false")" aria-controls="nv-CRM">
@@ -560,17 +560,18 @@
                                                 </ul>
                                             </div>
                                         </li>
+                                        
                                         <li class="nav-item">
-                                            <a class="nav-link dropdown-indicator" href="#nv-events9" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-project-management">
+                                            <a class="nav-link dropdown-indicator" href="#nv-events9" role="button" data-bs-toggle="collapse" aria-expanded="@(Namecontroller == "FINSTOCKSaisie"?"true":"false")" aria-controls="nv-project-management">
                                                 <div class="d-flex align-items-center">
                                                     <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-text">Saisie</span>
                                                 </div>
                                             </a>
                                             <div class="parent-wrapper">
-                                                <ul class="nav collapse parent" data-bs-parent="#appFinStock" id="nv-events9">
+                                                <ul class="nav collapse parent @(Namecontroller == "FINSTOCKSaisie"?"show":"")" data-bs-parent="#appFinStock" id="nv-events9">
                                                     <li class="collapsed-nav-item-title d-none">Saisie</li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link Saisie" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKSaisie @(action == "Articles"?"active":"")" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Articles</span></div>
                                                         </a>
                                                     </li>

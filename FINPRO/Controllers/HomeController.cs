@@ -19,7 +19,7 @@ namespace FINPRO.Controllers {
         //BDD.Connexion objConnect = new BDD.Connexion();
         parametre parametre = new parametre();
         public ActionResult Index() {
-            Session["titre"] = "FINPRONET";
+            Session["titre"] = "2DBC";
             var Success = "Connexion Valide";
             BDD.Connexion.Serveur = BDD.Connexion.enumServeur.WEB;
             FinproConfig objConfig = new FinproConfig();
@@ -218,6 +218,7 @@ namespace FINPRO.Controllers {
         [HttpPost]
         public JsonResult login(parametre user)
         {
+            
             Tables.rUser rUser = new Tables.rUser();
             var login = user.login;
             string password = rUser.CryptagePasswordBis(user.password);
@@ -310,6 +311,11 @@ namespace FINPRO.Controllers {
                                     }
                                     break;
                             }
+                        }
+                        else
+                        {
+                            isAllValid = false;
+                            message = "Login ou mot de passe incorrect";
                         }
                         if (isAllValid)
                         {
