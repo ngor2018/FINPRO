@@ -14,8 +14,8 @@
             case classes.contains("Parametrage"):
                 controller = "Parametrage";
                 break;
-            case classes.contains("Codifications"):
-                controller = "Codifications";
+            case classes.contains("FINPRO_Codifications"):
+                controller = "FINPRO_Codifications";
                 break;
             case classes.contains("ComptabiliteGenerale"):
                 controller = "ComptabiliteGenerale";

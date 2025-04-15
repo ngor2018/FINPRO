@@ -469,9 +469,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
-    <Content Include="Views\Codifications\Structures.cshtml" />
-    <Content Include="Views\Codifications\PlanCompte.cshtml" />
-    <Content Include="Views\Codifications\ParametreGeneraux.cshtml" />
+    <Content Include="Views\FINPRO_Codifications\Structures.cshtml" />
+    <Content Include="Views\FINPRO_Codifications\PlanCompte.cshtml" />
+    <Content Include="Views\FINPRO_Codifications\ParametreGeneraux.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\FINSTOCKParam\services.cshtml" />
     <Content Include="Views\FINSTOCKParam\groupes.cshtml" />
@@ -497,7 +497,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\CodificationsController.cs" />
+    <Compile Include="Controllers\FINPRO_CodificationsController.cs" />
     <Compile Include="Controllers\CRUDController.cs" />
     <Compile Include="Controllers\FINSTOCKParamController.cs" />
     <Compile Include="Controllers\FINSTOCKSaisieController.cs" />

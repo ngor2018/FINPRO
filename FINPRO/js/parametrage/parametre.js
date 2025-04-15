@@ -925,15 +925,15 @@ function formPopupParieSaisie(pageName) {
                             <input type="hidden" id="articleCodeBar" />
                             <div class="col-md-6">
                                 <div class="row justify-content-center" style="text-align:center">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div id="parent_box">
                                             <div id="box_">
 
                                             </div>
-                                            <div id="box" style="width:50%;margin-left:75px">
+                                            <div id="box" style="width:100%;">
                                             </div>
                                         </div>
-                                        <div id="pdf_box" style="padding-top:8px"></div>
+                                        <div id="pdf_box"></div>
                                     </div>
                                 </div>
                             </div>
@@ -1052,7 +1052,7 @@ function genererCodeBar(text) {
     var box = document.getElementById('box');
     box.innerHTML = "<svg id='barcode'></svg>";
     JsBarcode("#barcode", text.value);
-    box.style.border = '1px solid #999';
+    //box.style.width = '1px solid #999';
 }
 function numSerieArticle(pageName, code1, code2) {
     $.ajax({

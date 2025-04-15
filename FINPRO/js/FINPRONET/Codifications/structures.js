@@ -1,37 +1,7 @@
 ﻿var isEditing = false;
 var pageName = $("#pageName").val();
-$(function () {
-    var pageNameController = $("#pageNameController").val();
-    var pageNameProjet = $("#pageNameProjet").val();
-    var titre = $("#nameTitre");
-    titre.html(`
-        <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">${pageNameProjet}</li>
-            <li class="breadcrumb-item active" aria-current="page">${pageNameController}</li>
-          </ol>
-        </nav>
-    `);
-    document.querySelectorAll(".btn").forEach(button => {
-        button.addEventListener("click", function () {
-            var button = this.id;
-            switch (button) {
-                case "StructPlanBudget":
-                case "StructPlanCompt":
-                case "StructActivite":
-                case "StructZone":
-                case "StructEmplacements":
-                case "StructPlanExtP1":
-                case "StructPlanExtP2":
-                case "StructPlanExtP3":
-                case "StructPlanExtP4":
-                    $("#nameIDButton").val(this.id);
-                    formPopup(this.id);
-                    break;
-            }
-        });
-    });
-})
+parameter();
+var IDButton = null;
 var Ajouter = function () {
     var selectButton = document.getElementById('Ajouter');
     switch (selectButton.textContent) {
@@ -103,10 +73,49 @@ var Ajouter = function () {
 }
 var Annuler = function () {
     isEditing = false;
-    var IDButton = $("#nameIDButton").val();
     GedData(IDButton);
     $(".disabled_me").prop("disabled", true);
     $(".input_focus").siblings('span.erreur').css('display', 'none');
+}
+function parameter() {
+    var pageNameTitreController = $("#pageNameTitreController").val();
+    var pageNameController = $("#pageNameController").val();
+    var pageNameProjet = $("#pageNameProjet").val();
+    var titre = $("#nameTitre");
+    switch (pageName) {
+        case "Structures":
+            FormHTML = `
+                        <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+                          <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><u>${pageNameTitreController}</u></li>
+                            <li class="breadcrumb-item active" aria-current="page">${pageNameController}</li>
+                            <li class="breadcrumb-item active" aria-current="page">${pageNameProjet}</li>
+                          </ol>
+                        </nav><br>
+                        `;
+            break;
+    }
+    titre.html(FormHTML);
+    document.querySelectorAll(".btn").forEach(button => {
+        button.addEventListener("click", function () {
+            var button = this.id;
+            switch (button) {
+                case "StructPlanBudget":
+                case "StructPlanCompt":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    $("#nameIDButton").val(this.id);
+                    IDButton = this.id;
+                    formPopup(this.id);
+                    break;
+            }
+        });
+    });
 }
 function ControleinputSaisie() {
     $("#closeSt").click(function () {
@@ -119,8 +128,7 @@ function ControleinputSaisie() {
         this.value = this.value.toUpperCase();
     })
     $('.choixSelect').select2();
-
-    $("#tab_StructPlanBudget tbody").on("click", "tr", function () {
+    $("#tab_" + IDButton + " tbody").on("click", "tr", function () {
         //if (isEditing) return; // Désactiver si en mode édition
         $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
         var niveau = "", libelle = "", abreviation = "", format = "", titre = "", abreviationTitre = "", PlanCorrespond = "";
@@ -386,7 +394,7 @@ function GedData(id) {
         data: {
             id: id,
         },
-        url: '/Codifications/GetListDataStruct',
+        url: '/FINPRO_Codifications/GetListDataStruct',
         success: function (data) {
             document.getElementById('Ajouter').textContent = "Ajouter";
             document.getElementById('closeSt').disabled = false;

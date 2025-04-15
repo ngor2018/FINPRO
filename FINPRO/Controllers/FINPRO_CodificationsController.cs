@@ -12,13 +12,14 @@ using FINPRO.Models;
 
 namespace FINPRO.Controllers
 {
-    public class CodificationsController : Controller
+    public class FINPRO_CodificationsController : Controller
     {
-        // GET: Codifications
+        // GET: FINPRO_Codifications
         SqlCommand com = new SqlCommand();
         SqlDataReader dr;
         SqlConnection conn = new SqlConnection(GetConnexion.GetConnectionString());
         parametre parametre = new parametre();
+        
         public ActionResult Structures()
         {
             if (Session["LOGIN"] == null)
@@ -27,9 +28,10 @@ namespace FINPRO.Controllers
             }
             else
             {
-                ViewBag.Projet = "FINPRONET";
-                ViewBag.Controleur = "Structures";
-                return View();
+                ViewBag.NameTitrecontroller = "FINPRO";
+                ViewBag.Projet = "Structures";
+                ViewBag.Controleur = "Codification";
+                return View(parametre);
             }
         }
         public ActionResult PlanCompte()
