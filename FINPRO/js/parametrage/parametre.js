@@ -6,17 +6,23 @@ $(function () {
     $("#code").keyup(function () {
         this.value = this.value.toUpperCase();
     })
-    $("#code1").change(function () {
-        //alert("Code1 changé !");
-        if (pageName === "Articles") {
-            $("#code2").off('change').val(null).trigger('change');
-            setTimeout(() => {
-                $("#code2").on('change', function () {
-                    //alert("Code2 changé !");
-                    loadData(pageName);
-                });
-            }, 10);
+    $("#code1,#code2").change(function () {
+        var idCode = this.id;
+        if (idCode == "code1") {
+            $("#code2").val(null).trigger('change');
         }
+        //switch (pageName) {
+        //    case "Articles":
+        //    case "Affectations":
+        //        $("#code2").off('change').val(null).trigger('change');
+        //        setTimeout(() => {
+        //            $("#code2").on('change', function () {
+        //                alert("Code2 changé !");
+        //                loadData(pageName);
+        //            });
+        //        }, 10);
+        //        break;
+        //}
         loadData(pageName);
     });
     $("#fermer").click(function () {
@@ -56,6 +62,11 @@ $(function () {
                 nomTitre += "Monnaie";
                 document.getElementById('partieBilletPiece').style.display = "block";
                 break;
+            case "Articles":
+                var code1 = $("#code1 option:selected").text();
+                var code2 = $("#code2 option:selected").text();
+                nomTitre += "(Groupe (" + code1 + " " + code2 + ")";
+                break;
         }
         $("#titleParam_").html(nomTitre);
         // Supprimer les messages d'erreur
@@ -80,6 +91,28 @@ $(function () {
                 document.getElementById('nomM').value = this.cells[2].innerHTML;
                 document.getElementById('nombreM').value = this.cells[3].innerHTML;
                 loadDetailDataBPi(pageName, this.cells[0].innerHTML);
+                break;
+            case "Articles":
+                document.getElementById('disableEtat').disabled = true;
+                var table = $('#' + pageName).DataTable();
+                var rowData = table.row(this).data(); // même les colonnes masquées !
+
+                document.getElementById('codeArticle').value = rowData[0];
+                document.getElementById('libelle').value = rowData[1];
+                document.getElementById('reference').value = rowData[2];
+                $("#unite").val(rowData[3]).trigger('change');
+                document.getElementById('serie').value = rowData[4];
+                document.getElementById('prixUnitaire').value = rowData[5];
+                document.getElementById('observation').value = rowData[6];
+
+                const randomValue = generateRandomValue();
+                if (rowData[7] == "" || rowData[7] == null) {
+                    $("#articleCodeBar").val(randomValue);
+                } else {
+                    $("#articleCodeBar").val(rowData[7]);
+                }
+                var text = document.getElementById('articleCodeBar');
+                genererCodeBar(text);
                 break;
             default:
                 document.getElementById('code').disabled = true;
@@ -109,12 +142,20 @@ var Enregistrer = function () {
     var code = $("#code").val();
     var libelle = $("#libelle").val();
     var code1 = $("#code1").val();
+    var code2 = $("#code2").val();
 
     var annee = $("#annee").val();
     var dateDebut = $("#DebutDate").val();
     var dateFin = $("#FinDate").val();
     var nomM = $("#nomM").val();
     var nombre = $("#nombreM").val();
+
+    var unite = $("#unite").val();
+    var reference = $("#reference").val();
+    var prixUnitaire = $("#prixUnitaire").val();
+    var codeBarre = $("#articleCodeBar").val();
+    var observation = $("#observation").val();
+
     var EnCours = document.getElementById('checkEncours')?.checked ?? false;
     switch (pageName) {
         case "Pays":
@@ -189,6 +230,19 @@ var Enregistrer = function () {
                 nombre = 0;
             }
             break;
+        case "Articles":
+            if (libelle.trim() == '') {
+                isAllValid = false;
+                setErrorMessage("#libelle", "champ obligatoire", isAllValid);
+            }
+            if (unite == 0 || unite == null) {
+                isAllValid = false;
+                setErrorMessage("#unite", "champ obligatoire", isAllValid);
+            }
+            if (prixUnitaire.trim() == '') {
+                prixUnitaire = 0;
+            }
+            break;
     }
     if (isAllValid) {
         var EtatCod = null;
@@ -205,6 +259,10 @@ var Enregistrer = function () {
                 break;
             case "Exercices":
                 EtatCod = document.getElementById('annee');
+                break;
+            case "Articles":
+                EtatCod = document.getElementById('disableEtat');
+                break;
         }
         switch (EtatCod.disabled) {
             case true:
@@ -220,6 +278,7 @@ var Enregistrer = function () {
             code: code,
             libelle: libelle,
             code1: code1,
+            code2: code2,
             niveau: pageName,
             statut: etat,
 
@@ -230,7 +289,11 @@ var Enregistrer = function () {
 
             libelleM: nomM,
             valeur: nombre,
-
+            reference: reference,
+            prixUnitaire: prixUnitaire,
+            codeBarre: codeBarre,
+            unite: unite,
+            observation: observation,
         }
 
         $.ajax({
@@ -261,6 +324,29 @@ var Enregistrer = function () {
                                         case "Exercices":
                                             loadData(pageName);
                                             break;
+                                        case "Articles":
+                                            var table = $('#' + pageName).DataTable();
+                                            var codeArticle = $("#codeArticle").val()?.trim();
+
+                                            table.rows().every(function () {
+                                                var rowData = this.data();
+                                                if (rowData[0].trim() === codeArticle) {
+                                                    // Mise à jour des données dans le tableau
+                                                    this.data([
+                                                        rowData[0],        // codeArticle (inchangé)
+                                                        libelle,           // libellé modifié
+                                                        reference,         // référence modifiée
+                                                        unite,             // unité modifiée
+                                                        rowData[4],        // série (inchangé ici)
+                                                        prixUnitaire,      // prix unitaire modifié
+                                                        observation,       // observation modifiée
+                                                        codeBarre          // code barre modifié
+                                                    ]).draw(false); // mise à jour sans changer la pagination
+                                                    return false; // sortir de la boucle
+                                                }
+                                            });
+                                            break;
+
                                         default:
                                             for (var i = 1; i < table.rows.length; i++) {
                                                 var item = table.rows[i];
@@ -320,6 +406,7 @@ var Ajout = function () {
             nomTitre += "Magasin (" + code + ")";
             break;
         case "Articles":
+            document.getElementById('disableEtat').disabled = false;
             var groupe = $("#code1 option:selected").text();
             var famille = $("#code2 option:selected").text();
             nomTitre += "Groupe (" + groupe + " " + famille + ")";
@@ -329,6 +416,14 @@ var Ajout = function () {
             $("#articleCodeBar").val(randomValue);
             var text = document.getElementById('articleCodeBar');
             genererCodeBar(text);
+            var code1 = $("#code1").val();
+            var code2 = $("#code2").val();
+            numSerieArticle(pageName, code1, code2);
+            break;
+        case "Affectations":
+            var site = $("#code1 option:selected").text();
+            var magasin = $("#code2 option:selected").text();
+            nomTitre += "Site (" + site + " " + magasin + ")";            
             break;
         case "Exercices":
             nomTitre += "Exercice";
@@ -378,6 +473,10 @@ var Supprimer = function () {
             code = $("#code").val();
             nomTitre += "Monnaie";
             break;
+        case "Articles":
+            code = $("#codeArticle").val();
+            nomTitre += "Article";
+            break;
     }
     nomTitreDel += '<strong><u>' + code + '</u></strong>';
     $("#titreDel").html(nomTitre);
@@ -388,6 +487,9 @@ var validerDel = function () {
     switch (pageName) {
         case "Exercices":
             code = $("#annee").val();
+            break;
+        case "Articles":
+            code = $("#codeArticle").val();
             break;
         default:
             code = $("#code").val();
@@ -458,6 +560,7 @@ function paramater() {
             break;
         case "Structures":
         case "Articles":
+        case "Affectations":
             FormHTML = `
                         <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
                           <ol class="breadcrumb mb-0">
@@ -484,6 +587,7 @@ function formTable(pageName) {
         case "Exercices":
         case "Monnaie":
         case "Articles":
+        case "Affectations":
             formHTML = `
                     <div class="row">
                         <div class="col-md-12" style="padding-bottom:10px">
@@ -522,7 +626,7 @@ function formTableTOP(pageName) {
             formHTML = `
                     <div class="row">
                         <div class="col-md-2">
-                            <label for="code1">Site</label>
+                            <label for="code1" id="labelCode1"></label>
                         </div>
                         <div class="col-md-4">
                             <select id="code1" style="width:100%" class="selectChoix">
@@ -532,17 +636,18 @@ function formTableTOP(pageName) {
                 `;
             break;
         case "Articles":
+        case "Affectations":
             formHTML = `
                     <div class="row">
                         <div class="col-md-2">
-                            <label for="code1">Groupe</label>
+                            <label for="code1" id="labelCode1"></label>
                         </div>
                         <div class="col-md-4">
                             <select id="code1" style="width:100%" class="selectChoix">
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label for="code2">Famille</label>
+                            <label for="code2" id="labelCode2"></label>
                         </div>
                         <div class="col-md-4">
                             <select id="code2" style="width:100%" class="selectChoix">
@@ -553,6 +658,19 @@ function formTableTOP(pageName) {
             break;
     }
     $("#partieSite").append(formHTML);
+    switch (pageName) {
+        case "magasins":
+            document.getElementById('labelCode1').textContent = "Site";
+            break;
+        case "Articles":
+            document.getElementById('labelCode1').textContent = "Groupe";
+            document.getElementById('labelCode2').textContent = "Famille";
+            break;
+        case "Affectations":
+            document.getElementById('labelCode1').textContent = "Site";
+            document.getElementById('labelCode2').textContent = "Magasin";
+            break;
+    }
 }
 function formTableau(pageName) {
     let formHTML = "";
@@ -591,6 +709,35 @@ function formTableau(pageName) {
                                             <th>Libellé</th>
                                             <th>Référence</th>
                                             <th>Unité</th>
+                                            <th hidden>Serie</th>
+                                            <th hidden>prixUnitaire</th>
+                                            <th hidden>observation</th>
+                                            <th hidden>codeBarre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> 
+                    `;
+            break;
+        case "Affectations":
+            formHTML = `
+                       <div class="row">
+                            <div class="col-md-12">
+                                <table class="table-bordered tabList" id="${pageName}" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th hidden>SITE</th>
+                                            <th hidden>MAGASIN</th>
+                                            <th>ARTICLES</th>
+                                            <th>STOCK MINI</th>
+                                            <th>STOCK MAXI</th>
+                                            <th>QTE INITIALE</th>
+                                            <th>PRIX UNITAIRE</th>
+                                            <th>DERNIER PRIX</th>
+                                            <th>VALEUR INITIALE</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -659,6 +806,7 @@ function formPopup(pageName) {
         case "Exercices":
         case "Monnaie":
         case "Articles":
+        case "Affectations":
             list = `
                     <div class="row justify-content-center" style="padding-top:4%">
                         <div class="col-md-8 pageView">
@@ -880,50 +1028,50 @@ function formPopupParieSaisie(pageName) {
             break;
         case "Articles":
             formHTML = `
+                        <input type='hidden' id="disableEtat">
                         <div class="row mb-1">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="serie">Série</label>
                             </div>
-                            <div class="col-md-3">
-                                <input type="text" name="serie" value="" id="serie" class="input_focus"/>
+                            <div class="col-md-4">
+                                <input type="text" name="serie" value="" id="serie" disabled class="input_focus"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="codeArticle">Code article</label>
                             </div>
-                            <div class="col-md-3">
-                                <input type="text" name="codeArticle" value="" id="codeArticle" class="input_focus"/>
+                            <div class="col-md-4">
+                                <input type="text" name="codeArticle" value="" id="codeArticle" disabled class="input_focus"/>
                             </div>
                         </div>
                         <div class="row mb-1">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="libelle">Libellé</label>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <input type="text" name="libelle" value="" id="libelle" class="input_focus" maxlength="250"/>
+                                <span class='erreur'></span>
                             </div>
                         </div>
                         <div class="row mb-1">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="reference">Référence</label>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <input type="text" name="reference" value="" id="reference" class="input_focus" maxlength="50"/>
                             </div>
                         </div>
                         <div class="row mb-1">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="unite">Unité</label>
                             </div>
-                            <div class="col-md-3">
-                                <select class="selectChoix" style="width:100%" id="unite" style="z-index:3500 !important;position: relative !important;">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
+                            <div class="col-md-5">
+                                <select class="selectChoix input_focus" style="width:100%" id="unite" style="z-index:3500 !important;position: relative !important;">
+                                    
                                 </select>
+                                <span class='erreur'></span>
                             </div>
                             <input type="hidden" id="articleCodeBar" />
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="row justify-content-center" style="text-align:center">
                                     <div class="col-md-12">
                                         <div id="parent_box">
@@ -943,7 +1091,7 @@ function formPopupParieSaisie(pageName) {
                                 <label for="prixUnitaire">Prix Unitaire</label>
                             </div>
                             <div class="col-md-3">
-                                <input type="text" name="prixUnitaire" value="" id="prixUnitaire" class="input_focus"/>
+                                <input type="text" name="prixUnitaire" value="" maxlength="11" id="prixUnitaire" class="input_focus"/>
                             </div>
                         </div>
                         <div class="row mb-1">
@@ -955,6 +1103,84 @@ function formPopupParieSaisie(pageName) {
                             </div>
                         </div>
                         `;
+            break;
+        case "Affectations":
+            formHTML = `
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row mb-1">
+                                        <div class="col-md-2">
+                                            <label for="article">Article</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="selectChoix input_focus" id="article" style="width:100%;z-index:3500 !important;position: relative !important;">
+                                            </select>
+                                            <span class='erreur'></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-md-12">
+                                            <h6><u>Prix /Stock</u></h6>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-md-6">
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="stockMinium">Stock Minimum</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="stockMinium" value="0" id="stockMinium" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="stockMaximum">Stock Maximum</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="stockMaximum" value="0" id="stockMaximum" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="QteInitiale">Quantité Initiale</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="QteInitiale" value="0" id="QteInitiale" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="PrixUnitaire">Prix Unitaire</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="PrixUnitaire" value="0" id="PrixUnitaire" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="dernierPrix">Dernier Prix</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="dernierPrix" value="0" id="dernierPrix" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                            <div class="row  mb-1">
+                                                <div class="col-md-2">
+                                                    <label for="ValInitiale">Valeur Initiale</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="ValInitiale" value="0" id="ValInitiale" class="input_focus valPrixStock" maxlength="12" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                           
+                        `;
+            break;
     }
     $("#zoneSaisie").append(formHTML); 
     let code;
@@ -977,6 +1203,17 @@ function formPopupParieSaisie(pageName) {
             formatChiffreLettreInput(code);
             const nombreM = document.getElementById('nombreM');
             formatChiffreInput(nombreM);
+            break;
+        case "Articles":
+            code = document.getElementById('prixUnitaire');
+            formatChiffreInput(code);
+            separateur_mil(code);
+            break;
+        case "Affectations":
+            document.querySelectorAll('.valPrixStock').forEach(function (input) {
+                formatChiffreInput(input);
+                separateur_mil(input);
+            });
             break;
     }
 }
@@ -1067,7 +1304,12 @@ function numSerieArticle(pageName, code1, code2) {
         },
         url: '/CRUD/GetSerieArticle',
         success: function (data) {
-            $("#site").val(data);
+            var serie = data.code;
+            var groupe = $("#code1").val();
+            var famille = $("#code2").val();
+            var codeArticle = groupe + famille + serie;
+            $("#codeArticle").val(codeArticle);
+            $("#serie").val(serie);
         }
     })
 }
@@ -1138,11 +1380,69 @@ function reportData(data) {
             $("#code2").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
         })
     }
+    switch (pageName) {
+        case "Articles":
+        case "Affectations":
+            if ($("#code1").val() == "" || $("#code1").val() == null || $("#code2").val() == "" || $("#code2").val() == null) {
+                document.getElementById('Ajout').disabled = true;
+            } else {
+                document.getElementById('Ajout').disabled = false;
+            }
+            break;
+    }
+    if ($("#unite").val() == "" || $("#unite").val() == null) {
+        $('#unite').empty();
+        $("#unite").append("<option value='0'>---</option>")
+        $.each(data.listDataUnite, function (index, row) {
+            $("#unite").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+        })
+    }
     DataTable(pageName, data);
 }
 function DataTable(code, data) {
     var itemCode = data.listLengthCode[0];
     var countStruct = data.listLengthCode.length;
+
+    const config = {
+        default: { columns: ["code", "libelle"], styles: {} },
+        Exercices: {
+            columns: ["annee", "dateDebut", "dateFin", "statut", "dateCloture"],
+            styles: {
+                annee: "text-align: right;",
+                dateDebut: "text-align: center;",
+                dateFin: "text-align: center;",
+                dateCloture: "text-align: right;",
+                statut: "text-align: center;"
+            }
+        },
+        Monnaie: {
+            columns: ["code", "libelle", "libelleM", "nbreDecimale"],
+            styles: {
+                code: "text-align: left;",
+                libelle: "text-align: left;",
+                libelleM: "text-align: left;",
+                nbreDecimale: "text-align: right;",
+            }
+        },
+        Articles: {
+            columns: ["code", "libelle", "reference", "unite", "serie", "prixUnitaire", "observation", "codeBarre"],
+            styles: {},
+            hiddenCols: ["serie", "prixUnitaire", "observation", "codeBarre"]
+        },
+        Affectations: {
+            columns: ["site", "magasin", "code", "stockMin", "stockMax", "QteInitiale", "prixUnitaire", "lastPrice", "valInitiale"],
+            styles: {
+                stockMin: "text-align: right;",
+                stockMax: "text-align: right;",
+                QteInitiale: "text-align: right;",
+                prixUnitaire: "text-align: right;",
+                lastPrice: "text-align: right;",
+                valInitiale: "text-align: right;",
+            },
+            hiddenCols: ["site", "magasin"]
+        }
+    };
+
     switch (code) {
         case "Structures":
             var item = data.listData[0];
@@ -1159,163 +1459,129 @@ function DataTable(code, data) {
             document.getElementById('checkAuto').checked = !!item.serieAUTO;
             document.getElementById('PrixMoyen').checked = !!item.pmp;
             document.getElementById('dernierPrix').checked = !item.pmp;
-            var inputs = document.querySelectorAll(".structCode");
 
-            inputs.forEach(input => {
+            document.querySelectorAll(".structCode").forEach(input => {
                 formatChiffreInput(input);
                 setMaxLength(input, 1);
             });
             break;
         default:
-            if (code != "Articles") {
+            if (code !== "Articles" && code !== "Affectations") {
                 if (countStruct > 0) {
-                    document.getElementById('Ajout').disabled = false;
-                    document.getElementById('Imprimer').disabled = false;
-                    document.getElementById('messageStruct').textContent = "";
+                    $('#Ajout').prop('disabled', false);
+                    $('#Imprimer').prop('disabled', false);
+                    $('#messageStruct').text("");
                     isEditing = false;
                 } else {
-                    document.getElementById('Ajout').disabled = true;
-                    document.getElementById('Imprimer').disabled = true;
+                    $('#Ajout').prop('disabled', true);
+                    $('#Imprimer').prop('disabled', true);
                     $('#messageStruct').html("Veuillez paramétrer la Structure des Codes <button class='btn btn-sm btn-warning' onclick='location.reload();' title='Actualiser'><i class='uil-refresh'></i></button>");
                     isEditing = true;
                 }
-            }
-            if (data.listData.length > 0) {
-                document.getElementById('Imprimer').disabled = false;
-            } else {
-                document.getElementById('Imprimer').disabled = true;
-            }
-            // Vérifier si la table existe déjà et la réinitialiser
-            if ($.fn.DataTable.isDataTable('#' + code)) {
-                $('#' + code).DataTable().destroy();
-                $("#" + code + " tbody").empty();
-            }
-            // Configuration des colonnes pour chaque type de table
-            const config = {
-                default: { columns: ["code", "libelle"], styles: {} },
-                Exercices: {
-                    columns: ["annee", "dateDebut", "dateFin", "statut", "dateCloture"],
-                    styles: {
-                        annee: "text-align: right;",
-                        dateDebut: "text-align: center;",
-                        dateFin: "text-align: center;",
-                        dateCloture: "text-align: right;",
-                        statut: "text-align: center;"
-                    }
-                },
-                Monnaie: {
-                    columns: ["code", "libelle", "libelleM", "nbreDecimale"],
-                    styles: {
-                        code: "text-align: left;",
-                        libelle: "text-align: left;",
-                        libelleM: "text-align: left;",
-                        nbreDecimale: "text-align: right;",
-                    }
-                },
-                Articles: {
-                    columns: ["code", "libelle", "reference","unite"],
-                    styles: {}
-                }
-            };
-
-            // Générer une ligne HTML en fonction des colonnes définies
-            function generateRow(item, columns, styles) {
-                return `<tr>` +
-                    columns.map(col => {
-                        let style = styles[col] ? ` style='${styles[col]}'` : "";
-                        let value = item[col] || "";
-
-                        // Si la colonne est "libelle", tronquer à 87 caractères et ajouter un tooltip
-                        if (col === "libelle" && value.length > 87) {
-                            let truncatedValue = value.substring(0, 87) + "...";
-                            return `<td${style} title="${value}" data-toggle="tooltip">${truncatedValue}</td>`;
-                        } else {
-                            return `<td${style}>${col === "statut" ? generateEtatCheckbox(value) : value}</td>`;
-                        }
-                    }).join('') +
-                    `</tr>`;
-            }
-
-            // Générer un champ checkbox pour l'état (statut)
-            function generateEtatCheckbox(status) {
-                return `<input class="" disabled type="checkbox" ${status ? "checked" : ""} />`;
-            }
-            // Déterminer les colonnes et styles à utiliser
-            const { columns, styles } = config[code] || config.default;
-
-            // Générer les lignes et les insérer dans le tableau
-            const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
-            $("#" + code + " tbody").append(rows);
-
-            // Initialisation de DataTable
-            $('#' + code).DataTable({
-                "pageLength": 10,
-                "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
-                "responsive": true,
-                "lengthChange": true,
-                "ordering": false,
-                "language": {
-                    "lengthMenu": "Afficher _MENU_ entrées",
-                    "emptyTable": "Aucun élément trouvé",
-                    "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
-                    "loadingRecords": "Chargement...",
-                    "processing": "En cours...",
-                    "search": '<i class="fa fa-search" aria-hidden="true"></i>',
-                    "searchPlaceholder": "Rechercher...",
-                    "zeroRecords": "Aucun élément correspondant trouvé",
-                    "paginate": {
-                        "first": "Premier",
-                        "last": "Dernier",
-                        "next": "Suivant",
-                        "previous": "Précédent"
-                    }
-                }
-            });
-            $("#" + pageName).removeClass("dataTable"); // Supprime la classe après l'initialisation
-            $('[data-toggle="tooltip"]').tooltip();
-            //Controller le maxlength
-            var codeLength = null;
-            var tailleCode = 0;
-            switch (code) {
-                case "Pays":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.pays);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "services":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.service);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "groupes":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.groupe);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "unite":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.unite);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "magasins":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.magasin);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "Exercices":
-                    codeLength = document.getElementById("annee");
-                    tailleCode = 4;
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-                case "Monnaie":
-                    codeLength = document.getElementById("code");
-                    tailleCode = parseInt(itemCode.monnaie);
-                    setMaxLength(codeLength, tailleCode);
-                    break;
-            }
+            } 
             break;
     }
+
+
+    $('#Imprimer').prop('disabled', data.listData.length === 0);
+    if (data.listData.length === 0) {
+        isEditing = true;
+    } else {
+        isEditing = false;
+    }
+    if ($.fn.DataTable.isDataTable('#' + code)) {
+        $('#' + code).DataTable().destroy();
+        $("#" + code + " tbody").empty();
+    }
+
+    // Déterminer les colonnes et styles
+    const { columns, styles } = config[code] || config.default;
+    const hiddenCols = config[code]?.hiddenCols || [];
+
+    const columnDefs = hiddenCols.map(col => {
+        const colIndex = columns.indexOf(col);
+        return { targets: colIndex, visible: false };
+    });
+
+    function generateEtatCheckbox(status) {
+        return `<input class="" disabled type="checkbox" ${status ? "checked" : ""} />`;
+    }
+
+    function generateRow(item, columns, styles) {
+        return `<tr>` + columns.map(col => {
+            let style = styles[col] ? ` style='${styles[col]}'` : "";
+            let value = item[col] || "";
+            if (col === "libelle" && value.length > 87) {
+                let truncatedValue = value.substring(0, 87) + "...";
+                return `<td${style} title="${value}" data-toggle="tooltip">${truncatedValue}</td>`;
+            } else {
+                return `<td${style}>${col === "statut" ? generateEtatCheckbox(value) : value}</td>`;
+            }
+        }).join('') + `</tr>`;
+    }
+
+    const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
+    $("#" + code + " tbody").append(rows);
+
+    $('#' + code).DataTable({
+        "pageLength": 10,
+        "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+        "responsive": true,
+        "lengthChange": true,
+        "ordering": false,
+        columnDefs: columnDefs,
+        "language": {
+            "lengthMenu": "Afficher _MENU_ entrées",
+            "emptyTable": "Aucun élément trouvé",
+            "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
+            "loadingRecords": "Chargement...",
+            "processing": "En cours...",
+            "search": '<i class="fa fa-search" aria-hidden="true"></i>',
+            "searchPlaceholder": "Rechercher...",
+            "zeroRecords": "Aucun élément correspondant trouvé",
+            "paginate": {
+                "first": "Premier",
+                "last": "Dernier",
+                "next": "Suivant",
+                "previous": "Précédent"
+            }
+        }
+    });
+
+    $("#" + pageName).removeClass("dataTable");
+    $('[data-toggle="tooltip"]').tooltip();
+
+    var codeLength = document.getElementById("code");
+    var tailleCode = 0;
+    switch (code) {
+        case "Pays":
+            tailleCode = parseInt(itemCode.pays);
+            break;
+        case "services":
+            tailleCode = parseInt(itemCode.service);
+            break;
+        case "groupes":
+            tailleCode = parseInt(itemCode.groupe);
+            break;
+        case "unite":
+            tailleCode = parseInt(itemCode.unite);
+            break;
+        case "magasins":
+            tailleCode = parseInt(itemCode.magasin);
+            break;
+        case "Exercices":
+            codeLength = document.getElementById("annee");
+            tailleCode = 4;
+            break;
+        case "Monnaie":
+            tailleCode = parseInt(itemCode.monnaie);
+            break;
+    }
+    if (codeLength && tailleCode > 0) {
+        setMaxLength(codeLength, tailleCode);
+    }
 }
+
 function initTableInteractions() {
     ["Billet", "Piece"].forEach(type => {
         let tableBody = document.querySelector(`#${type}_${pageName} tbody`);
@@ -1480,6 +1746,9 @@ function resetForm() {
             document.getElementById('partieBilletPiece').style.display = "none";
             $("#Billet_" + pageName + " tbody").empty();
             $("#Piece_" + pageName + " tbody").empty();
+            break;
+        case "Articles":
+            $("#unite").val(0).trigger('change');
             break;
     }
     $(".input_focus").val('');

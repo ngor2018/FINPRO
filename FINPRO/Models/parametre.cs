@@ -9,6 +9,8 @@ namespace FINPRO.Models
     {
         public string id { get; set; }
         public string code { get; set; }
+        public string code1 { get; set; }
+        public string code2 { get; set; }
         public long rowIndexB { get; set; }
         public long rowIndexP { get; set; }
         public string login { get; set; }
@@ -52,6 +54,12 @@ namespace FINPRO.Models
         public string codeBarre { get; set; }
         public bool serieAUTO { get; set; }
         public string codifArticle { get; set; }
+        public string observation { get; set; }
+        public string stockMin { get; set; }
+        public string stockMax { get; set; }
+        public string QteInitiale { get; set; }
+        public string valInitiale { get; set; }
+        public string lastPrice { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
     }

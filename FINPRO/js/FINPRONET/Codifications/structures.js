@@ -2,8 +2,10 @@
 var pageName = $("#pageName").val();
 parameter();
 var IDButton = null;
+
 var Ajouter = function () {
     var selectButton = document.getElementById('Ajouter');
+    //document.getElementById('niveau').disabled = false;
     switch (selectButton.textContent) {
         case "Ajouter":
             document.getElementById('Ajouter').textContent = "Enregistrer";

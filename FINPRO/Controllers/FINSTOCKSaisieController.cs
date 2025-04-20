@@ -33,5 +33,19 @@ namespace FINPRO.Controllers
                 return View(parametre);
             }
         }
+        public ActionResult Affectations()
+        {
+            if (Session["LOGIN"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.NameTitrecontroller = "FINSTOCK";
+                ViewBag.Projet = "Affectations";
+                ViewBag.Controleur = "Saisie";
+                return View(parametre);
+            }
+        }
     }
 }

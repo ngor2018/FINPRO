@@ -484,6 +484,7 @@
     <Content Include="Views\Parametrage\Monnaie.cshtml" />
     <Content Include="Views\FINSTOCKParam\Structures.cshtml" />
     <Content Include="Views\FINSTOCKSaisie\Articles.cshtml" />
+    <Content Include="Views\FINSTOCKSaisie\Affectations.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
