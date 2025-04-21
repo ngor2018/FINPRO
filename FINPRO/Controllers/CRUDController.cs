@@ -194,6 +194,34 @@ namespace FINPRO.Controllers
                     }
                     break;
                 case "Affectations":
+                    Tables_Sto.rStkArticle rArticle = new Tables_Sto.rStkArticle();
+                    //Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
+                    DataTable tabArticle = rArticle.RemplirDataTable();
+                    //DataTable tabAffect = mAffectation.RemplirDataTable();
+
+                    /*var affectCodes = tabAffect.AsEnumerable()
+                           .Select(r => r["ARTICLE"].ToString())
+                           .ToHashSet(); // Optimisé pour la recherche
+
+                    var articlesNonAffectes = tabArticle.AsEnumerable()
+                        .Where(r => !affectCodes.Contains(r["CODE"].ToString()))
+                        .Select(r => new parametre
+                        {
+                            code = r["CODE"].ToString(),
+                            libelle = r["LIBELLE"].ToString()
+                        })
+                        .ToList();
+
+                    listUnite.AddRange(articlesNonAffectes);*/
+                    foreach (DataRow row1 in tabArticle.Rows)
+                    {
+                        listUnite.Add(new parametre()
+                        {
+                            code = row1["code"].ToString(),
+                            libelle = row1["libelle"].ToString()
+                        });
+                    }
+
                     foreach (DataRow row in tabSite.Rows)
                     {
                         listSite.Add(new parametre()
@@ -566,7 +594,10 @@ namespace FINPRO.Controllers
                     try
                     {
                         // Enregistrer si la méthode existe
-                        enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                        if (isAllValid)
+                        {
+                            enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                        }
                         result = statut ? "Enregistrement modifié avec succès" : (isAllValid ? "Enregistrement ajouté avec succès" : "Code existe déjà");
                     }
                     catch (Exception ex)
@@ -641,7 +672,17 @@ namespace FINPRO.Controllers
                     fields["UNITE"] = objData.unite;
                     fields["OBSERVATION"] = objData.observation;
                     break;
-
+                case "Affectations":
+                    fields["SITE"] = objData.code1;
+                    fields["MAGASIN"] = objData.code2;
+                    fields["ARTICLE"] = objData.unite;
+                    fields["STOCKMIN"] = objData.stockMin;
+                    fields["STOCKMAX"] = objData.stockMax;
+                    fields["PRIXUNITAIRE"] = objData.prixUnitaire;
+                    fields["DERNIERPRIX"] = objData.lastPrice;
+                    fields["QUANTITEINITIALE"] = objData.QteInitiale;
+                    fields["VALEURINITIALE"] = objData.valInitiale;
+                    break;
             }
 
             return fields;
@@ -691,6 +732,8 @@ namespace FINPRO.Controllers
                         code = objData.code1 + objData.code2 + codeLast;
                     }
                     return $"CODE = '{code}'";
+                case "Affectations":
+                    return $"SITE = '{objData.code1}' AND MAGASIN = '{objData.code2}' AND ARTICLE = '{objData.unite}'";
                 default:
                     return "";
             }
@@ -710,6 +753,7 @@ namespace FINPRO.Controllers
                 case "Exercices": return new Tables_Sto.rExercice();
                 case "Monnaie": return new Tables_Sto.rMonnaie();
                 case "Articles": return new Tables_Sto.rStkArticle();
+                case "Affectations": return new Tables_Sto.mAffectation();
                 default: return null;
             }
         }

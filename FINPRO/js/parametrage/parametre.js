@@ -39,6 +39,7 @@ $(function () {
         $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
         toggleForms("partieUnique");
         var nomTitre = "Editer ";
+        var code1 = null, code2 = null;
         switch (pageName) {
             case "Pays":
                 nomTitre += "Pays";
@@ -63,9 +64,15 @@ $(function () {
                 document.getElementById('partieBilletPiece').style.display = "block";
                 break;
             case "Articles":
-                var code1 = $("#code1 option:selected").text();
-                var code2 = $("#code2 option:selected").text();
+                code1 = $("#code1 option:selected").text();
+                code2 = $("#code2 option:selected").text();
                 nomTitre += "(Groupe (" + code1 + " " + code2 + ")";
+                break;
+            case "Affectations":
+                document.getElementById('unite').disabled = true;
+                code1 = $("#code1 option:selected").text();
+                code2 = $("#code2 option:selected").text();
+                nomTitre += "(Site (" + code1 + " " + code2 + ")";
                 break;
         }
         $("#titleParam_").html(nomTitre);
@@ -114,6 +121,15 @@ $(function () {
                 var text = document.getElementById('articleCodeBar');
                 genererCodeBar(text);
                 break;
+            case "Affectations":
+                $("#unite").val(this.cells[0].innerHTML).trigger('change');
+                $("#stockMinium").val(this.cells[1].innerHTML);
+                $("#stockMaximum").val(this.cells[2].innerHTML);
+                $("#QteInitiale").val(this.cells[3].innerHTML);
+                $("#PrixUnitaire").val(this.cells[4].innerHTML);
+                $("#dernierPrix").val(this.cells[5].innerHTML);
+                $("#ValInitiale").val(this.cells[6].innerHTML);
+                break;
             default:
                 document.getElementById('code').disabled = true;
                 $("#code").val(this.cells[0].innerHTML);
@@ -150,11 +166,22 @@ var Enregistrer = function () {
     var nomM = $("#nomM").val();
     var nombre = $("#nombreM").val();
 
+    const valOrZero = val => val.trim() === '' ? 0 : val;
+    //Article,Affectation
     var unite = $("#unite").val();
+
     var reference = $("#reference").val();
-    var prixUnitaire = $("#prixUnitaire").val();
+    var prixUnitaire = null;
     var codeBarre = $("#articleCodeBar").val();
     var observation = $("#observation").val();
+
+    var stockMinium = $("#stockMinium").val().replace(/\s+/g, "");
+    var stockMaximum = $("#stockMaximum").val().replace(/\s+/g, "");
+    var QteInitiale = $("#QteInitiale").val().replace(/\s+/g, "");
+
+    var dernierPrix = $("#dernierPrix").val().replace(/\s+/g, "");
+    var ValInitiale = $("#ValInitiale").val().replace(/\s+/g, "");
+
 
     var EnCours = document.getElementById('checkEncours')?.checked ?? false;
     switch (pageName) {
@@ -231,6 +258,7 @@ var Enregistrer = function () {
             }
             break;
         case "Articles":
+            prixUnitaire = $("#prixUnitaire").val();
             if (libelle.trim() == '') {
                 isAllValid = false;
                 setErrorMessage("#libelle", "champ obligatoire", isAllValid);
@@ -239,9 +267,21 @@ var Enregistrer = function () {
                 isAllValid = false;
                 setErrorMessage("#unite", "champ obligatoire", isAllValid);
             }
-            if (prixUnitaire.trim() == '') {
-                prixUnitaire = 0;
+            prixUnitaire = valOrZero(prixUnitaire);
+            break;
+        case "Affectations":
+            prixUnitaire = $("#PrixUnitaire").val().replace(/\s+/g, "");
+            if (unite == 0 || unite == null) {
+                isAllValid = false;
+                setErrorMessage("#unite", "champ obligatoire", isAllValid);
             }
+
+            stockMinium = valOrZero(stockMinium);
+            stockMaximum = valOrZero(stockMaximum);
+            QteInitiale = valOrZero(QteInitiale);
+            prixUnitaire = valOrZero(prixUnitaire);
+            dernierPrix = valOrZero(dernierPrix);
+            ValInitiale = valOrZero(ValInitiale);
             break;
     }
     if (isAllValid) {
@@ -262,6 +302,9 @@ var Enregistrer = function () {
                 break;
             case "Articles":
                 EtatCod = document.getElementById('disableEtat');
+                break;
+            case "Affectations":
+                EtatCod = document.getElementById('unite');
                 break;
         }
         switch (EtatCod.disabled) {
@@ -294,6 +337,12 @@ var Enregistrer = function () {
             codeBarre: codeBarre,
             unite: unite,
             observation: observation,
+            stockMin: stockMinium,
+            stockMax: stockMaximum,
+            QteInitiale: QteInitiale,
+            lastPrice: dernierPrix,
+            valInitiale: ValInitiale
+
         }
 
         $.ajax({
@@ -373,6 +422,10 @@ var Enregistrer = function () {
                             case "Exercices":
                                 $("#annee").siblings('span.erreur').html(data.message).css('display', 'block');
                                 break;
+                            case "Affectations":
+                                $("#unite").siblings('span.erreur').html(data.message).css('display', 'block');
+                                break;
+
                         }
                         break;
                 }
@@ -1109,70 +1162,76 @@ function formPopupParieSaisie(pageName) {
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row mb-1">
-                                        <div class="col-md-2">
-                                            <label for="article">Article</label>
+                                        <div class="col-md-3">
+                                            <label for="unite">Article</label>
                                         </div>
-                                        <div class="col-md-4">
-                                            <select class="selectChoix input_focus" id="article" style="width:100%;z-index:3500 !important;position: relative !important;">
+                                        <div class="col-md-9">
+                                            <select class="selectChoix input_focus" id="unite" style="width:100%;">
                                             </select>
                                             <span class='erreur'></span>
                                         </div>
                                     </div>
                                     <div class="row mb-1">
                                         <div class="col-md-12">
-                                            <h6><u>Prix /Stock</u></h6>
+                                            <h5><u>Prix /Stock</u></h5>
                                         </div>
                                     </div>
                                     <div class="row mb-1">
                                         <div class="col-md-6">
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="stockMinium">Stock Minimum</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="stockMinium" value="0" id="stockMinium" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="stockMaximum">Stock Maximum</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="stockMaximum" value="0" id="stockMaximum" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="QteInitiale">Quantité Initiale</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="QteInitiale" value="0" id="QteInitiale" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="PrixUnitaire">Prix Unitaire</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="PrixUnitaire" value="0" id="PrixUnitaire" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="dernierPrix">Dernier Prix</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="dernierPrix" value="0" id="dernierPrix" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                             <div class="row  mb-1">
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <label for="ValInitiale">Valeur Initiale</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <input type="text" name="ValInitiale" value="0" id="ValInitiale" class="input_focus valPrixStock" maxlength="12" />
+                                                    <span class='erreur'></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1211,8 +1270,7 @@ function formPopupParieSaisie(pageName) {
             break;
         case "Affectations":
             document.querySelectorAll('.valPrixStock').forEach(function (input) {
-                formatChiffreInput(input);
-                separateur_mil(input);
+                formatChiffreInputAvecSepMilier(input);
             });
             break;
     }
@@ -1392,10 +1450,19 @@ function reportData(data) {
     }
     if ($("#unite").val() == "" || $("#unite").val() == null) {
         $('#unite').empty();
-        $("#unite").append("<option value='0'>---</option>")
-        $.each(data.listDataUnite, function (index, row) {
-            $("#unite").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
-        })
+        $("#unite").append("<option value='0'>---</option>");
+        switch (pageName) {
+            case "Articles":
+                $.each(data.listDataUnite, function (index, row) {
+                    $("#unite").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+                })
+                break;
+            case "Affectations":
+                $.each(data.listDataUnite, function (index, row) {
+                    $("#unite").append("<option value='" + row.code + "'>" + row.code + "-> " + row.libelle + "</option>");
+                })
+                break;
+        }
     }
     DataTable(pageName, data);
 }
@@ -1508,9 +1575,16 @@ function DataTable(code, data) {
     }
 
     function generateRow(item, columns, styles) {
+        const affectCols = ["stockMax", "QteInitiale", "prixUnitaire", "lastPrice", "valInitiale"];
         return `<tr>` + columns.map(col => {
             let style = styles[col] ? ` style='${styles[col]}'` : "";
             let value = item[col] || "";
+
+            // Appliquer separateur_mil si colonne dans Affectations
+            if (code === "Affectations" && affectCols.includes(col)) {
+                value = separateur_mil(value);
+            }
+
             if (col === "libelle" && value.length > 87) {
                 let truncatedValue = value.substring(0, 87) + "...";
                 return `<td${style} title="${value}" data-toggle="tooltip">${truncatedValue}</td>`;
@@ -1519,6 +1593,7 @@ function DataTable(code, data) {
             }
         }).join('') + `</tr>`;
     }
+
 
     const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
     $("#" + code + " tbody").append(rows);
@@ -1750,6 +1825,10 @@ function resetForm() {
         case "Articles":
             $("#unite").val(0).trigger('change');
             break;
+        case "Affectations":
+            document.getElementById('unite').disabled = false;
+            $("#unite").val(0).trigger('change');
+            break;
     }
     $(".input_focus").val('');
     $('.input_focus').siblings('span.erreur').css('display', 'none');
@@ -1797,6 +1876,33 @@ function formatChiffreInput(input) {
 
         if (!isAllowedKey) {
             event.preventDefault();
+        }
+    });
+}
+function formatChiffreInputAvecSepMilier(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isNumber ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
+
+        if (!isAllowedKey) {
+            event.preventDefault();
+        }
+    });
+    // Ajoute les séparateurs de milliers lors de la saisie
+    input.addEventListener('input', function (event) {
+        let value = input.value.replace(/\s/g, ''); // Enlève les espaces existants
+        if (!isNaN(value)) {
+            input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
     });
 }
