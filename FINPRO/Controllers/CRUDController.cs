@@ -78,6 +78,30 @@ namespace FINPRO.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetCheckMouvArticle(string code,string code1,string code2,string article)
+        {
+            var isAllValid = true;
+            string filtre = "", result = "";
+            DataTable objTab = new DataTable();
+            switch (code)
+            {
+                case "Affectations":
+                    filtre = $"SITE = '{code1}' and MAGASIN = '{code2}' and ARTICLE = '{article}'";
+                    Tables_Sto.mMouvement mMouvement = new Tables_Sto.mMouvement();
+                    objTab = mMouvement.RemplirDataTable(filtre);
+                    if (objTab.Rows.Count > 0)
+                    {
+                        isAllValid = false;
+                    }
+                    break;
+            }
+            if (!isAllValid)
+            {
+                result = "Cet article est déjà mouvementé. Seuls les stocks mini et maxi sont modifiables";
+            }
+            return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
         public JsonResult GetSerieArticle(string code, string code1, string code2)
         {
             Tables_Sto.rStkArticle article = new Tables_Sto.rStkArticle();
@@ -132,7 +156,7 @@ namespace FINPRO.Controllers
                 case "groupes":
                     tableInstance = new Tables_Sto.rGroupeFamille();
                     break;
-                case "unite":
+                case "unites":
                     tableInstance = new Tables.rUnite();
                     break;
                 case "magasins":
@@ -218,7 +242,8 @@ namespace FINPRO.Controllers
                         listUnite.Add(new parametre()
                         {
                             code = row1["code"].ToString(),
-                            libelle = row1["libelle"].ToString()
+                            libelle = row1["libelle"].ToString(),
+                            prixUnitaire = row1["PU"].ToString()
                         });
                     }
 
@@ -337,7 +362,7 @@ namespace FINPRO.Controllers
                 case "signataire":
                 case "groupes":
                 case "services":
-                case "unite":
+                case "unites":
                 case "magasins":
                     foreach (DataRow row in objTable.Rows)
                     {
@@ -418,11 +443,15 @@ namespace FINPRO.Controllers
                 case "Affectations":
                     foreach (DataRow row in objTable.Rows)
                     {
+                        var filtreArt = $"CODE = '{row["ARTICLE"].ToString()}'";
+                        BDD.Divers objBDDDiver = new BDD.Divers();
+                        var libelleProd = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.Libelle.ToString());
                         listDataFiltre.Add(new parametre()
                         {
                             site = row["SITE"].ToString(),
                             magasin = row["MAGASIN"].ToString(),
                             code = row["ARTICLE"].ToString(),
+                            libelle = libelleProd,
                             stockMin = row["STOCKMIN"].ToString(),
                             stockMax = row["STOCKMAX"].ToString(),
                             QteInitiale = row["QUANTITEINITIALE"].ToString(),
@@ -622,7 +651,7 @@ namespace FINPRO.Controllers
                 case "Pays":
                 case "services":
                 case "groupes":
-                case "unite":
+                case "unites":
                     fields["CODE"] = objData.code;
                     fields["LIBELLE"] = objData.libelle;
                     break;
@@ -630,7 +659,7 @@ namespace FINPRO.Controllers
                 case "magasins":
                     fields["CODE"] = objData.code;
                     fields["LIBELLE"] = objData.libelle;
-                    fields["SITE"] = objData.site;
+                    fields["SITE"] = objData.code1;
                     break;
 
                 case "Exercices":
@@ -678,7 +707,18 @@ namespace FINPRO.Controllers
                     fields["ARTICLE"] = objData.unite;
                     fields["STOCKMIN"] = objData.stockMin;
                     fields["STOCKMAX"] = objData.stockMax;
-                    fields["PRIXUNITAIRE"] = objData.prixUnitaire;
+                    Tables_Sto.rStkArticle article1 = new Tables_Sto.rStkArticle();
+                    filtre = $"CODE = '{objData.unite}'";
+                    objTab = article1.RemplirDataTable(filtre);
+                    var pu = objTab.Rows[0]["PU"].ToString();
+                    if (objData.prixUnitaire == "0")
+                    {
+                        fields["PRIXUNITAIRE"] = pu;
+                    }
+                    else
+                    {
+                        fields["PRIXUNITAIRE"] = objData.prixUnitaire;
+                    }
                     fields["DERNIERPRIX"] = objData.lastPrice;
                     fields["QUANTITEINITIALE"] = objData.QteInitiale;
                     fields["VALEURINITIALE"] = objData.valInitiale;
@@ -695,7 +735,7 @@ namespace FINPRO.Controllers
             DataTable objTab = new DataTable();
             string niveau = objData.niveau,
                     code = objData.code,
-                    site = objData.site,
+                    site = objData.code1,
                     annee = objData.annee;
             bool statut = objData.statut;
 
@@ -704,7 +744,7 @@ namespace FINPRO.Controllers
                 case "Pays":
                 case "services":
                 case "groupes":
-                case "unite":
+                case "unites":
                 case "Monnaie":
                     return $"CODE = '{code}'";
                 case "magasins":
@@ -748,7 +788,7 @@ namespace FINPRO.Controllers
                 case "Pays": return new Tables_Sto.rPays();
                 case "services": return new Tables_Sto.rService();
                 case "groupes": return new Tables_Sto.rGroupeFamille();
-                case "unite": return new Tables_Sto.rUnite();
+                case "unites": return new Tables_Sto.rUnite();
                 case "magasins": return new Tables_Sto.rMagasin();
                 case "Exercices": return new Tables_Sto.rExercice();
                 case "Monnaie": return new Tables_Sto.rMonnaie();
@@ -764,7 +804,7 @@ namespace FINPRO.Controllers
             string result = "";
             bool isAllValid = true;
             var code = objData.code;
-            var site = objData.site;
+            var site = objData.code1;
             var niveau = objData.niveau;
             object tableInstance = null;
             string tableType = "",filtre = "";
@@ -780,7 +820,7 @@ namespace FINPRO.Controllers
                 case "groupes":
                     tableInstance = new Tables_Sto.rGroupeFamille();
                     break;
-                case "unite":
+                case "unites":
                     tableInstance = new Tables_Sto.rUnite();
                     break;
                 case "magasins":
@@ -794,6 +834,9 @@ namespace FINPRO.Controllers
                     break;
                 case "Articles":
                     tableInstance = new Tables_Sto.rStkArticle();
+                    break;
+                case "Affectations":
+                    tableInstance = new Tables_Sto.mAffectation();
                     break;
             }
             if (tableInstance != null)
@@ -814,7 +857,7 @@ namespace FINPRO.Controllers
                     case "Pays":
                     case "services":
                     case "groupes":
-                    case "unite":
+                    case "unites":
                     case "Monnaie":
                     case "Articles":
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "'";
@@ -835,6 +878,9 @@ namespace FINPRO.Controllers
                         {
                             requete = "DELETE FROM " + tableType + " where ANNEE = '" + code + "'";
                         }
+                        break;
+                    case "Affectations":
+                        requete = "DELETE FROM " + tableType + " where SITE = '" + objData.code1 + "' and MAGASIN = '" + objData.code2 + "' and ARTICLE = '" + code + "'";
                         break;
                 }
             }
@@ -864,7 +910,7 @@ namespace FINPRO.Controllers
         {
 
             long totalCount = 0;
-            string nomColonne = "", nomColonne1 = "";
+            string nomColonne = "", nomColonne1 = "", filtre = "";
             switch (niveau)
             {
                 case "Pays":
@@ -876,7 +922,7 @@ namespace FINPRO.Controllers
                 case "groupes":
                     nomColonne = "GROUPE";
                     break;
-                case "unite":
+                case "unites":
                     nomColonne = "UNITE";
                     break;
                 case "Exercices":
@@ -902,7 +948,7 @@ namespace FINPRO.Controllers
                 case "Pays":
                 case "services":
                 case "groupes":
-                case "unite":
+                case "unites":
                 case "Monnaie":
                 case "Articles":
                     query = @"
@@ -1034,7 +1080,7 @@ namespace FINPRO.Controllers
                 case "Pays":
                 case "services":
                 case "groupes":
-                case "unite":
+                case "unites":
                 case "Exercices":
                 case "Monnaie":
                 case "Articles":
@@ -1042,15 +1088,29 @@ namespace FINPRO.Controllers
                     break;
                 case "magasins":
                     com.Parameters.AddWithValue("@nomColonne1", nomColonne1);
-                    com.Parameters.AddWithValue("@code1", objData.site);
+                    com.Parameters.AddWithValue("@code1", objData.code1);
                     break;
             }
-            dr = com.ExecuteReader();
             DataTable objTable = new DataTable();
-            objTable.Load(dr);
-            if (objTable.Rows.Count > 0 && objTable.Rows[0]["TotalOccurrences"] != DBNull.Value)
+            switch (niveau)
             {
-                totalCount = Convert.ToInt64(objTable.Rows[0]["TotalOccurrences"]);
+                case "Affectations":
+                    Tables_Sto.mMouvement mMouvement = new Tables_Sto.mMouvement();
+                    filtre = $"SITE = '{objData.code1}' and MAGASIN = '{objData.code2}' and ARTICLE = '{objData.unite}'";
+                    objTable = mMouvement.RemplirDataTable(filtre);
+                    if (objTable.Rows.Count > 0)
+                    {
+                        totalCount = Convert.ToInt64(objTable.Rows.Count);
+                    }
+                    break;
+                default:
+                    dr = com.ExecuteReader();
+                    objTable.Load(dr);
+                    if (objTable.Rows.Count > 0 && objTable.Rows[0]["TotalOccurrences"] != DBNull.Value)
+                    {
+                        totalCount = Convert.ToInt64(objTable.Rows[0]["TotalOccurrences"]);
+                    }
+                    break;
             }
             conn.Close();
             return totalCount;

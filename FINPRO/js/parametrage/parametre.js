@@ -25,6 +25,17 @@ $(function () {
         //}
         loadData(pageName);
     });
+    $("#unite").change(function () {
+        switch (pageName) {
+            case "Affectations":
+                const select = document.getElementById("unite");
+                const selectedOption = select.options[select.selectedIndex];
+                const nameAttr = selectedOption.getAttribute("name");
+
+                document.getElementById("PrixUnitaire").value = separateur_mil(nameAttr) || '';
+                break;
+        }
+    })
     $("#fermer").click(function () {
         document.getElementById('fullscreen_popup').style.display = "none";
         switch (pageName) {
@@ -50,7 +61,7 @@ $(function () {
             case "groupes":
                 nomTitre += "Groupe";
                 break;
-            case "unite":
+            case "unites":
                 nomTitre += "Unité";
                 break;
             case "Exercies":
@@ -78,6 +89,8 @@ $(function () {
         $("#titleParam_").html(nomTitre);
         // Supprimer les messages d'erreur
         $(".erreur").html('').hide();
+        var table = $('#' + pageName).DataTable();
+        var rowData = table.row(this).data(); // même les colonnes masquées !
         switch (pageName) {
             case "Exercices":
                 document.getElementById('annee').disabled = true;
@@ -101,8 +114,6 @@ $(function () {
                 break;
             case "Articles":
                 document.getElementById('disableEtat').disabled = true;
-                var table = $('#' + pageName).DataTable();
-                var rowData = table.row(this).data(); // même les colonnes masquées !
 
                 document.getElementById('codeArticle').value = rowData[0];
                 document.getElementById('libelle').value = rowData[1];
@@ -122,13 +133,19 @@ $(function () {
                 genererCodeBar(text);
                 break;
             case "Affectations":
-                $("#unite").val(this.cells[0].innerHTML).trigger('change');
-                $("#stockMinium").val(this.cells[1].innerHTML);
-                $("#stockMaximum").val(this.cells[2].innerHTML);
-                $("#QteInitiale").val(this.cells[3].innerHTML);
-                $("#PrixUnitaire").val(this.cells[4].innerHTML);
-                $("#dernierPrix").val(this.cells[5].innerHTML);
-                $("#ValInitiale").val(this.cells[6].innerHTML);
+                document.getElementById('errorStockMinMax').textContent = "";
+                $("#unite").val(rowData[2]).trigger('change');
+                $("#stockMinium").val(rowData[4]);
+                $("#stockMaximum").val(rowData[5]);
+                $("#QteInitiale").val(rowData[6]);
+                $("#PrixUnitaire").val(rowData[7]);
+                $("#dernierPrix").val(rowData[8]);
+                $("#ValInitiale").val(rowData[9]);
+
+                var site = rowData[0];
+                var magasin = rowData[1];
+                var article = rowData[2];
+                checkMouvementArticle(pageName, site, magasin, article);
                 break;
             default:
                 document.getElementById('code').disabled = true;
@@ -141,6 +158,11 @@ $(function () {
     })
     $('.input_focus').keyup(function () {
         $(this).siblings('span.erreur').css('display', 'none');
+        switch (pageName) {
+            case "Affectations":
+                document.getElementById('errorStockMinMax').textContent = "";
+                break;
+        }
     })
     $('.input_focus').change(function () {
         $(this).siblings('span.erreur').css('display', 'none');
@@ -166,7 +188,11 @@ var Enregistrer = function () {
     var nomM = $("#nomM").val();
     var nombre = $("#nombreM").val();
 
-    const valOrZero = val => val.trim() === '' ? 0 : val;
+    const valOrZero = val => {
+        val = val?.toString().replace(/\s+/g, "").trim();
+        return val === '' || isNaN(val) ? 0 : parseFloat(val);
+    };
+
     //Article,Affectation
     var unite = $("#unite").val();
 
@@ -175,12 +201,12 @@ var Enregistrer = function () {
     var codeBarre = $("#articleCodeBar").val();
     var observation = $("#observation").val();
 
-    var stockMinium = $("#stockMinium").val().replace(/\s+/g, "");
-    var stockMaximum = $("#stockMaximum").val().replace(/\s+/g, "");
-    var QteInitiale = $("#QteInitiale").val().replace(/\s+/g, "");
+    var stockMinium = $("#stockMinium").val();
+    var stockMaximum = $("#stockMaximum").val();
+    var QteInitiale = $("#QteInitiale").val();
 
-    var dernierPrix = $("#dernierPrix").val().replace(/\s+/g, "");
-    var ValInitiale = $("#ValInitiale").val().replace(/\s+/g, "");
+    var dernierPrix = $("#dernierPrix").val();
+    var ValInitiale = $("#ValInitiale").val();
 
 
     var EnCours = document.getElementById('checkEncours')?.checked ?? false;
@@ -189,7 +215,7 @@ var Enregistrer = function () {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
             if (code.trim() == '') {
                 isAllValid = false;
@@ -275,6 +301,12 @@ var Enregistrer = function () {
                 isAllValid = false;
                 setErrorMessage("#unite", "champ obligatoire", isAllValid);
             }
+            if (parseInt(stockMinium) > parseInt(stockMaximum)) {
+                isAllValid = false;
+                document.getElementById('errorStockMinMax').textContent = "Le stock minimum ne peut être supérieur au stock maximum";
+            } else {
+                document.getElementById('errorStockMinMax').textContent = "";
+            }
 
             stockMinium = valOrZero(stockMinium);
             stockMaximum = valOrZero(stockMaximum);
@@ -292,7 +324,7 @@ var Enregistrer = function () {
             case "signataire":
             case "groupes":
             case "services":
-            case "unite":
+            case "unites":
             case "magasins":
             case "Monnaie":
                 EtatCod = document.getElementById('code');
@@ -369,15 +401,16 @@ var Enregistrer = function () {
                                 //Edition
                                 default:
                                     var table = document.getElementById(pageName);
+                                    //Pour les tab avec DataTable champ cache
+                                    var tableData = $('#' + pageName).DataTable();
                                     switch (pageName) {
                                         case "Exercices":
                                             loadData(pageName);
                                             break;
                                         case "Articles":
-                                            var table = $('#' + pageName).DataTable();
                                             var codeArticle = $("#codeArticle").val()?.trim();
 
-                                            table.rows().every(function () {
+                                            tableData.rows().every(function () {
                                                 var rowData = this.data();
                                                 if (rowData[0].trim() === codeArticle) {
                                                     // Mise à jour des données dans le tableau
@@ -395,7 +428,27 @@ var Enregistrer = function () {
                                                 }
                                             });
                                             break;
-
+                                        case "Affectations":
+                                            tableData.rows().every(function () {
+                                                var rowData = this.data();
+                                                if (rowData[0].trim() === code1 && rowData[1].trim() === code2 && rowData[2].trim() === unite) {
+                                                    // Mise à jour des données dans le tableau
+                                                    this.data([
+                                                        rowData[0],  // site (inchangé)
+                                                        rowData[1],  // magasin (inchangé)
+                                                        rowData[2],  // article (inchangé)
+                                                        rowData[3],  // article (inchangé)
+                                                        stockMinium,
+                                                        stockMaximum,
+                                                        QteInitiale,
+                                                        prixUnitaire,
+                                                        dernierPrix,
+                                                        ValInitiale
+                                                    ]).draw(false); // mise à jour sans changer la pagination
+                                                    return false; // sortir de la boucle
+                                                }
+                                            });
+                                            break;
                                         default:
                                             for (var i = 1; i < table.rows.length; i++) {
                                                 var item = table.rows[i];
@@ -415,7 +468,7 @@ var Enregistrer = function () {
                             case "Pays":
                             case "services":
                             case "groupes":
-                            case "unite":
+                            case "unites":
                             case "magasins":
                                 $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
                                 break;
@@ -451,7 +504,7 @@ var Ajout = function () {
         case "groupes":
             nomTitre += "Groupe";
             break;
-        case "unite":
+        case "unites":
             nomTitre += "Unité";
             break;
         case "magasins":
@@ -510,7 +563,7 @@ var Supprimer = function () {
             code = $("#code").val();
             nomTitre += "Groupe";
             break;
-        case "unite":
+        case "unites":
             code = $("#code").val();
             nomTitre += "Unité";
             break;
@@ -530,6 +583,10 @@ var Supprimer = function () {
             code = $("#codeArticle").val();
             nomTitre += "Article";
             break;
+        case "Affectations":
+            code = $("#unite").val();
+            nomTitre += "affectation";
+            break;
     }
     nomTitreDel += '<strong><u>' + code + '</u></strong>';
     $("#titreDel").html(nomTitre);
@@ -537,6 +594,8 @@ var Supprimer = function () {
 }
 var validerDel = function () {
     var code = null;
+    var code1 = $("#code1").val();
+    var code2 = $("#code2").val();
     switch (pageName) {
         case "Exercices":
             code = $("#annee").val();
@@ -544,13 +603,17 @@ var validerDel = function () {
         case "Articles":
             code = $("#codeArticle").val();
             break;
+        case "Affectations":
+            code = $("#unite").val();
+            break;
         default:
             code = $("#code").val();
+            break;
     }
-    var code1 = $("#code1").val();
     const objData = {
         code: code,
         code1: code1,
+        code2: code2,
         niveau:pageName
     }
     $.ajax({
@@ -596,7 +659,7 @@ function paramater() {
     var FormHTML = "";
     switch (pageName) {
         case "Pays":
-        case "unite":
+        case "unites":
         case "magasins":
         case "services":
         case "groupes":
@@ -635,12 +698,11 @@ function formTable(pageName) {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
         case "Exercices":
         case "Monnaie":
         case "Articles":
-        case "Affectations":
             formHTML = `
                     <div class="row">
                         <div class="col-md-12" style="padding-bottom:10px">
@@ -662,14 +724,38 @@ function formTable(pageName) {
                     <div id="niveauImpression"></div>
                     <div id="niveauFormTableau"></div>                    
                     `;
-            $("#formParam").append(formHTML);
-            formTableTOP(pageName);
-            formTableau(pageName);
-            formPopup(pageName);
-            formPopupParieSaisie(pageName);
-            formDel();
+            break;
+        case "Affectations":
+            formHTML = `
+                    <div class="row">
+                        <div class="col-md-12" style="padding-bottom:10px">
+                            <div class="float-start">
+                                <button class="btn btn-sm btn-primary" id="Imprimer" onclick="Imprimer()"> <i class="fas fa-print mr-2"></i>Imprimer</button>
+                            </div>
+                            <div class="float-end">
+                                <button class="btn btn-sm btn-primary" id="Affecte" onclick="Affecte()">Affecter</button>
+                                <button class="btn btn-sm btn-primary" id="Ajout" onclick="Ajout()"> <i class="fas fa-plus mr-2"></i>Ajouter</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="partieSite">
+                    </div>
+                    <div class="row mb-2 justify-content-center" style="text-align:center">
+                        <div class="col-md-12">
+                            <h4 id='messageStruct' style='color:red'></h4>
+                        </div>
+                    </div>
+                    <div id="niveauImpression"></div>
+                    <div id="niveauFormTableau"></div>                    
+                    `;
             break;
     }
+    $("#formParam").append(formHTML);
+    formTableTOP(pageName);
+    formTableau(pageName);
+    formPopup(pageName);
+    formPopupParieSaisie(pageName);
+    formDel();
     loadData(pageName);
 }
 function formTableTOP(pageName) {
@@ -732,7 +818,7 @@ function formTableau(pageName) {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
             formHTML = `
                        <div class="row">
@@ -782,15 +868,20 @@ function formTableau(pageName) {
                                 <table class="table-bordered tabList" id="${pageName}" style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th hidden>SITE</th>
-                                            <th hidden>MAGASIN</th>
-                                            <th>ARTICLES</th>
-                                            <th>STOCK MINI</th>
-                                            <th>STOCK MAXI</th>
-                                            <th>QTE INITIALE</th>
-                                            <th>PRIX UNITAIRE</th>
-                                            <th>DERNIER PRIX</th>
-                                            <th>VALEUR INITIALE</th>
+                                            <th hidden rowspan="2">SITE</th>
+                                            <th hidden rowspan="2">MAGASIN</th>
+                                            <th hidden rowspan="2">CODE ARTICLE</th>
+                                            <th rowspan="2">ARTICLES</th>
+                                            <th colspan="2">STOCK</th>
+                                            <th rowspan="2">QTE INITIALE</th>
+                                            <th colspan="2">PRIX</th>
+                                            <th rowspan="2">VALEUR INITIALE</th>
+                                        </tr>
+                                        <tr>
+                                            <th>MINI</th>
+                                            <th>MAXI</th>
+                                            <th>UNITAIRE</th>
+                                            <th>DERNIER</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -854,7 +945,7 @@ function formPopup(pageName) {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
         case "Exercices":
         case "Monnaie":
@@ -904,7 +995,7 @@ function formPopupParieSaisie(pageName) {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
             formHTML = `
                         <div class="row">
@@ -1159,6 +1250,11 @@ function formPopupParieSaisie(pageName) {
             break;
         case "Affectations":
             formHTML = `
+                            <div class="row justify-content-center" style="text-align:center">
+                                <div class="col-md-12">
+                                    <span id="errorMouvement" style="color:red"></span>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row mb-1">
@@ -1238,6 +1334,11 @@ function formPopupParieSaisie(pageName) {
                                     </div>
                                 </div>
                             </div>                           
+                            <div class="row justify-content-center" style="text-align:center">                           
+                                <div class="col-md-12">                           
+                                    <span id="errorStockMinMax" style="color:red"></span>                           
+                                </div>                           
+                            </div>                           
                         `;
             break;
     }
@@ -1248,7 +1349,7 @@ function formPopupParieSaisie(pageName) {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
             code = document.getElementById('code');
             formatChiffreLettreInput(code);
@@ -1371,6 +1472,40 @@ function numSerieArticle(pageName, code1, code2) {
         }
     })
 }
+function checkMouvementArticle(pageName, SITE, MAGASIN, ARTICLE) {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            code: pageName,
+            code1: SITE,
+            code2: MAGASIN,
+            article: ARTICLE,
+        },
+        url: '/CRUD/GetCheckMouvArticle',
+        success: function (data) {
+            if (data.statut == false) {
+                document.getElementById('errorMouvement').textContent = data.message;
+
+                document.getElementById('QteInitiale').disabled = true;
+                document.getElementById('PrixUnitaire').disabled = true;
+                document.getElementById('dernierPrix').disabled = true;
+                document.getElementById('ValInitiale').disabled = true;
+                document.getElementById('Supprimer').disabled = true;
+            } else {
+                document.getElementById('errorMouvement').textContent = "";
+
+                document.getElementById('QteInitiale').disabled = false;
+                document.getElementById('PrixUnitaire').disabled = false;
+                document.getElementById('dernierPrix').disabled = false;
+                document.getElementById('ValInitiale').disabled = false;
+                document.getElementById('Supprimer').disabled = false;
+            }
+        }
+    })
+}
 function loadData(code) {
     var code1 = $("#code1").val();
     var code2 = $("#code2").val();
@@ -1459,7 +1594,7 @@ function reportData(data) {
                 break;
             case "Affectations":
                 $.each(data.listDataUnite, function (index, row) {
-                    $("#unite").append("<option value='" + row.code + "'>" + row.code + "-> " + row.libelle + "</option>");
+                    $("#unite").append("<option value='" + row.code + "' name = '" + row.prixUnitaire + "'>" + row.code + "-> " + row.libelle + "</option>");
                 })
                 break;
         }
@@ -1497,7 +1632,7 @@ function DataTable(code, data) {
             hiddenCols: ["serie", "prixUnitaire", "observation", "codeBarre"]
         },
         Affectations: {
-            columns: ["site", "magasin", "code", "stockMin", "stockMax", "QteInitiale", "prixUnitaire", "lastPrice", "valInitiale"],
+            columns: ["site", "magasin", "code", "codeLibelle", "stockMin", "stockMax", "QteInitiale", "prixUnitaire", "lastPrice", "valInitiale"],
             styles: {
                 stockMin: "text-align: right;",
                 stockMax: "text-align: right;",
@@ -1506,7 +1641,7 @@ function DataTable(code, data) {
                 lastPrice: "text-align: right;",
                 valInitiale: "text-align: right;",
             },
-            hiddenCols: ["site", "magasin"]
+            hiddenCols: ["site", "magasin", "code"]
         }
     };
 
@@ -1576,23 +1711,31 @@ function DataTable(code, data) {
 
     function generateRow(item, columns, styles) {
         const affectCols = ["stockMax", "QteInitiale", "prixUnitaire", "lastPrice", "valInitiale"];
+
         return `<tr>` + columns.map(col => {
             let style = styles[col] ? ` style='${styles[col]}'` : "";
-            let value = item[col] || "";
+            let value = "";
 
-            // Appliquer separateur_mil si colonne dans Affectations
-            if (code === "Affectations" && affectCols.includes(col)) {
-                value = separateur_mil(value);
+            if (col === "codeLibelle") {
+                value = `${item.code || ""} - ${item.libelle || ""}`;
+            } else {
+                value = item[col] || "";
+                // Appliquer separateur_mil si colonne dans Affectations
+                if (code === "Affectations" && affectCols.includes(col)) {
+                    value = separateur_mil(value);
+                }
             }
 
-            if (col === "libelle" && value.length > 87) {
-                let truncatedValue = value.substring(0, 87) + "...";
+            // Tronquer les valeurs longues
+            if ((col === "libelle" || col === "codeLibelle") && value.length > 50) {
+                let truncatedValue = value.substring(0, 50) + "...";
                 return `<td${style} title="${value}" data-toggle="tooltip">${truncatedValue}</td>`;
             } else {
                 return `<td${style}>${col === "statut" ? generateEtatCheckbox(value) : value}</td>`;
             }
         }).join('') + `</tr>`;
     }
+
 
 
     const rows = data.listData.map(item => generateRow(item, columns, styles)).join('');
@@ -1638,7 +1781,7 @@ function DataTable(code, data) {
         case "groupes":
             tailleCode = parseInt(itemCode.groupe);
             break;
-        case "unite":
+        case "unites":
             tailleCode = parseInt(itemCode.unite);
             break;
         case "magasins":
@@ -1807,7 +1950,7 @@ function resetForm() {
         case "signataire":
         case "groupes":
         case "services":
-        case "unite":
+        case "unites":
         case "magasins":
             document.getElementById('code').disabled = false;
             break;
@@ -1826,6 +1969,13 @@ function resetForm() {
             $("#unite").val(0).trigger('change');
             break;
         case "Affectations":
+            document.getElementById('errorMouvement').textContent = "";
+            document.getElementById('errorStockMinMax').textContent = "";
+            document.getElementById('QteInitiale').disabled = false;
+            document.getElementById('PrixUnitaire').disabled = false;
+            document.getElementById('dernierPrix').disabled = false;
+            document.getElementById('ValInitiale').disabled = false;
+            document.getElementById('Supprimer').disabled = false;
             document.getElementById('unite').disabled = false;
             $("#unite").val(0).trigger('change');
             break;
@@ -1954,11 +2104,11 @@ function afficherDateddMMyyyy(date) {
 }
 ////Appliquer un séparateur de millier
 function separateur_mil(nStr) {
-    nStr += '';
-    x = nStr.split('.');
-    x1 = x[0];
-    x2 = x.length > 1 ? '.' + x[1] : '';
-    var rgx = /(\d+)(\d{3})/;
+    if (!nStr || isNaN(nStr)) return nStr;
+    nStr = nStr.toString();
+    let [x1, x2 = ""] = nStr.split('.');
+    x2 = x2 ? '.' + x2 : '';
+    const rgx = /(\d+)(\d{3})/;
     while (rgx.test(x1)) {
         x1 = x1.replace(rgx, '$1' + ' ' + '$2');
     }

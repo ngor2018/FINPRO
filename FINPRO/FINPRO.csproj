@@ -476,7 +476,7 @@
     <Content Include="Views\FINSTOCKParam\services.cshtml" />
     <Content Include="Views\FINSTOCKParam\groupes.cshtml" />
     <Content Include="Views\CRUD\vue_config.cshtml" />
-    <Content Include="Views\Parametrage\unite.cshtml" />
+    <Content Include="Views\Parametrage\unites.cshtml" />
     <Content Include="Views\FINSTOCKParam\magasins.cshtml" />
     <Content Include="Views\Parametrage\Pays.cshtml" />
     <Content Include="Views\Parametrage\EnteteProjet.cshtml" />

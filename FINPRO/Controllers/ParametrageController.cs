@@ -32,7 +32,7 @@ namespace FINPRO.Controllers
                 return View(parametre);
             }
         }
-        public ActionResult unite()
+        public ActionResult unites()
         {
             if (Session["LOGIN"] == null)
             {
