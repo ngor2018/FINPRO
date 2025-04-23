@@ -512,6 +512,7 @@
     <Compile Include="Models\parametre.cs" />
     <Compile Include="Models\SampleData.cs" />
     <Compile Include="Models\SampleOrder.cs" />
+    <Compile Include="Models\tabList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <PropertyGroup>

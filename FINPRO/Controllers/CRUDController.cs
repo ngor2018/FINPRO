@@ -133,6 +133,112 @@ namespace FINPRO.Controllers
                 return Json(new { error = true, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        
+        [HttpGet]
+        public JsonResult GetAffectArticle(string code, string code1, string code2)
+        {
+            List<parametre> list1 = new List<parametre>();
+            List<parametre> list2 = new List<parametre>();
+            List<parametre> listArticleFilterAffect = new List<parametre>();
+            object tableInstance = null;
+            var filtre = "";
+            DataTable objTable = new DataTable();
+            switch (code)
+            {
+                case "Affectations":
+                    tableInstance = new Tables_Sto.mAffectation();
+                    break;
+            }
+            if (tableInstance != null)
+            {
+                var tableType = tableInstance.GetType();
+                var remplirDataTableMethod = tableType.GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+                if (remplirDataTableMethod != null)
+                {
+                    objTable = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
+                }
+            }
+            switch (code)
+            {
+                case "Affectations":
+                    Tables_Sto.rGroupeFamille rGroup = new Tables_Sto.rGroupeFamille();
+                    DataTable tabGr = rGroup.RemplirDataTable();
+
+                    foreach (DataRow row in tabGr.Rows)
+                    {
+                        list1.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString()
+                        });
+                    }
+                    if (tabGr.Rows.Count > 0)
+                    {
+                        DataRow firstRowGr = tabGr.Rows[0];
+                        var FisrtCodeGr = firstRowGr["CODE"].ToString();
+                        if (string.IsNullOrEmpty(code1))
+                        {
+                            code1 = FisrtCodeGr;
+                        }
+                        var filtreFam = $"GROUPE = '{code1}'";
+                        Tables_Sto.rFamille rFamille = new Tables_Sto.rFamille();
+                        DataTable tabFam = rFamille.RemplirDataTable(filtreFam);
+                        foreach (DataRow row in tabFam.Rows)
+                        {
+                            list2.Add(new parametre()
+                            {
+                                code = row["code"].ToString(),
+                                libelle = row["libelle"].ToString()
+                            });
+                        }
+                        if (tabFam.Rows.Count > 0)
+                        {
+                            DataRow firstRowFam = tabFam.Rows[0];
+                            var FisrtCodeFam = firstRowFam["CODE"].ToString();
+                            if (string.IsNullOrEmpty(code2))
+                            {
+                                code2 = FisrtCodeFam;
+                            }
+                            filtre = $"GROUPE = '{code1}' and FAMILLE = '{code2}'";
+                        }
+                        else
+                        {
+                            filtre = $"GROUPE = '{code1}'";
+                        }
+                        //DataRow[] rowsFiltersAr = objTable.Select(filtre);
+                        //objTable = rowsFiltersAr.Length > 0 ? rowsFiltersAr.CopyToDataTable() : objTable.Clone();
+                        
+                        
+                        Tables_Sto.rStkArticle rArticle = new Tables_Sto.rStkArticle();
+                        Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
+                        DataTable tabArticle = rArticle.RemplirDataTable(filtre);
+                        DataTable tabAffect = mAffectation.RemplirDataTable();
+
+                        var affectCodes = tabAffect.AsEnumerable()
+                               .Select(r => r["ARTICLE"].ToString())
+                               .ToHashSet(); // Optimisé pour la recherche
+
+                        var articlesNonAffectes = tabArticle.AsEnumerable()
+                            .Where(r => !affectCodes.Contains(r["CODE"].ToString()))
+                            .Select(r => new parametre
+                            {
+                                code = r["CODE"].ToString(),
+                                libelle = r["LIBELLE"].ToString()
+                            })
+                            .ToList();
+
+                        listArticleFilterAffect.AddRange(articlesNonAffectes);
+                    }
+                    break;
+            }
+            var listData = new
+            {
+                list1 = list1,
+                list2 = list2,
+                listArticle = listArticleFilterAffect
+            };
+            return Json(listData, JsonRequestBehavior.AllowGet);
+        }
         [HttpGet]
         public JsonResult GetDataParam(string code, string code1,string code2)
         {
@@ -219,24 +325,7 @@ namespace FINPRO.Controllers
                     break;
                 case "Affectations":
                     Tables_Sto.rStkArticle rArticle = new Tables_Sto.rStkArticle();
-                    //Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
                     DataTable tabArticle = rArticle.RemplirDataTable();
-                    //DataTable tabAffect = mAffectation.RemplirDataTable();
-
-                    /*var affectCodes = tabAffect.AsEnumerable()
-                           .Select(r => r["ARTICLE"].ToString())
-                           .ToHashSet(); // Optimisé pour la recherche
-
-                    var articlesNonAffectes = tabArticle.AsEnumerable()
-                        .Where(r => !affectCodes.Contains(r["CODE"].ToString()))
-                        .Select(r => new parametre
-                        {
-                            code = r["CODE"].ToString(),
-                            libelle = r["LIBELLE"].ToString()
-                        })
-                        .ToList();
-
-                    listUnite.AddRange(articlesNonAffectes);*/
                     foreach (DataRow row1 in tabArticle.Rows)
                     {
                         listUnite.Add(new parametre()
@@ -637,6 +726,41 @@ namespace FINPRO.Controllers
             }
 
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+        }
+        
+        [HttpPost]
+        public JsonResult AllAffectArticle(parametre objData)
+        {
+            var result = "Affectation traitée avec succès";
+            Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
+            DataTable objTab = new DataTable();
+            var site = objData.code1;
+            var magasin = objData.code2;
+            objTab = mAffectation.RemplirDataTable();
+            foreach (var item in objData.tabList)
+            {
+                DataRow row = objTab.NewRow();
+                var filtreArt = $"CODE = '{item.code}'";
+                BDD.Divers objBDDDiver = new BDD.Divers();
+                var prixUnitaire = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.PU.ToString());
+                row["SITE"] = site;
+                row["MAGASIN"] = magasin;
+                row["ARTICLE"] = item.code;
+                row["PRIXUNITAIRE"] = prixUnitaire;
+                row["MAGASIN"] = 0;
+                row["ARTICLE"] = 0;
+                row["STOCKMIN"] = 0;
+                row["STOCKMAX"] = 0;
+                row["DERNIERPRIX"] = 0;
+                row["QUANTITEINITIALE"] = 0;
+                row["VALEURINITIALE"] = 0;
+                objTab.Rows.Add(row);
+                mAffectation.Enregistrer(objTab);
+            }
+            return Json(new
+            {
+                message = result
+            }, JsonRequestBehavior.AllowGet);
         }
         // Génère les champs supplémentaires en fonction du niveau
         private Dictionary<string, object> SetExtraFields(string niveau, parametre objData)

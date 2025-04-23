@@ -11,18 +11,6 @@ $(function () {
         if (idCode == "code1") {
             $("#code2").val(null).trigger('change');
         }
-        //switch (pageName) {
-        //    case "Articles":
-        //    case "Affectations":
-        //        $("#code2").off('change').val(null).trigger('change');
-        //        setTimeout(() => {
-        //            $("#code2").on('change', function () {
-        //                alert("Code2 changé !");
-        //                loadData(pageName);
-        //            });
-        //        }, 10);
-        //        break;
-        //}
         loadData(pageName);
     });
     $("#unite").change(function () {
@@ -175,6 +163,11 @@ $(function () {
     $(".selectChoix").select2();
     initTableInteractions();
 })
+var Affecte = function () {
+    toggleForms("partieAffectation");
+    formPopupAffectation(pageName);
+    GetAffectArticle(pageName);
+}
 var Enregistrer = function () {
     var isAllValid = true;
     var code = $("#code").val();
@@ -651,6 +644,7 @@ var closeDel = function () {
     toggleForms("partieUnique");
     $("#errorCodif").html('');
 }
+
 function paramater() {
     var pageNameTitreController = $("#pageNameTitreController").val();
     var pageNameController = $("#pageNameController").val();
@@ -1209,7 +1203,7 @@ function formPopupParieSaisie(pageName) {
                                 <label for="unite">Unité</label>
                             </div>
                             <div class="col-md-5">
-                                <select class="selectChoix input_focus" style="width:100%" id="unite" style="z-index:3500 !important;position: relative !important;">
+                                <select class="selectChoix input_focus" id="unite" style="width:100%;z-index:3500 !important;">
                                     
                                 </select>
                                 <span class='erreur'></span>
@@ -1376,6 +1370,188 @@ function formPopupParieSaisie(pageName) {
             break;
     }
 }
+function formPopupAffectation(pageName) {
+    let formHTML = "";
+    switch (pageName) {
+        case "Affectations":
+            formHTML = `<div class="row justify-content-center" style="padding-top:4%">
+                            <div class="col-md-8 pageView">
+                                <div class="row">
+                                    <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
+                                        <div class="float-start">
+                                            <strong id="titleParam_"></strong>
+                                        </div>
+                                        <div class="float-end">
+                                            <button class="btn btn-sm  btn-danger me-1 mb-1" id="fermer_">&times;Fermer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center" style="text-align:center">
+                                    <div class="col-md-12">
+                                        <div class="alert_Param hide">
+                                            <span class="fas fa-exclamation-circle"></span>
+                                            <span class="result_Param"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-2">
+                                                <label for="site1">Groupe</label>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select id="site1" class="selectChoix" style="width:100%">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="site2">Famille</label>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select id="site2" class="selectChoix" style="width:100%">
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center" style="text-align:center">
+                                            <div class="col-md-12">
+                                                <span id="etatCocheError" style="color:red"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-12">
+                                                <table class="tabList" style="width:100%" id="tabAffect_${pageName}">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="text-align:center" class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
+                                                                <div class="form-check mb-0 fs-8">
+                                                                    <input class="form-check-input" id="bulk-select-example" type="checkbox">
+                                                                </div>
+                                                            </th>
+                                                            <th>Code</th>
+                                                            <th>Libellé</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center" style="text-align:center">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-sm btn-success" id="saveAllAffect">Enregistrer</button>
+                                    </div>
+                                </div>
+                            <div>
+                        <div>
+                        `;
+            break;
+    }
+    $("#partieAffectation").append(formHTML);
+    ControlinputAffect();
+}
+function ControlinputAffect() {
+    $("#fermer_").click(function () {
+        document.getElementById('fullscreen_popup').style.display = "none";
+        $("#partieAffectation").empty();
+    })
+    $(".selectChoix").select2();
+    $("#site1,#site2").change(function () {
+        var idCode = this.id;
+        if (idCode == "site1") {
+            $("#site2").val(null).trigger('change');
+        }
+        GetAffectArticle(pageName);
+    });
+    // Coche/Décoche tous les checkboxes, même ceux hors page visible
+    $(document).on('change', '#bulk-select-example', function () {
+        const checked = $(this).is(':checked');
+        const table = $('#tabAffect_' + pageName).DataTable();
+        table.rows().every(function () {
+            const node = this.node();
+            $(node).find('input[type="checkbox"]').prop('checked', checked);
+        });
+        document.getElementById('etatCocheError').textContent = "";
+    });
+
+    // Quand une ligne est cochée/décochée manuellement
+    $(document).on('change', '#tabAffect_' + pageName + ' tbody input[type="checkbox"]', function () {
+        const table = $('#tabAffect_' + pageName).DataTable();
+        let total = 0;
+        let checked = 0;
+        table.rows().every(function () {
+            const node = this.node();
+            const cb = $(node).find('input[type="checkbox"]');
+            total += cb.length;
+            checked += cb.filter(':checked').length;
+        });
+        $('#bulk-select-example').prop('checked', total > 0 && total === checked);
+        document.getElementById('etatCocheError').textContent = "";
+    });
+    $("#saveAllAffect").click(function () {
+        var objData = {};
+        var code1 = $("#code1").val();
+        var code2 = $("#code2").val();
+        var listOfAffect = [];
+
+        var table = $('#tabAffect_' + pageName).DataTable();
+        var auMoinsUnCoche = false;
+
+        // Parcours toutes les lignes, même hors pagination visible
+        table.rows().every(function () {
+            var node = this.node();
+            var $row = $(node);
+            var isChecked = $row.find('td:eq(0) input[type="checkbox"]').is(':checked');
+
+            if (isChecked) {
+                auMoinsUnCoche = true;
+                var OrderDetailAffect = {};
+                OrderDetailAffect.code = $row.find('td:eq(1)').text().trim(); // cellule 1
+                listOfAffect.push(OrderDetailAffect);
+            }
+        });
+
+        if (!auMoinsUnCoche) {
+            document.getElementById('etatCocheError').textContent = "Veuillez cocher au moins une ligne à affecter !";
+            return;
+        }
+        objData.code1 = code1;
+        objData.code2 = code2;
+        objData.tabList = listOfAffect;
+
+        //console.log("Code1:", code1, "Code2:", code2);
+        //console.log("Liste à affecter:", listOfAffect);
+
+        $.ajax({
+            async: true,
+            type: 'POST',
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(objData),
+            url: '/CRUD/AllAffectArticle',
+            success: function (data) {
+                $('.alert_Param').removeClass("hide");
+                $('.alert_Param').addClass("show");
+                $('.alert_Param').addClass("showAlert");
+                $(".result_Param").html('<font style="color:#ce8500">' + data.message + '</font>');
+                setTimeout(function () {
+                    $('.alert_Param').addClass("hide");
+                    $('.alert_Param').removeClass("show");
+                    document.getElementById('fermer_').click();
+                })
+            },
+            error: function () {
+                alert('Erreur');
+            }
+        })
+    });
+
+
+
+}
 function formDel() {
     let container = document.getElementById("partieDelete");
     container.innerHTML = "";
@@ -1503,6 +1679,82 @@ function checkMouvementArticle(pageName, SITE, MAGASIN, ARTICLE) {
                 document.getElementById('ValInitiale').disabled = false;
                 document.getElementById('Supprimer').disabled = false;
             }
+        }
+    })
+}
+function GetAffectArticle(pageName) {
+    var code1 = $("#site1").val();
+    var code2 = $("#site2").val();
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            code: pageName,
+            code1: code1,
+            code2: code2,
+        },
+        url: '/CRUD/GetAffectArticle',
+        success: function (data) {
+            if ($("#site1").val() == "" || $("#site1").val() == null) {
+                $('#site1').empty();
+                $.each(data.list1, function (index, row) {
+                    $("#site1").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+                })
+            }
+            if ($("#site2").val() == "" || $("#site2").val() == null) {
+                $('#site2').empty();
+                $.each(data.list2, function (index, row) {
+                    $("#site2").append("<option value='" + row.code + "'>" + row.libelle + "</option>");
+                })
+            }
+
+            if ($.fn.DataTable.isDataTable('#tabAffect_' + pageName)) {
+                $('#tabAffect_' + pageName).DataTable().destroy();
+                $("#tabAffect_" + pageName + " tbody").empty();
+            }
+            if (data.listArticle.length > 0) {
+                data.listArticle.forEach(item => {
+                    list = `<tr>
+                                <td style="text-align:center" class="fs-9 align-middle">
+                                    <div class="form-check mb-0 fs-8">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>${item.code}</td>
+                                <td>${item.libelle}</td>
+                            </tr>`;
+                    $("#tabAffect_" + pageName + " tbody").append(list);
+                })
+            }
+            $('#tabAffect_' + pageName).DataTable({
+                "pageLength": 10,
+                "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+                "responsive": true,
+                "lengthChange": true,
+                "scrollY": '250px',       // hauteur max pour le tbody
+                "scrollCollapse": true,   // réduit le scroll si peu de lignes
+                "paging": true,           // tu peux mettre false si tu veux tout scroller sans pagination
+                "ordering": false,
+                "language": {
+                    "lengthMenu": "Afficher _MENU_ entrées",
+                    "emptyTable": "Aucun élément trouvé",
+                    "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
+                    "loadingRecords": "Chargement...",
+                    "processing": "En cours...",
+                    "search": '<i class="fa fa-search" aria-hidden="true"></i>',
+                    "searchPlaceholder": "Rechercher...",
+                    "zeroRecords": "Aucun élément correspondant trouvé",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }
+            });
+            $("#tabAffect_" + pageName).removeClass("dataTable");
         }
     })
 }
@@ -1993,7 +2245,7 @@ function setErrorMessage(selector, message, isValid) {
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
-    let forms = ["partieUnique", "partieDelete"];
+    let forms = ["partieUnique", "partieAffectation", "partieDelete"];
     document.getElementById('fullscreen_popup').style.display = "block";
     forms.forEach(id => {
         let elem = document.getElementById(id);
