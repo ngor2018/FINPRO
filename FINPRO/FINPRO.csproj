@@ -275,6 +275,7 @@
     <Content Include="js\Layout.js" />
     <Content Include="js\FINPRONET\parametre\parametre.js" />
     <Content Include="js\parametrage\parametre.js" />
+    <Content Include="js\STOCK\Saisie\EntreeSortieStock.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.mvc.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -485,6 +486,7 @@
     <Content Include="Views\FINSTOCKParam\Structures.cshtml" />
     <Content Include="Views\FINSTOCKSaisie\Articles.cshtml" />
     <Content Include="Views\FINSTOCKSaisie\Affectations.cshtml" />
+    <Content Include="Views\FINSTOCKSaisie\EntreeStock.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

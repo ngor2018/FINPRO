@@ -1379,7 +1379,7 @@ function formPopupAffectation(pageName) {
                                 <div class="row">
                                     <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
                                         <div class="float-start">
-                                            <strong id="titleParam_"></strong>
+                                            <strong id="titleParam_">Affectation multiple</strong>
                                         </div>
                                         <div class="float-end">
                                             <button class="btn btn-sm  btn-danger me-1 mb-1" id="fermer_">&times;Fermer</button>
@@ -1394,7 +1394,7 @@ function formPopupAffectation(pageName) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
+                                <div class="row" style='padding-top:10px'>
                                     <div class="col-md-12">
                                         <div class="row mb-2">
                                             <div class="col-md-2">
@@ -1524,7 +1524,8 @@ function ControlinputAffect() {
 
         //console.log("Code1:", code1, "Code2:", code2);
         //console.log("Liste à affecter:", listOfAffect);
-
+        document.getElementById('saveAllAffect').disabled = true;
+        document.getElementById('saveAllAffect').textContent = "Traitement en cours...";
         $.ajax({
             async: true,
             type: 'POST',
@@ -1538,10 +1539,12 @@ function ControlinputAffect() {
                 $('.alert_Param').addClass("showAlert");
                 $(".result_Param").html('<font style="color:#ce8500">' + data.message + '</font>');
                 setTimeout(function () {
+                    document.getElementById('saveAllAffect').disabled = false;
+                    document.getElementById('saveAllAffect').textContent = "Enregistrer";
                     $('.alert_Param').addClass("hide");
                     $('.alert_Param').removeClass("show");
                     document.getElementById('fermer_').click();
-                })
+                },2500)
             },
             error: function () {
                 alert('Erreur');

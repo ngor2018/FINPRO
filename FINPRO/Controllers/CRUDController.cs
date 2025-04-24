@@ -134,6 +134,70 @@ namespace FINPRO.Controllers
             }
         }
         
+
+        [HttpGet]
+        public JsonResult GetEntreeSortie(string page,string compte)
+        {
+            List<parametre> listExercice = new List<parametre>();
+            List<parametre> listCompte = new List<parametre>();
+            List<parametre> listCompteAuxi = new List<parametre>();
+            Tables_Sto.rExercice rExercice = new Tables_Sto.rExercice();
+            DataTable tabExo = rExercice.RemplirDataTable();
+            foreach (DataRow row in tabExo.Rows)
+            {
+                listExercice.Add(new parametre()
+                {
+                    annee = row["annee"].ToString(),
+                    statut = bool.Parse(row["ENCOURS"].ToString()),
+                    dateDebut = DateTime.Parse(row["DATEDEB"].ToString()).ToString("dd/MM/yyyy"),
+                    dateFin = DateTime.Parse(row["DATEFIN"].ToString()).ToString("dd/MM/yyyy")
+                });
+            }
+            var filtre = "";
+            switch (page)
+            {
+                case "EntreeStock":
+                    Tables.rCoge1 rCoge1 = new Tables.rCoge1();
+                    DataTable tabCoge = rCoge1.RemplirDataTable($"COLLECTIF = '1'");
+                    foreach (DataRow row in tabCoge.Rows)
+                    {
+                        listCompte.Add(new parametre()
+                        {
+                            code = row["code"].ToString(),
+                            libelle = row["libelle"].ToString()
+                        });
+                    }
+                    if (tabCoge.Rows.Count > 0)
+                    {
+                        DataRow firstRowS = tabCoge.Rows[0];
+                        var codeFirstS = firstRowS["CODE"].ToString();
+
+                        if (string.IsNullOrEmpty(compte))
+                        {
+                            compte = codeFirstS;
+                        }
+                        var filtreTiers = $"COGE = '{compte}'";
+                        Tables.rTiers rTiers = new Tables.rTiers();
+                        DataTable tabTiers = rTiers.RemplirDataTable(filtreTiers);
+                        foreach (DataRow row in tabTiers.Rows)
+                        {
+                            listCompteAuxi.Add(new parametre()
+                            {
+                                code = row["AUXI"].ToString(),
+                                libelle = row["NOM"].ToString()
+                            });
+                        }
+                    }
+                    break;
+            }
+            var listData = new
+            {
+                exercice = listExercice,
+                compte = listCompte,
+                compteAuxi = listCompteAuxi
+            };
+            return Json(listData, JsonRequestBehavior.AllowGet);
+        }
         [HttpGet]
         public JsonResult GetAffectArticle(string code, string code1, string code2)
         {
@@ -728,40 +792,6 @@ namespace FINPRO.Controllers
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
         
-        [HttpPost]
-        public JsonResult AllAffectArticle(parametre objData)
-        {
-            var result = "Affectation traitée avec succès";
-            Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
-            DataTable objTab = new DataTable();
-            var site = objData.code1;
-            var magasin = objData.code2;
-            objTab = mAffectation.RemplirDataTable();
-            foreach (var item in objData.tabList)
-            {
-                DataRow row = objTab.NewRow();
-                var filtreArt = $"CODE = '{item.code}'";
-                BDD.Divers objBDDDiver = new BDD.Divers();
-                var prixUnitaire = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.PU.ToString());
-                row["SITE"] = site;
-                row["MAGASIN"] = magasin;
-                row["ARTICLE"] = item.code;
-                row["PRIXUNITAIRE"] = prixUnitaire;
-                row["MAGASIN"] = 0;
-                row["ARTICLE"] = 0;
-                row["STOCKMIN"] = 0;
-                row["STOCKMAX"] = 0;
-                row["DERNIERPRIX"] = 0;
-                row["QUANTITEINITIALE"] = 0;
-                row["VALEURINITIALE"] = 0;
-                objTab.Rows.Add(row);
-                mAffectation.Enregistrer(objTab);
-            }
-            return Json(new
-            {
-                message = result
-            }, JsonRequestBehavior.AllowGet);
-        }
         // Génère les champs supplémentaires en fonction du niveau
         private Dictionary<string, object> SetExtraFields(string niveau, parametre objData)
         {
@@ -1238,6 +1268,58 @@ namespace FINPRO.Controllers
             }
             conn.Close();
             return totalCount;
+        }
+
+
+        [HttpPost]
+        public JsonResult AllAffectArticle(parametre objData)
+        {
+            var result = "Affectation traitée avec succès";
+            Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
+            var site = objData.code1;
+            var magasin = objData.code2;
+            foreach (var item in objData.tabList)
+            {
+                DataTable objTab = mAffectation.RemplirDataTable();
+                DataRow row = objTab.NewRow();
+                var filtreArt = $"CODE = '{item.code}'";
+                BDD.Divers objBDDDiver = new BDD.Divers();
+                var prixUnitaire = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.PU.ToString());
+                if (prixUnitaire == "" || prixUnitaire == null)
+                {
+                    prixUnitaire = "0";
+                }
+                //Verifier si l article est deja affecte
+                Tables_Sto.mAffectation mAffectation1 = new Tables_Sto.mAffectation();
+                var filterAffect = $"SITE = '{site}' AND MAGASIN = '{magasin}' AND ARTICLE = '{item.code}'";
+                DataTable tabAffect = mAffectation1.RemplirDataTable(filterAffect);
+                var article = objBDDDiver.GetLibelle(filterAffect, Abstraite.enumPlan.MAFFECTATION, Tables_Sto.mAffectation.GetChamp.Article.ToString());
+                if (article != item.code)
+                {
+                    row["SITE"] = site;
+                    row["MAGASIN"] = magasin;
+                    row["ARTICLE"] = item.code;
+                    row["PRIXUNITAIRE"] = prixUnitaire;
+                    row["STOCKMIN"] = 0;
+                    row["STOCKMAX"] = 0;
+                    row["DERNIERPRIX"] = 0;
+                    row["QUANTITEINITIALE"] = 0;
+                    row["VALEURINITIALE"] = 0;
+                    objTab.Rows.Add(row);
+                    try
+                    {
+                        mAffectation.Enregistrer(objTab);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+            return Json(new
+            {
+                message = result
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }
