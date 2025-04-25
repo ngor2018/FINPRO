@@ -9,5 +9,6 @@ namespace FINPRO.Models
     {
         public string code { get; set; }
         public string libelle { get; set; }
+        public string PU { get; set; }
     }
 }

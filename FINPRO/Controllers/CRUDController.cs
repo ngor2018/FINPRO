@@ -304,6 +304,75 @@ namespace FINPRO.Controllers
             return Json(listData, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
+        public JsonResult GetSiteMagasin(string code1)
+        {
+            List<parametre> listSite = new List<parametre>();
+            List<parametre> listSite2 = new List<parametre>();
+
+            Tables.rSite rSite = new Tables.rSite();
+            DataTable tabSite = rSite.RemplirDataTable(Tables.rSite.GetChamp.EnCours.ToString() + " = 1");
+            foreach (DataRow row in tabSite.Rows)
+            {
+                listSite.Add(new parametre()
+                {
+                    code = row["code"].ToString(),
+                    libelle = row["libelle"].ToString()
+                });
+            }
+            if (tabSite.Rows.Count > 0)
+            {
+                DataRow firstRowS = tabSite.Rows[0];
+                var codeFirstS = firstRowS["CODE"].ToString();
+
+                if (string.IsNullOrEmpty(code1))
+                {
+                    code1 = codeFirstS;
+                }
+
+                var filtreMag = $"SITE = '{code1}'";
+                Tables_Sto.rMagasin rMagasin = new Tables_Sto.rMagasin();
+                DataTable tabMag = rMagasin.RemplirDataTable(filtreMag);
+                foreach (DataRow row in tabMag.Rows)
+                {
+                    listSite2.Add(new parametre()
+                    {
+                        code = row["code"].ToString(),
+                        libelle = row["libelle"].ToString()
+                    });
+                }
+            }
+            var list = new
+            {
+                list1 = listSite,
+                list2 = listSite2,
+
+            };
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public JsonResult GetDataArticleInsertStock(string code1,string code2)
+        {
+            List<parametre> listArticle = new List<parametre>();
+            Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
+            var filtre = "";
+            filtre = $"SITE = '{code1}' and MAGASIN = '{code2}'";
+            DataTable objTable = mAffectation.RemplirDataTable(filtre);
+            foreach (DataRow row1 in objTable.Rows)
+            {
+                var filtreArt = $"CODE = '{row1["ARTICLE"].ToString()}'";
+                BDD.Divers objBDDDiver = new BDD.Divers();
+                var libelleProd = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.Libelle.ToString());
+                listArticle.Add(new parametre()
+                {
+                    code = row1["ARTICLE"].ToString(),
+                    libelle = libelleProd,
+                    prixUnitaire = row1["PRIXUNITAIRE"].ToString()
+                });
+            }
+
+            return Json(listArticle, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
         public JsonResult GetDataParam(string code, string code1,string code2)
         {
             List<parametre> listDataFiltre = new List<parametre>();
