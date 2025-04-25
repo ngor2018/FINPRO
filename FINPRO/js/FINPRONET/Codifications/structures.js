@@ -1,10 +1,18 @@
-﻿var isEditing = false;
+﻿var isEditing = false, CheckFirstLine = false;
 var pageName = $("#pageName").val();
+var totalPost = 0;
 parameter();
 var IDButton = null;
 
 var Ajouter = function () {
     var selectButton = document.getElementById('Ajouter');
+    if (totalPost > 0) {
+        document.getElementById('errorCRUD').textContent = "Vous ne pouvez plus créer de niveaux, des codes ont été déjà saisis";
+        setTimeout(function () {
+            document.getElementById('errorCRUD').textContent = "";
+        },2500)
+        return;
+    }
     //document.getElementById('niveau').disabled = false;
     switch (selectButton.textContent) {
         case "Ajouter":
@@ -17,7 +25,6 @@ var Ajouter = function () {
 
             document.getElementById('Annuler').disabled = false;
             $(".disabled_me").prop("disabled", false);
-            document.getElementById('niveau').disabled = true;
             resetForm();
             $("#libelle").focus();
             break;
@@ -71,6 +78,51 @@ var Ajouter = function () {
                 alert('Mario')
             }
             break;
+    }
+}
+var Modifier = function () {
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+
+    document.getElementById('Modifier').disabled = true;
+    document.getElementById('Supprimer').disabled = true;
+    document.getElementById('closeSt').disabled = true;
+    document.getElementById('Imprimer').disabled = true;
+
+    document.getElementById('Annuler').disabled = false;
+
+    document.getElementById('libelle').disabled = false;
+    document.getElementById('abreviation').disabled = false;
+    document.getElementById('format').disabled = false;
+    if (CheckFirstLine == true) {
+        //✅ Première ligne sélectionnée !";
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+                document.getElementById('titre').disabled = false;
+                document.getElementById('abreviationTitre').disabled = false;
+                break;
+        }
+    } else {
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+                document.getElementById('titre').disabled = true;
+                document.getElementById('abreviationTitre').disabled = true;
+                break;
+        }
+    } 
+    if (totalPost > 0) {
+        switch (IDButton) {
+            case "StructPlanCompt":
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+                document.getElementById('format').disabled = true;
+                break;
+        }
     }
 }
 var Annuler = function () {
@@ -142,8 +194,24 @@ function ControleinputSaisie() {
         $("#libelle").val(libelle);
         $("#abreviation").val(abreviation);
         $("#format").val(format);
+
+        // Vérifie si c'est la première ligne
+        var table = document.getElementById("tab_" + IDButton);
+        if (table && table.tBodies[0].rows.length > 0) {
+            var firstRow = table.tBodies[0].rows[0];
+            if (this === firstRow) {
+                //console.log("✅ Première ligne sélectionnée !");
+                CheckFirstLine = true;
+            } else {
+                //console.log("📌 Ligne normale sélectionnée.");
+                CheckFirstLine = false;
+            }
+        }
+
         switch (IDButton) {
             case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
                 titre = this.cells[4].innerHTML;
                 abreviationTitre = this.cells[5].innerHTML;
                 $("#titre").val(titre);
@@ -190,7 +258,7 @@ function formPopup(id) {
                                         <label for="niveau">Niveau</label>
                                     </div>
                                     <div class="col-md-2">
-                                        <input type="text" name="niveau" value="" id="niveau" class=" input_focus disabled_me" />
+                                        <input type="text" name="niveau" value="" id="niveau" class=" input_focus" disabled/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -226,6 +294,11 @@ function formPopup(id) {
                                 <div id="partiePlanCorrespond">
                                     
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center" style="text-align:center">
+                            <div class="col-md-12">
+                            <span id="errorCRUD" style="color:red"></span>
                             </div>
                         </div>
                         <div class="row justify-content-right" style="padding-top:10px;text-align:right">
@@ -322,12 +395,12 @@ function formPopupTab(id) {
                             <table class="table-bordered tabList" id="tab_${id}" width="100%">
                                 <thead class="sticky-top bg-white">
                                     <tr>
-                                        <th>Niveau</th>
-                                        <th>Libellé</th>
-                                        <th>Abréviation</th>
-                                        <th>Format</th>
-                                        <th hidden>titre</th>
-                                        <th hidden>Abre titre</th>
+                                        <th data-field="niveau">Niveau</th>
+                                        <th data-field="libelle">Libellé</th>
+                                        <th data-field="abreviation">Abréviation</th>
+                                        <th data-field="format">Format</th>
+                                        <th hidden data-field="titre">titre</th>
+                                        <th hidden data-field="abreviationTitre">Abre titre</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -347,10 +420,10 @@ function formPopupTabPlan_Empl(id) {
                             <table class="table-bordered tabList" id="tab_${id}" width="100%">
                                 <thead class="sticky-top bg-white">
                                     <tr>
-                                        <th>Niveau</th>
-                                        <th>Libellé</th>
-                                        <th>Abréviation</th>
-                                        <th>Format</th>
+                                        <th data-field="niveau">Niveau</th>
+                                        <th data-field="libelle">Libellé</th>
+                                        <th data-field="abreviation">Abréviation</th>
+                                        <th data-field="format">Format</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -370,13 +443,13 @@ function formPopupTabFamily_P(id) {
                     <table class="table-bordered tabList" id="tab_${id}" width="100%">
                         <thead class="sticky-top bg-white">
                             <tr>
-                                <th>Niveau</th>
-                                <th>Libellé</th>
-                                <th>Abréviation</th>
-                                <th>Format</th>
-                                <th hidden>titre</th>
-                                <th hidden>Abre titre</th>
-                                <th hidden>Plan Corresp</th>
+                                <th data-field="niveau">Niveau</th>
+                                <th data-field="libelle">Libellé</th>
+                                <th data-field="abreviation">Abréviation</th>
+                                <th data-field="format">Format</th>
+                                <th hidden data-field="titre">titre</th>
+                                <th hidden data-field="abreviationTitre">Abre titre</th>
+                                <th hidden data-field="PlanCorrespon">Plan Corresp</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -387,91 +460,114 @@ function formPopupTabFamily_P(id) {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
+
+//s’adapte automatiquement aux champs présents dans item.
+function updateTableWithData(id, listData) {
+    const tbody = $("#tab_" + id + " tbody");
+    tbody.empty();
+
+    // Récupère les colonnes visibles + leur statut "hidden" à partir du thead
+    const columns = [];
+    $("#tab_" + id + " thead th").each(function () {
+        const colName = $(this).data("field");
+        const isHidden = $(this).attr("hidden") !== undefined;
+        columns.push({ name: colName || "", hidden: isHidden });
+    });
+
+    // Génère les lignes du tableau
+    listData.forEach(item => {
+        let row = "<tr>";
+        columns.forEach(col => {
+            const value = col.name ? (item[col.name] ?? "") : "";
+            const alignRight = col.name === "format" ? "style='text-align:right'" : "";
+            const hiddenAttr = col.hidden ? "hidden" : "";
+            row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+        });
+        row += "</tr>";
+        tbody.append(row);
+    });
+}
+
+
+
+function fillFirstRowForm(id, firstRow) {
+    const inputs = {};
+    for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
+        const cell = firstRow.cells[cellIndex];
+        const value = cell?.textContent.trim() ?? "";
+
+        // Essaie de trouver l’id correspondant au nom du champ supposé
+        const possibleFields = ["niveau", "libelle", "abreviation", "format", "titre", "abreviationTitre"];
+        if (possibleFields[cellIndex]) {
+            const fieldId = possibleFields[cellIndex];
+            if ($("#" + fieldId).length > 0) {
+                $("#" + fieldId).val(value);
+                inputs[fieldId] = value;
+            }
+        }
+    }
+
+    // Gestion du titreStruct
+    const titleElement = document.getElementById('titleStruct');
+    const titre = inputs.titre ?? "";
+    if (titre) {
+        titleElement.textContent = titre;
+    } else {
+        const defaultTitles = {
+            StructPlanBudget: "Structure Plan Budgétaire",
+            StructActivite: "Structure Plan Analytique",
+            StructPlanCompt: "Structure Plan Comptable",
+            StructZone: "Zones d'intervention",
+            StructEmplacements: "Structure du Plan des Emplacements",
+        };
+        titleElement.textContent = defaultTitles[id] || "";
+    }
+
+    $(firstRow).addClass("selected").siblings().removeClass("selected");
+}
+
 function GedData(id) {
     $.ajax({
         async: true,
         type: 'GET',
         dataType: 'JSON',
         contentType: 'application/json; charset=utf-8',
-        data: {
-            id: id,
-        },
+        data: { id: id },
         url: '/FINPRO_Codifications/GetListDataStruct',
         success: function (data) {
+            $("#contentTab tbody").empty();
             document.getElementById('Ajouter').textContent = "Ajouter";
             document.getElementById('closeSt').disabled = false;
             document.getElementById('Annuler').disabled = true;
-            $("#contentTab tbody").empty();
-            if (data.listData.length == 0) {
+
+            if (data.listData.length === 0) {
                 document.getElementById('Ajouter').disabled = false;
                 document.getElementById('Imprimer').disabled = true;
                 document.getElementById('Modifier').disabled = true;
                 document.getElementById('Supprimer').disabled = true;
-
                 resetForm();
             } else {
-                var list = "";
-                $("#tab_" + id + " tbody").empty();
-                switch (id) {
-                    case "StructPlanBudget":
-                        document.getElementById('Ajouter').disabled = false;
-                        /*if (data.total > 0) {
-                            document.getElementById('Ajouter').disabled = true;
-                        } else {
-                            document.getElementById('Ajouter').disabled = false;
-                        }*/
-                        data.listData.forEach(item => {
-                            list = `
-                                <tr>
-                                    <td>${item.niveau}</td>
-                                    <td>${item.libelle}</td>
-                                    <td>${item.abreviation}</td>
-                                    <td style='text-align:right'>${item.format}</td>
-                                    <td hidden>${item.titre}</td>
-                                    <td hidden>${item.abreviationTitre}</td>
-                                </tr>`;
-                            $("#tab_" + id + " tbody").append(list);
-                        });
-                        break;
-                }
-                var table = document.getElementById("tab_" + id);
+                document.getElementById('Ajouter').disabled = false;
+                totalPost = parseInt(data.total);
+                updateTableWithData(id, data.listData);
+
+                const table = document.getElementById("tab_" + id);
                 if (table && table.tBodies[0].rows.length > 0) {
-                    var firstRow = table.tBodies[0].rows[0];
-                    var niveau = "", libelle = "", abreviation = "", format = "", titre = "", abreviationTitre = "";
-                    niveau = firstRow.cells[0].textContent.trim();
-                    libelle = firstRow.cells[1].textContent.trim();
-                    abreviation = firstRow.cells[2].textContent.trim();
-                    format = firstRow.cells[3].textContent.trim();
-                    $("#niveau").val(niveau);
-                    $("#libelle").val(libelle);
-                    $("#abreviation").val(abreviation);
-                    $("#format").val(format);
-                    switch (id) {
-                        case "StructPlanBudget":
-                            titre = firstRow.cells[4].textContent.trim();
-                            abreviationTitre = firstRow.cells[5].textContent.trim();
-
-                            $("#titre").val(titre);
-                            $("#abreviationTitre").val(abreviationTitre);
-                            if (titre == '') {
-                                document.getElementById('titleStruct').textContent = "Structure Plan Budgétaire";
-                            } else {
-                                document.getElementById('titleStruct').textContent = titre;
-                            }
-                            break;
-                    }
-                    $(firstRow).addClass("selected").siblings().removeClass("selected");
-
+                    CheckFirstLine = true;
+                    fillFirstRowForm(id, table.tBodies[0].rows[0]);
                 }
+
                 compterCaracteresColums(id);
                 document.getElementById('Imprimer').disabled = false;
                 document.getElementById('Modifier').disabled = false;
                 document.getElementById('Supprimer').disabled = false;
             }
+
             $(".disabled_me").prop("disabled", true);
         }
-    })
+    });
 }
+
 function compterCaracteresColums(tab) {
     let totalCaracteres = 0;
     let tableau = document.getElementById("tab_" + tab);

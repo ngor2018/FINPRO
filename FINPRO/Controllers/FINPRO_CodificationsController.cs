@@ -62,38 +62,79 @@ namespace FINPRO.Controllers
         }
         public JsonResult GetListDataStruct(string id)
         {
-            List<parametre> listData = new List<parametre>();
+            var listData = new List<parametre>();
+            var filtre = string.Empty;
             DataTable objTab = new DataTable();
             DataTable objTab1 = new DataTable();
             int cpte = 0;
+
+            // Mapping ID -> instances des tables
+            var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
+                {
+                    { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) },
+                    { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) },
+                    { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },
+                    { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },
+                    { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },
+                    // Ajoute d'autres mappings ici si nécessaire
+                };
+
+            if (!tableMapping.TryGetValue(id, out var instances))
+            {
+                return Json(new { error = "ID non supporté" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Utilitaire pour remplir les DataTables via réflexion
+            DataTable RemplirDataTable(object instance, string param = "")
+            {
+                if (instance == null) return new DataTable();
+
+                var type = instance.GetType();
+                var method = type.GetMethod("RemplirDataTable", new[] { typeof(string) });
+
+                return method != null ? (DataTable)method.Invoke(instance, new object[] { param }) : new DataTable();
+            }
+
+            // Remplissage des DataTables
+            objTab = RemplirDataTable(instances.tableInstance, filtre);
+            objTab1 = RemplirDataTable(instances.tablePostInstance, "");
+
+            cpte = objTab1.Rows.Count;
+
+            // Traitement des données selon l'ID
             switch (id)
             {
                 case "StructPlanBudget":
-                    Tables.rStruPost rStruPost = new Tables.rStruPost();
-                    objTab = rStruPost.RemplirDataTable();
+                case "StructPlanCompt":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
                     foreach (DataRow row in objTab.Rows)
                     {
-                        listData.Add(new parametre()
+                        listData.Add(new parametre
                         {
-                            niveau = row[Tables.rStruPost.GetChamp.Niveau.ToString()].ToString(),
-                            libelle = row[Tables.rStruPost.GetChamp.Libelle.ToString()].ToString(),
-                            abreviation = row[Tables.rStruPost.GetChamp.Abreviation.ToString()].ToString(),
-                            format = row[Tables.rStruPost.GetChamp.Format.ToString()].ToString(),
-                            titre = row[Tables.rStruPost.GetChamp.Titre.ToString()].ToString(),
-                            abreviationTitre = row[Tables.rStruPost.GetChamp.TitreCourt.ToString()].ToString(),
+                            niveau = row["Niveau"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                            abreviation = row["Abreviation"]?.ToString(),
+                            format = row["Format"]?.ToString(),
+                            titre = row["Titre"]?.ToString(),
+                            abreviationTitre = row["TitreCourt"]?.ToString()
                         });
                     }
-                    Tables.rPost1 rPost1 = new Tables.rPost1();
-                    objTab1 = rPost1.RemplirDataTable();
-                    cpte = (int)objTab1.Rows.Count;
                     break;
+
+                    // Ajoute d'autres cas si nécessaire
             }
+
+            // Structure de retour
             var data = new
             {
                 total = cpte,
-                listData = listData
+                listData
             };
+
             return Json(data, JsonRequestBehavior.AllowGet);
         }
+
     }
 }

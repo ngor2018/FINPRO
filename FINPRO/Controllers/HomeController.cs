@@ -279,11 +279,11 @@ namespace FINPRO.Controllers {
                             {
                                 case "":
                                 case null:
-                                    conn.Open();
-                                    com.Connection = conn;
+                                    //conn.Open();
+                                    //com.Connection = conn;
                                     com.CommandText = "update RUSER set PASSWORD = '" + password + "' where LOGIN = '" + login + "'";
                                     dr = com.ExecuteReader();
-                                    conn.Close();
+                                    //conn.Close();
                                     etatCompte = (bool)objTable.Rows[0][Tables.rUser.GetChamp.Actif.ToString()];
                                     if (!etatCompte)
                                     {
