@@ -350,28 +350,51 @@ namespace FINPRO.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
-        public JsonResult GetDataArticleInsertStock(string code1,string code2)
+        public JsonResult GetDataArticleInsertStock(string code1,string code2,string codeBar)
         {
             List<parametre> listArticle = new List<parametre>();
             Tables_Sto.mAffectation mAffectation = new Tables_Sto.mAffectation();
             var filtre = "";
             filtre = $"SITE = '{code1}' and MAGASIN = '{code2}'";
-            DataTable objTable = mAffectation.RemplirDataTable(filtre);
+            //DataTable objTable = mAffectation.RemplirDataTable(filtre);
+            //BDD.Divers objBDDDiver = new BDD.Divers();
+            //string articleCode;
+            //string filtreArt;
+            DataTable objTable = new DataTable();
+            string requete = "";
+            if (codeBar == null || codeBar == "")
+            {
+                requete = "select CODE,LIBELLE,aff.PRIXUNITAIRE as PRIXUNITAIRE from RSTKARTICLE art,MAFFECTATION aff where art.CODE = aff.ARTICLE and aff.SITE='" + code1 + "' and aff.MAGASIN='" + code2 + "'";
+            }
+            else {
+                requete = "select CODE,LIBELLE,aff.PRIXUNITAIRE as PRIXUNITAIRE from RSTKARTICLE art,MAFFECTATION aff where art.CODE = aff.ARTICLE and aff.SITE='" + code1 + "' and aff.MAGASIN='" + code2 + "' and art.CodeBarre = '" + codeBar + "'";
+            }
+            conn.Open();
+            com.Connection = conn;
+            com.CommandText = requete;
+            dr = com.ExecuteReader();
+            objTable.Load(dr);
             foreach (DataRow row1 in objTable.Rows)
             {
-                var filtreArt = $"CODE = '{row1["ARTICLE"].ToString()}'";
-                BDD.Divers objBDDDiver = new BDD.Divers();
-                var libelleProd = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.Libelle.ToString());
+                //filtreArt = $"CODE = '{row1["ARTICLE"].ToString()}'";
+                //var libelle = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.Libelle.ToString());
                 listArticle.Add(new parametre()
                 {
-                    code = row1["ARTICLE"].ToString(),
-                    libelle = libelleProd,
+                    code = row1["CODE"].ToString(),
+                    libelle = row1["LIBELLE"].ToString(),
                     prixUnitaire = row1["PRIXUNITAIRE"].ToString()
                 });
             }
-
-            return Json(listArticle, JsonRequestBehavior.AllowGet);
+            return new JsonResult
+            {
+                Data = listArticle,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet,
+                MaxJsonLength = int.MaxValue // ✅ Ici tu autorises un JSON très grand
+            };
         }
+
+
+
         [HttpGet]
         public JsonResult GetDataParam(string code, string code1,string code2)
         {

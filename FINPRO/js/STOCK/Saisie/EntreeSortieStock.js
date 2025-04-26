@@ -1,4 +1,5 @@
 ﻿var pageName = $("#pageName").val();
+var nameidCodeBar = null;
 $(function () {
     vuePage();
 })
@@ -77,18 +78,18 @@ var ajoutArticle = function () {
     toggleFormsPopup("partieUnique");
     var code1 = $("#site1").val();
     var code2 = $("#site2").val();
+    $("#codeBar").val("");
+    nameidCodeBar = null;
     GetDataArticleInsertStock(code1, code2)
 }
 function LookAllAffect() {
     var table = $('#tabAffect_' + pageName).DataTable();
-    var auMoinsUnCoche = false;
     var listOfAffect = [];
 
     table.rows().every(function () {
         var $row = $(this.node());
-        var isChecked = $row.find('td:eq(0) input[type="checkbox"]').is(':checked');
+        var isChecked = $row.find('td:eq(0) input[type="checkbox"]').prop('checked');
         if (isChecked) {
-            auMoinsUnCoche = true;
             listOfAffect.push({
                 code: $row.find('td:eq(1)').text().trim(),
                 libelle: $row.find('td:eq(2)').text().trim(),
@@ -97,37 +98,44 @@ function LookAllAffect() {
         }
     });
 
-    if (!auMoinsUnCoche) {
-        document.getElementById('etatCocheError').textContent = "Veuillez cocher au moins une ligne à affecter !";
+    if (listOfAffect.length === 0) {
+        $('#etatCocheError').text("Veuillez cocher au moins une ligne à affecter !");
         return;
+    } else {
+        $('#etatCocheError').text(""); // Clear error if any
     }
 
     const $tbody = $('#tab_Article').closest('table').find('tbody');
 
     listOfAffect.forEach(item => {
         let existe = false;
-
         $tbody.find('tr').each(function () {
             const codeExistant = $(this).find('td:eq(0)').text().trim();
             if (codeExistant === item.code) {
                 existe = true;
-                return false;
+                return false; // Break
             }
         });
 
         if (!existe) {
             const row = `
                 <tr>
-                    <td class="code-cell" title="${item.libelle}">${item.code}</td>
-                    <td style="display:none;"><input hidden type="text" class="form-control form-control-sm libelle" value="${item.libelle}" /></td>
-                    <td style="display:none;"><input hidden type="text" class="form-control form-control-sm libelleSaisie" value="${item.libelle}" /></td>
-                    <td style="display:none;"><input hidden type="text" class="form-control form-control-sm Commentaire" value="" /></td>
+                    <td class="code-cell" style="width:8%" title="${item.libelle}">${item.code}</td>
+                    <td style="display:none;"><input type="hidden" class="form-control form-control-sm libelle" value="${item.libelle}" /></td>
+                    <td style="display:none;"><input type="hidden" class="form-control form-control-sm libelleSaisie" value="${item.libelle}" /></td>
+                    <td style="display:none;"><input type="hidden" class="form-control form-control-sm Commentaire" value="" /></td>
                     <td><input type="text" class="form-control form-control-sm PU" value="${formatNombre(item.PU)}" /></td>
                     <td><input type="text" class="form-control form-control-sm Qte" value="1" /></td>
-                    <td class="valeur">0</td>
-                    <td><input type="text" class="form-control form-control-sm TVA" value="18" /></td>
-                    <td class="montantHT">0</td>
-                    <td class="montantTVA">0</td>
+                    <td class="valeur" style="width:8%">0</td>
+                    <td style="width:6%"><input type="text" class="form-control form-control-sm TVA" value="1" /></td>
+                    <td class="montantHT" style="width:8%">0</td>
+                    <td class="montantTVA" style="width:8%">0</td>
+                    <td class="montantTTC" style="width:8%">0</td>
+                    <td class="text-center" style="width:4%">
+                        <button type="button" class="btn-del" style="color:red;border:none">
+                            <i class="far fa-minus-square"></i>
+                        </button>
+                    </td>
                 </tr>`;
             $tbody.append(row);
         }
@@ -142,98 +150,118 @@ function LookAllAffect() {
     });
 
     calculerToutesLesLignes();
-    document.getElementById('fermer_').click();
+    $('#fermer_').trigger('click');
 
-    // Gérer le clic sur les cellules de code
-    $tbody.off('click').on('click', '.code-cell', function () {
+    // Click sur la cellule de code pour modifier libellé/commentaire
+    $tbody.off('click.codeCell').on('click.codeCell', '.code-cell', function () {
         const $td = $(this);
         const code = $td.text().trim();
         const $row = $td.closest('tr');
-        let $inputLibelle;
-        if ($row.find('input.libelleSaisie').val() == "") {
-            $inputLibelle = $row.find('input.libelle');
-        } else {
-            $inputLibelle = $row.find('input.libelleSaisie');
-        }
+        const $inputLibelleSaisie = $row.find('input.libelleSaisie');
+        const $inputLibelle = $row.find('input.libelle');
         const $inputCommentaire = $row.find('input.Commentaire');
-        const $hiddenTd = $row.find('td:eq(2)');  //input -> libelleSaisie
-        const $hiddenTdComm = $row.find('td:eq(3)'); //input -> Commentaire
 
-        // Overlay
-        const overlay = $(`<div id="overlayPopup" style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-        "></div>`);
+        const currentLibelle = $inputLibelleSaisie.val() || $inputLibelle.val();
+        const currentCommentaire = $inputCommentaire.val() || "";
 
-        // Popup
-        const popup = $(`<div id="popupLibelle" style="
-            position: fixed;
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            padding: 20px;
-            z-index: 10000;
-            border-radius: 8px;
-            width: 600px;
-        ">
-            <h5>${code}|${$inputLibelle.val()}</h5><hr>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="row mb-1">
-                        <div class="col-md-2">
-                            <label for="libelleInput">Libelle</label>
+        const overlay = $(`
+            <div id="overlayPopup" style="
+                position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;
+                background-color: rgba(0, 0, 0, 0.5);z-index: 9999;">
+            </div>
+        `);
+
+        const popup = $(`
+            <div id="popupLibelle" style="
+                position: fixed;top: 30%;left: 50%;transform: translate(-50%, -50%);
+                background: white;border: 1px solid #ccc;box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                padding: 20px;z-index: 10000;border-radius: 8px;width: 600px;">
+                <h5>${code} | ${currentLibelle}</h5><hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row mb-1">
+                            <div class="col-md-2"><label>Libellé</label></div>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control input_focus" id="libelleInput" value="${currentLibelle}"/>
+                                <span class="erreur text-danger"></span>
+                            </div>
                         </div>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control" id="libelleInput" value="${$inputLibelle.val()}"/>
-                            <span class="erreur"></span>
-                        </div>
-                    </div>
-                    <div class="row mb-1">
-                        <div class="col-md-2">
-                            <label for="CommentaireInput">Commentaire</label>
-                        </div>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control" id="CommentaireInput" value="${$inputCommentaire.val()}"/>
+                        <div class="row mb-1">
+                            <div class="col-md-2"><label>Commentaire</label></div>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control input_focus" id="CommentaireInput" value="${currentCommentaire}"/>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="mt-3 text-end">
+                    <button class="btn btn-primary btn-sm me-2" id="validerLibelle">Valider</button>
+                    <button class="btn btn-secondary btn-sm" id="fermerLibelle">Fermer</button>
+                </div>
             </div>
-            <div class="mt-3 text-end">
-                <button class="btn btn-primary btn-sm me-2" id="validerLibelle">Valider</button>
-                <button class="btn btn-secondary btn-sm" id="fermerLibelle">Fermer</button>
-            </div>
-        </div>`);
+        `);
 
-        $('body').append(overlay).append(popup);
+        $('body').append(overlay, popup);
 
         $('#validerLibelle').on('click', function () {
-            const newVal = $('#libelleInput').val().trim();
-            const newValCom = $('#CommentaireInput').val().trim();
-            var isAllValid = true;
-            if (newVal == "") {
-                isAllValid = false;
-                $("#libelleInput").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
-            } 
-            if (isAllValid) {
-                $inputLibelle.val(newVal);                 // Mettre à jour le champ caché libelleSaisie
-                $inputCommentaire.val(newValCom);                 // Mettre à jour le champ caché Commentaire
-                //$td.attr('title', newVal);                 // Mettre à jour le title
-                $hiddenTd.html(`<input hidden type="text" class="form-control form-control-sm libelleSaisie" value="${newVal}" />`);
-                $hiddenTdComm.html(`<input hidden type="text" class="form-control form-control-sm Commentaire" value="${newValCom}" />`);
-                $('#popupLibelle, #overlayPopup').remove();
+            const newLibelle = $('#libelleInput').val().trim();
+            const newCommentaire = $('#CommentaireInput').val().trim();
+            if (!newLibelle) {
+                $('#libelleInput').siblings('span.erreur').text('Champ obligatoire');
+                return;
             }
+
+            $inputLibelleSaisie.val(newLibelle);
+            $inputCommentaire.val(newCommentaire);
+
+            $row.find('td:eq(2)').html(`<input type="hidden" class="form-control form-control-sm libelleSaisie" value="${newLibelle}" />`);
+            $row.find('td:eq(3)').html(`<input type="hidden" class="form-control form-control-sm Commentaire" value="${newCommentaire}" />`);
+
+            $('#overlayPopup, #popupLibelle').remove();
         });
 
-        $('#fermerLibelle').on('click', function () {
-            $('#popupLibelle, #overlayPopup').remove();
+        $('#fermerLibelle, #overlayPopup').on('click', function () {
+            $('#overlayPopup, #popupLibelle').remove();
+        });
+    });
+
+    // Click bouton suppression
+    $tbody.off('click.btnDel').on('click.btnDel', '.btn-del', function () {
+        const $row = $(this).closest('tr');
+
+        const overlay = $(`
+            <div id="overlayDelete" style="
+                position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;
+                background-color: rgba(0, 0, 0, 0.5);z-index: 9999;">
+            </div>
+        `);
+
+        const popup = $(`
+            <div id="popupDelete" style="
+                position: fixed;top: 40%;left: 50%;transform: translate(-50%, -50%);
+                background: white;border: 1px solid #ccc;box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                padding: 20px;z-index: 10000;border-radius: 8px;width: 400px;text-align:center;">
+                <h5>Confirmer la suppression</h5><hr>
+                <p>Voulez-vous vraiment supprimer cette ligne ?</p>
+                <div class="mt-3">
+                    <button class="btn btn-danger btn-sm me-2" id="confirmerSuppression">Supprimer</button>
+                    <button class="btn btn-secondary btn-sm" id="annulerSuppression">Annuler</button>
+                </div>
+            </div>
+        `);
+
+        $('body').append(overlay, popup);
+
+        $('#confirmerSuppression').on('click', function () {
+            $row.fadeOut(300, function () {
+                $(this).remove();
+                calculerToutesLesLignes();
+            });
+            $('#overlayDelete, #popupDelete').remove();
+        });
+
+        $('#annulerSuppression, #overlayDelete').on('click', function () {
+            $('#overlayDelete, #popupDelete').remove();
         });
     });
 }
@@ -241,9 +269,11 @@ function LookAllAffect() {
 
 
 
+
 function calculerToutesLesLignes() {
     let totalHT = 0;
     let totalTVA = 0;
+    let totalTTC = 0;
     let erreur = false;
 
     $('#tab_Article').closest('table').find('tbody tr').each(function () {
@@ -268,13 +298,15 @@ function calculerToutesLesLignes() {
         const valeur = PU * Qte;
         const montantTVA = (valeur * TVA) / 100;
         const montantHT = valeur;
-
+        const montantTTC = montantTVA + montantHT;
         $row.find('.valeur').text(formatNombre(valeur));
         $row.find('.montantTVA').text(formatNombre(montantTVA));
         $row.find('.montantHT').text(formatNombre(montantHT));
+        $row.find('.montantTTC').text(formatNombre(montantTTC));
 
         totalHT += montantHT;
         totalTVA += montantTVA;
+        totalTTC += montantTTC;
     });
 
     const $tfoot = $('#tab_Article').closest('table').find('tfoot');
@@ -283,6 +315,7 @@ function calculerToutesLesLignes() {
             <th colspan="5" style="text-align:center">Total :</th>
             <th>${formatNombre(totalHT)}</th>
             <th>${formatNombre(totalTVA)}</th>
+            <th>${formatNombre(totalTTC)}</th>
         </tr>
     `);
 
@@ -291,7 +324,26 @@ function calculerToutesLesLignes() {
     }
 }
 
+function formatChiffreInput(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isNumber ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
 
+        if (!isAllowedKey) {
+            event.preventDefault();
+        }
+    });
+}
 function formatChiffreInputAvecSepMilier(input) {
     input.addEventListener('keydown', function (event) {
         const key = event.key;
@@ -520,9 +572,21 @@ function formContentVue2() {
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="row mb-1 justify-content-right" style="text-align:right">
+                                                <div class="row mb-1" style="padding-top:8px">
                                                     <div class="col-md-12">
-                                                        <button id="ajoutArticle" style="border:1px solid #808080;" onclick="ajoutArticle()">Ajout article</button>
+                                                        <div class="float-start" style="width:70%">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <label for="codeBar">Code barre</label>
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    <input type="text" id="codeBar" class="input_focus"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="float-end">
+                                                            <button id="ajoutArticle" style="border:1px solid #808080;" onclick="ajoutArticle()">Ajout article</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -532,16 +596,21 @@ function formContentVue2() {
                                                 <table class="tabList" style="width:100%">
                                                     <thead class="sticky-top" id="tab_Article">
                                                         <tr>
-                                                            <th>Article</th>
-                                                            <th hidden>Libellé</th>
-                                                            <th hidden>Libellé Saisie</th>
-                                                            <th hidden>Commentaire</th>
-                                                            <th>PU</th>
-                                                            <th>Qte</th>
-                                                            <th>Valeur</th>
+                                                            <th rowspan="2">Article</th>
+                                                            <th rowspan="2" hidden>Libellé</th>
+                                                            <th rowspan="2" hidden>Libellé Saisie</th>
+                                                            <th rowspan="2" hidden>Commentaire</th>
+                                                            <th rowspan="2">PU</th>
+                                                            <th rowspan="2">Qte</th>
+                                                            <th rowspan="2">Valeur</th>
+                                                            <th rowspan="2">TVA</th>
+                                                            <th colspan="3">Montant</th>
+                                                            <th rowspan="2"></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Hors TVA</th>
                                                             <th>TVA</th>
-                                                            <th>Montant Hors TVA</th>
-                                                            <th>Montant TVA</th>
+                                                            <th>TTC</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody></tbody>
@@ -577,6 +646,8 @@ function formContentVue2() {
             document.getElementById('valCompteAuxi').textContent = compteAux;
             break;
     }
+    //var codeBar = document.getElementById('codeBar');
+    //formatChiffreInput(codeBar);
     $(".selectChoix").select2();
     popupArticle();
     GetSiteMagasin($("#site1").val());
@@ -607,6 +678,37 @@ function formContentVue2() {
         });
         $('#bulk-select-example').prop('checked', total > 0 && total === checked);
         document.getElementById('etatCocheError').textContent = "";
+    });
+    const mappingAZERTY = {
+        '&': '1',
+        'é': '2',
+        '"': '3',
+        "'": '4',
+        '(': '5',
+        '-': '6',
+        'è': '7',
+        '_': '8',
+        'ç': '9',
+        'à': '0'
+    };
+    document.getElementById('codeBar').addEventListener('input', function (e) {
+        let value = e.target.value;
+        let corrected = '';
+
+        for (let i = 0; i < value.length; i++) {
+            let char = value[i];
+            corrected += mappingAZERTY[char] || char; // Remplace si nécessaire
+        }
+
+        e.target.value = corrected;
+        var code = corrected; // Utiliser la valeur corrigée
+
+        if (code.length === 13 && /^\d+$/.test(code)) { // ✅ Vérifie 13 chiffres exactement
+            var code1 = $("#site1").val();
+            var code2 = $("#site2").val();
+            GetDataArticleInsertStock(code1, code2);
+            nameidCodeBar = this.id;
+        }
     });
 }
 function popupArticle() {
@@ -709,7 +811,8 @@ function GetSiteMagasin(code1) {
         }
     })
 }
-function GetDataArticleInsertStock(code1,code2) {
+function GetDataArticleInsertStock(code1, code2) {
+    var codeBar = $("#codeBar").val();
     $.ajax({
         async: true,
         type: 'GET',
@@ -718,6 +821,7 @@ function GetDataArticleInsertStock(code1,code2) {
         data: {
             code1: code1,
             code2: code2,
+            codeBar: codeBar
         },
         url: '/CRUD/GetDataArticleInsertStock',
         success: function (data) {
@@ -739,16 +843,32 @@ function GetDataArticleInsertStock(code1,code2) {
             }
             if (data.length > 0) {
                 data.forEach(item => {
-                    list = `<tr>
+                    switch (nameidCodeBar) {
+                        case "codeBar":
+                            list = `<tr>
+                                <td style="text-align:center" class="fs-9 align-middle">
+                                    <div class="form-check mb-0 fs-8">
+                                        <input checked class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>${item.code}</td>
+                                <td>${tronquer(item.libelle, 50)}</td>
+                                <td style="text-align:right">${separateur_mil(item.prixUnitaire)}</td>
+                            </tr>`;
+                            break;
+                        default:
+                            list = `<tr>
                                 <td style="text-align:center" class="fs-9 align-middle">
                                     <div class="form-check mb-0 fs-8">
                                         <input class="form-check-input" type="checkbox">
                                     </div>
                                 </td>
                                 <td>${item.code}</td>
-                                <td>${tronquer(item.libelle,50)}</td>
+                                <td>${tronquer(item.libelle, 50)}</td>
                                 <td style="text-align:right">${separateur_mil(item.prixUnitaire)}</td>
                             </tr>`;
+                            break;
+                    }
                     $("#tabAffect_" + pageName + " tbody").append(list);
                 })
                 // ✅ Active les tooltips Bootstrap sur tous les éléments injectés
@@ -781,6 +901,9 @@ function GetDataArticleInsertStock(code1,code2) {
                 }
             });
             $("#tabAffect_" + pageName).removeClass("dataTable");
+            if (nameidCodeBar == "codeBar") {
+                document.getElementById('LookAllAffect').click();
+            }
         }
     })
 }
