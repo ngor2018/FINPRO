@@ -1,6 +1,7 @@
 ﻿var isEditing = false, CheckFirstLine = false;
 var pageName = $("#pageName").val();
 var totalPost = 0;
+GetNameButtonCodif();
 parameter();
 var IDButton = null;
 
@@ -217,6 +218,17 @@ function ControleinputSaisie() {
                 $("#titre").val(titre);
                 $("#abreviationTitre").val(abreviationTitre);
                 break;
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+                titre = this.cells[4].innerHTML;
+                abreviationTitre = this.cells[5].innerHTML;
+                PlanCorrespond = this.cells[6].innerHTML;
+                $("#titre").val(titre);
+                $("#abreviationTitre").val(abreviationTitre);
+                $("#PlanCorrespond").val(PlanCorrespond).trigger('change');
+                break;
         }
     })
 }
@@ -380,6 +392,11 @@ function formPopupPlanCorresp(id) {
                         </div>
                         <div class="col-md-9">
                             <select class="input_focus choixSelect disabled_me" style="width:100%" id="PlanCorrespond">
+                                <option value="0"></option>
+                                <option value="RACTI1">Activité</option>
+                                <option value="RGEO1">Zones</option>
+                                <option value="RPOST1">Budget</option>
+                                <option value="RCOGE1">Plan Comptable</option>
                             </select>
                         </div>
                     </div>
@@ -449,7 +466,7 @@ function formPopupTabFamily_P(id) {
                                 <th data-field="format">Format</th>
                                 <th hidden data-field="titre">titre</th>
                                 <th hidden data-field="abreviationTitre">Abre titre</th>
-                                <th hidden data-field="PlanCorrespon">Plan Corresp</th>
+                                <th hidden data-field="PlanCorrespond">Plan Corresp</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -492,40 +509,78 @@ function updateTableWithData(id, listData) {
 
 function fillFirstRowForm(id, firstRow) {
     const inputs = {};
+    const possibleFields = ["niveau", "libelle", "abreviation", "format", "titre", "abreviationTitre", "PlanCorrespond"];
+
     for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
         const cell = firstRow.cells[cellIndex];
         const value = cell?.textContent.trim() ?? "";
 
-        // Essaie de trouver l’id correspondant au nom du champ supposé
-        const possibleFields = ["niveau", "libelle", "abreviation", "format", "titre", "abreviationTitre"];
-        if (possibleFields[cellIndex]) {
-            const fieldId = possibleFields[cellIndex];
-            if ($("#" + fieldId).length > 0) {
+        const fieldId = possibleFields[cellIndex];
+        if (fieldId && $("#" + fieldId).length > 0) {
+            if (fieldId === "PlanCorrespond") {
+                // Cas spécial pour PlanCorrespond : gérer un Select2
+                const $select = $("#" + fieldId);
+                if ($select.hasClass('select2-hidden-accessible')) {
+                    $select.val(value).trigger('change');
+                } else {
+                    $select.val(value);
+                }
+            } else {
                 $("#" + fieldId).val(value);
-                inputs[fieldId] = value;
             }
+            inputs[fieldId] = value;
         }
     }
 
     // Gestion du titreStruct
     const titleElement = document.getElementById('titleStruct');
     const titre = inputs.titre ?? "";
-    if (titre) {
+
+    // Vérification si le tableau est vide
+    const isTableEmpty = $("#tab_" + id + " tbody tr").length === 0;
+
+    const defaultTitles = {
+        StructPlanBudget: "Structure Plan Budgétaire",
+        StructActivite: "Structure Plan Analytique",
+        StructPlanCompt: "Structure Plan Comptable",
+        StructZone: "Zones d'intervention",
+        StructEmplacements: "Structure du Plan des Emplacements",
+        StructPlanExtP1: "Plan 1",
+        StructPlanExtP2: "Plan 2",
+        StructPlanExtP3: "Plan 3",
+        StructPlanExtP4: "Plan 4",
+    };
+    if (titre && !isTableEmpty) {
         titleElement.textContent = titre;
     } else {
-        const defaultTitles = {
-            StructPlanBudget: "Structure Plan Budgétaire",
-            StructActivite: "Structure Plan Analytique",
-            StructPlanCompt: "Structure Plan Comptable",
-            StructZone: "Zones d'intervention",
-            StructEmplacements: "Structure du Plan des Emplacements",
-        };
         titleElement.textContent = defaultTitles[id] || "";
     }
 
     $(firstRow).addClass("selected").siblings().removeClass("selected");
 }
 
+function GetNameButtonCodif() {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: "{}",
+        url: '/FINPRO_Codifications/GetNameButton',
+        success: function (data) {
+            document.getElementById('StructPlanBudget').textContent = data.budget;
+            document.getElementById('StructPlanCompt').textContent = data.PlanCompte;
+            document.getElementById('StructActivite').textContent = data.activite;
+            document.getElementById('StructZone').textContent = data.zones;
+            document.getElementById('StructEmplacements').textContent = data.emplacement;
+
+            document.getElementById('StructPlanExtP1').textContent = data.p1;
+            document.getElementById('StructPlanExtP2').textContent = data.p2;
+            document.getElementById('StructPlanExtP3').textContent = data.p3;
+            document.getElementById('StructPlanExtP4').textContent = data.p4;
+        }
+    });
+}
 function GedData(id) {
     $.ajax({
         async: true,
@@ -535,12 +590,27 @@ function GedData(id) {
         data: { id: id },
         url: '/FINPRO_Codifications/GetListDataStruct',
         success: function (data) {
-            $("#contentTab tbody").empty();
+            //$("#contentTab tbody").empty();
             document.getElementById('Ajouter').textContent = "Ajouter";
             document.getElementById('closeSt').disabled = false;
             document.getElementById('Annuler').disabled = true;
 
             if (data.listData.length === 0) {
+                const defaultTitles = {
+                    StructPlanBudget: "Structure Plan Budgétaire",
+                    StructActivite: "Structure Plan Analytique",
+                    StructPlanCompt: "Structure Plan Comptable",
+                    StructZone: "Zones d'intervention",
+                    StructEmplacements: "Structure du Plan des Emplacements",
+                    StructPlanExtP1: "Plan 1",
+                    StructPlanExtP2: "Plan 2",
+                    StructPlanExtP3: "Plan 3",
+                    StructPlanExtP4: "Plan 4",
+                };
+                // Gestion du titreStruct
+                const titleElement = document.getElementById('titleStruct');
+                titleElement.textContent = defaultTitles[id]
+
                 document.getElementById('Ajouter').disabled = false;
                 document.getElementById('Imprimer').disabled = true;
                 document.getElementById('Modifier').disabled = true;

@@ -23,6 +23,8 @@ namespace FINPRO.Models
         public string niveau { get; set; }
         public string abreviation { get; set; }
         public string abreviationTitre { get; set; }
+        public string PlanCorrespond { get; set; }
+        public string rattachement { get; set; }
         public string format { get; set; }
         public string tabID { get; set; }
         public string titre { get; set; }

@@ -60,6 +60,47 @@ namespace FINPRO.Controllers
                 return View();
             }
         }
+        [HttpGet]
+        public JsonResult GetNameButton()
+        {
+            var rStruBudget = new Tables.rStruPost();
+            var rStruPlanCompte = new Tables.rStruCoge();
+            var rStruActivite = new Tables.rStruActi();
+            var rStruZone = new Tables.rStruGeo();
+            var rStruEmplacement = new Tables.rStruEmplacement();
+            var rStruP1 = new Tables.RSTRUPLAN1EXT();
+            var rStruP2 = new Tables.RSTRUPLAN2EXT();
+            var rStruP3 = new Tables.RSTRUPLAN3EXT();
+            var rStruP4 = new Tables.RSTRUPLAN4EXT();
+
+            string GetTitreCourt(DataTable table, string defaultValue)
+            {
+                if (table.Rows.Count > 0)
+                {
+                    var titre = table.Rows[0]["TitreCourt"]?.ToString()?.Trim();
+                    if (!string.IsNullOrEmpty(titre))
+                        return titre;
+                }
+                return defaultValue;
+            }
+
+            var data = new
+            {
+                budget = GetTitreCourt(rStruBudget.RemplirDataTable(), "Budget"),
+                PlanCompte = "Plan comptable", // Fixe
+                activite = GetTitreCourt(rStruActivite.RemplirDataTable(), "Activité"),
+                zones = GetTitreCourt(rStruZone.RemplirDataTable(), "Géo"),
+                emplacement = "Emplacements", // Fixe
+                p1 = GetTitreCourt(rStruP1.RemplirDataTable(), "Plan 1"),
+                p2 = GetTitreCourt(rStruP2.RemplirDataTable(), "Plan 2"),
+                p3 = GetTitreCourt(rStruP3.RemplirDataTable(), "Plan 3"),
+                p4 = GetTitreCourt(rStruP4.RemplirDataTable(), "Plan 4"),
+            };
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+
         public JsonResult GetListDataStruct(string id)
         {
             var listData = new List<parametre>();
@@ -71,11 +112,15 @@ namespace FINPRO.Controllers
             // Mapping ID -> instances des tables
             var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
                 {
-                    { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) },
-                    { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) },
-                    { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },
-                    { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },
-                    { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },
+                    { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) }, //Budget
+                    { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) }, //Plan Compte
+                    { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },  //Activite
+                    { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },        //Zone
+                    { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },  //Emplacements
+                    { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },  //Plan 1
+                    { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
+                    { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
+                    { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },  //Plan 4
                     // Ajoute d'autres mappings ici si nécessaire
                 };
 
@@ -119,6 +164,25 @@ namespace FINPRO.Controllers
                             format = row["Format"]?.ToString(),
                             titre = row["Titre"]?.ToString(),
                             abreviationTitre = row["TitreCourt"]?.ToString()
+                        });
+                    }
+                    break;
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    foreach (DataRow row in objTab.Rows)
+                    {
+                        listData.Add(new parametre
+                        {
+                            niveau = row["Niveau"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                            abreviation = row["Abreviation"]?.ToString(),
+                            format = row["Format"]?.ToString(),
+                            titre = row["Titre"]?.ToString(),
+                            abreviationTitre = row["TitreCourt"]?.ToString(),
+                            PlanCorrespond = row["rattachement"]?.ToString(),
+                            
                         });
                     }
                     break;
