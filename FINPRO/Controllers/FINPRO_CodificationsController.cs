@@ -67,6 +67,7 @@ namespace FINPRO.Controllers
             var rStruPlanCompte = new Tables.rStruCoge();
             var rStruActivite = new Tables.rStruActi();
             var rStruZone = new Tables.rStruGeo();
+            var rStruPlan6 = new Tables.rStruPlan6();
             var rStruEmplacement = new Tables.rStruEmplacement();
             var rStruP1 = new Tables.RSTRUPLAN1EXT();
             var rStruP2 = new Tables.RSTRUPLAN2EXT();
@@ -83,13 +84,18 @@ namespace FINPRO.Controllers
                 }
                 return defaultValue;
             }
-
+            Tables.rProjet rProjet = new Tables.rProjet();
+            DataTable tabProjet = rProjet.RemplirDataTable();
+            bool etatPlan6 = (bool)tabProjet.Rows[0]["SuiviPlan6"];
             var data = new
             {
+                statutP6 = etatPlan6,
+
                 budget = GetTitreCourt(rStruBudget.RemplirDataTable(), "Budget"),
                 PlanCompte = "Plan comptable", // Fixe
                 activite = GetTitreCourt(rStruActivite.RemplirDataTable(), "Activité"),
                 zones = GetTitreCourt(rStruZone.RemplirDataTable(), "Géo"),
+                plan6 = GetTitreCourt(rStruPlan6.RemplirDataTable(), "Plan 6"),
                 emplacement = "Emplacements", // Fixe
                 p1 = GetTitreCourt(rStruP1.RemplirDataTable(), "Plan 1"),
                 p2 = GetTitreCourt(rStruP2.RemplirDataTable(), "Plan 2"),
@@ -117,6 +123,8 @@ namespace FINPRO.Controllers
                     { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },  //Activite
                     { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },        //Zone
                     { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },  //Emplacements
+                    { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },  //Plan 6
+                    
                     { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },  //Plan 1
                     { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
                     { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
@@ -154,6 +162,7 @@ namespace FINPRO.Controllers
                 case "StructActivite":
                 case "StructZone":
                 case "StructEmplacements":
+                case "StructPlan6":
                     foreach (DataRow row in objTab.Rows)
                     {
                         listData.Add(new parametre

@@ -9,6 +9,7 @@ using System.Web.Security;
 using DBINSTALL;
 using BDD;
 using FINPRO.Models;
+using System.Globalization;
 
 namespace FINPRO.Controllers
 {
@@ -1362,6 +1363,61 @@ namespace FINPRO.Controllers
             return totalCount;
         }
 
+        [HttpPost]
+        public JsonResult AllInOutArticle(parametre objData)
+        {
+            var result = "Enregistrement traitée avec succès";
+            Tables_Sto.mMouvement mMouvement = new Tables_Sto.mMouvement();
+            var exercice = objData.annee;
+            var numBon = objData.numBon;
+            var numBl = objData.numBl;
+            var dateSaisie = objData.dateDebut;
+            var compte = objData.compte;
+            var compteAuxi = objData.compteAuxi;
+            var site = objData.site;
+            var magasin = objData.magasin;
+            foreach (var item in objData.tabList)
+            {
+                DataTable objTab = mMouvement.RemplirDataTable();
+                DataRow row = objTab.NewRow();
+                var filtreArt = $"CODE = '{item.code}'";
+                BDD.Divers objBDDDiver = new BDD.Divers();
+                var unite = objBDDDiver.GetLibelle(filtreArt, Abstraite.enumPlan.ARTICLESTOCK, Tables_Sto.rStkArticle.GetChamp.Unite.ToString());
+                try
+                {
+                    row["DATEMOUVEMENT"] = dateSaisie;
+                    row["SITE"] = site;
+                    row["MAGASIN"] = magasin;
+                    row["ARTICLE"] = item.code;
+                    row["NUMPIECE"] = numBl;
+                    row["NUMBC"] = numBon;
+                    row["LIBELLE"] = item.libelle;
+                    row["SIGNE"] = "E";
+                    row["CONSOMMATEUR"] = "";
+                    row["SERVICE"] = "";
+                    row["PRIXUNITAIRE"] = Convert.ToDecimal(item.PU, CultureInfo.InvariantCulture);
+                    row["QUANTITE"] = item.Qte;
+                    row["VALEUR"] = Convert.ToDecimal(item.valeur, CultureInfo.InvariantCulture);
+                    row["COMMENTAIRE"] = item.commentaire;
+                    row["UNITE"] = unite;
+                    row["COGE"] = compte;
+                    row["AUXI"] = compteAuxi;
+                    row["TVA"] = Convert.ToDecimal(item.TVA, CultureInfo.InvariantCulture);
+                    row["MONTANTTVA"] = Convert.ToDecimal(item.montantTVA, CultureInfo.InvariantCulture);
+                    objTab.Rows.Add(row);
+                    mMouvement.Enregistrer(objTab);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+            }
+            return Json(new
+            {
+                message = result
+            }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public JsonResult AllAffectArticle(parametre objData)

@@ -62,6 +62,10 @@ namespace FINPRO.Models
         public string QteInitiale { get; set; }
         public string valInitiale { get; set; }
         public string lastPrice { get; set; }
+        public string numBon { get; set; }
+        public string numBl { get; set; }
+        public string compte { get; set; }
+        public string compteAuxi { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
         public IEnumerable<tabList> tabList { get; set; }

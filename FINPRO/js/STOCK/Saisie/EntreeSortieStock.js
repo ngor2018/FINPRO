@@ -82,6 +82,81 @@ var ajoutArticle = function () {
     nameidCodeBar = null;
     GetDataArticleInsertStock(code1, code2)
 }
+var validerInOut = function () {
+    var objData = {};
+    var listOfAffect = [];
+    const table = document.getElementById('tab_Article');
+    const tbodyRows = table.querySelector('tbody').rows;
+
+    if (tbodyRows.length === 0) {
+        document.getElementById('tabArticleVide').textContent = "Veuillez sélectionner des articles";
+    } else {
+        var exercice = $("#exercice").val();
+        var numBon = $("#numBon").val();
+        var numBl = $("#numBL").val();
+        var dateSaisie = $("#dateSaisie").val();
+        var compte = $("#compte").val();
+        var compteAuxi = $("#compteAux").val();
+        var site = $("#site1").val();
+        var magasin = $("#site2").val();
+
+        // Parcourir uniquement le tbody !
+        $("#tab_Article tbody tr").each(function () {
+            var $row = $(this);
+            var OrderDetailAffect = {};
+
+            OrderDetailAffect.code = $row.find('td:eq(0)').text().trim();
+            OrderDetailAffect.libelle = $row.find("td:eq(2) input").val();
+            OrderDetailAffect.commentaire = $row.find("td:eq(2) input").val();
+            OrderDetailAffect.PU = $row.find("td:eq(4) input").val().replace(/\s/g, '');
+            OrderDetailAffect.Qte = $row.find("td:eq(5) input").val().replace(/\s/g, '');
+            OrderDetailAffect.valeur = $row.find('td:eq(6)').text().trim().replace(/\s/g, '');
+            OrderDetailAffect.TVA = $row.find("td:eq(7) input").val().replace(/\s/g, '');
+            OrderDetailAffect.montantHT = $row.find('td:eq(8)').text().trim().replace(/\s/g, '');
+            OrderDetailAffect.montantTVA = $row.find('td:eq(9)').text().trim().replace(/\s/g, '');
+
+            listOfAffect.push(OrderDetailAffect);
+        });
+
+        objData.annee = exercice;
+        objData.numBon = numBon;
+        objData.numBl = numBl;
+        objData.dateDebut = dateSaisie;
+        objData.compte = compte;
+        objData.compteAuxi = compteAuxi;
+        objData.site = site;
+        objData.magasin = magasin;
+        objData.tabList = listOfAffect;
+
+        document.getElementById('validerInOut').disabled = true;
+        document.getElementById('validerInOut').textContent = "Traitement en cours...";
+
+        $.ajax({
+            async: true,
+            type: 'POST',
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(objData),
+            url: '/CRUD/AllInOutArticle',
+            success: function (data) {
+                $('.alert_Param').removeClass("hide").addClass("show showAlert");
+                $(".result_Param").html('<font style="color:#ce8500">' + data.message + '</font>');
+                setTimeout(function () {
+                    document.getElementById('validerInOut').disabled = false;
+                    document.getElementById('validerInOut').textContent = "Valider";
+                    $('.alert_Param').addClass("hide").removeClass("show");
+                    $("#tab_Article tbody").empty();
+                    $("#tab_Article tfoot").empty();
+                }, 2500);
+            },
+            error: function () {
+                alert('Erreur lors de l\'enregistrement');
+            }
+        });
+
+    }
+}
+
 function LookAllAffect() {
     var table = $('#tabAffect_' + pageName).DataTable();
     var listOfAffect = [];
@@ -124,10 +199,10 @@ function LookAllAffect() {
                     <td style="display:none;"><input type="hidden" class="form-control form-control-sm libelle" value="${item.libelle}" /></td>
                     <td style="display:none;"><input type="hidden" class="form-control form-control-sm libelleSaisie" value="${item.libelle}" /></td>
                     <td style="display:none;"><input type="hidden" class="form-control form-control-sm Commentaire" value="" /></td>
-                    <td><input type="text" class="form-control form-control-sm PU" value="${formatNombre(item.PU)}" /></td>
-                    <td><input type="text" class="form-control form-control-sm Qte" value="1" /></td>
+                    <td style="width:15%"><input type="text" style="text-align:right" class="form-control form-control-sm PU" value="${formatNombre(item.PU)}" /></td>
+                    <td style="width:8%"><input type="text" class="form-control form-control-sm Qte" value="1" /></td>
                     <td class="valeur" style="width:8%">0</td>
-                    <td style="width:6%"><input type="text" class="form-control form-control-sm TVA" value="1" /></td>
+                    <td style="width:6%"><input type="text" class="form-control form-control-sm TVA" value="0" /></td>
                     <td class="montantHT" style="width:8%">0</td>
                     <td class="montantTVA" style="width:8%">0</td>
                     <td class="montantTTC" style="width:8%">0</td>
@@ -267,9 +342,6 @@ function LookAllAffect() {
 }
 
 
-
-
-
 function calculerToutesLesLignes() {
     let totalHT = 0;
     let totalTVA = 0;
@@ -282,11 +354,18 @@ function calculerToutesLesLignes() {
         const Qteinput = $row.find('.Qte');
         const TVAinput = $row.find('.TVA');
 
-        let PU = parseFloat(PUinput.val().replace(/\s/g, '')) || 0;
-        let Qte = parseFloat(Qteinput.val().replace(/\s/g, '')) || 0;
-        let TVA = parseFloat(TVAinput.val().replace(/\s/g, '')) || 0;
+        // Lire les valeurs brutes
+        let PUraw = PUinput.val();
+        let Qteraw = Qteinput.val();
+        let TVARaw = TVAinput.val();
 
-        if (PU <= 0 || Qte <= 0) {
+        // Nettoyer et convertir
+        let PU = parseFloat(PUraw.replace(/\s/g, ''));
+        let Qte = parseFloat(Qteraw.replace(/\s/g, ''));
+        let TVA = parseFloat(TVARaw.replace(/\s/g, '')) || 0;
+
+        // Vérification améliorée
+        if (!PUraw || !Qteraw || isNaN(PU) || isNaN(Qte) || PU <= 0 || Qte <= 0) {
             PUinput.addClass('is-invalid');
             Qteinput.addClass('is-invalid');
             erreur = true;
@@ -295,10 +374,11 @@ function calculerToutesLesLignes() {
             Qteinput.removeClass('is-invalid');
         }
 
-        const valeur = PU * Qte;
+        const valeur = (isNaN(PU) ? 0 : PU) * (isNaN(Qte) ? 0 : Qte);
         const montantTVA = (valeur * TVA) / 100;
         const montantHT = valeur;
         const montantTTC = montantTVA + montantHT;
+
         $row.find('.valeur').text(formatNombre(valeur));
         $row.find('.montantTVA').text(formatNombre(montantTVA));
         $row.find('.montantHT').text(formatNombre(montantHT));
@@ -309,20 +389,25 @@ function calculerToutesLesLignes() {
         totalTTC += montantTTC;
     });
 
+    // Activer ou désactiver validerInOut à la fin
+    document.getElementById('validerInOut').disabled = erreur;
+
     const $tfoot = $('#tab_Article').closest('table').find('tfoot');
     $tfoot.html(`
-        <tr>
+        <tr style="background-color:#77B5FE;color:#fff">
             <th colspan="5" style="text-align:center">Total :</th>
             <th>${formatNombre(totalHT)}</th>
             <th>${formatNombre(totalTVA)}</th>
             <th>${formatNombre(totalTTC)}</th>
+            <th></th>
         </tr>
     `);
 
     if (erreur) {
-        console.warn("Certains champs sont invalides !");
+        console.warn("Certains champs PU ou Qte sont invalides ou vides !");
     }
 }
+
 
 function formatChiffreInput(input) {
     input.addEventListener('keydown', function (event) {
@@ -591,10 +676,23 @@ function formContentVue2() {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row justify-content-center" style="text-align:center">
+                                            <div class="col-md-12">
+                                                <div class="alert_Param hide">
+                                                    <span class="fas fa-exclamation-circle"></span>
+                                                    <span class="result_Param"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center" style="text-align:center">
+                                            <div class="col-md-12">
+                                                <span id="tabArticleVide" style="color:red"></span>
+                                            </div>
+                                        </div>
                                         <div class="row" style="padding-top:8px">
                                             <div class="col-md-12" style="max-height: 300px; overflow-y: auto">
-                                                <table class="tabList" style="width:100%">
-                                                    <thead class="sticky-top" id="tab_Article">
+                                                <table class="tabList" style="width:100%" id="tab_Article">
+                                                    <thead class="sticky-top">
                                                         <tr>
                                                             <th rowspan="2">Article</th>
                                                             <th rowspan="2" hidden>Libellé</th>
@@ -616,6 +714,11 @@ function formContentVue2() {
                                                     <tbody></tbody>
                                                     <tfoot></tfoot>
                                                 </table>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center" style="text-align:center;padding-top:10px">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-sm btn-success" id="validerInOut" onclick="validerInOut()">Valider</button>
                                             </div>
                                         </div>
                                     </div>
@@ -664,7 +767,11 @@ function formContentVue2() {
         });
         document.getElementById('etatCocheError').textContent = "";
     });
-
+    $("#site1,#site2").change(function () {
+        $("#tab_Article tbody").empty();
+        $("#tab_Article tfoot").empty();
+        document.getElementById('validerInOut').disabled = false;
+    })
     // Quand une ligne est cochée/décochée manuellement
     $(document).on('change', '#tabAffect_' + pageName + ' tbody input[type="checkbox"]', function () {
         const table = $('#tabAffect_' + pageName).DataTable();
@@ -708,6 +815,7 @@ function formContentVue2() {
             var code2 = $("#site2").val();
             GetDataArticleInsertStock(code1, code2);
             nameidCodeBar = this.id;
+            $("#codeBar").val('');
         }
     });
 }
@@ -723,14 +831,6 @@ function popupArticle() {
                                         </div>
                                         <div class="float-end">
                                             <button class="btn btn-sm  btn-danger me-1 mb-1" id="fermer_">&times;Fermer</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row justify-content-center" style="text-align:center">
-                                    <div class="col-md-12">
-                                        <div class="alert_Param hide">
-                                            <span class="fas fa-exclamation-circle"></span>
-                                            <span class="result_Param"></span>
                                         </div>
                                     </div>
                                 </div>

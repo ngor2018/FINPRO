@@ -100,6 +100,7 @@ var Modifier = function () {
             case "StructPlanBudget":
             case "StructActivite":
             case "StructZone":
+            case "StructPlan6":
                 document.getElementById('titre').disabled = false;
                 document.getElementById('abreviationTitre').disabled = false;
                 break;
@@ -109,6 +110,7 @@ var Modifier = function () {
             case "StructPlanBudget":
             case "StructActivite":
             case "StructZone":
+            case "StructPlan6":
                 document.getElementById('titre').disabled = true;
                 document.getElementById('abreviationTitre').disabled = true;
                 break;
@@ -120,11 +122,29 @@ var Modifier = function () {
             case "StructPlanBudget":
             case "StructActivite":
             case "StructZone":
+            case "StructPlan6":
             case "StructEmplacements":
                 document.getElementById('format').disabled = true;
                 break;
         }
     }
+}
+var Supprimer = function () {
+    if (totalPost > 0) {
+        document.getElementById('errorCRUD').textContent = "Vous ne pouvez plus supprimer de niveaux, des codes ont été déjà saisis";
+        setTimeout(function () {
+            document.getElementById('errorCRUD').textContent = "";
+        }, 2500)
+        return;
+    }
+    toggleForms("partieDelete");
+    var niveau = $("#niveau").val();
+    document.getElementById('titreDel').textContent = "Suppresssion";
+    $("#messageDel").html("Voulez-vous supprimer Niveau <strong>" + niveau + "</strong>");
+}
+var closeDel = function () {
+    toggleForms("partieStructurePlan");
+    $("#errorCodif").html('');
 }
 var Annuler = function () {
     isEditing = false;
@@ -160,6 +180,7 @@ function parameter() {
                 case "StructActivite":
                 case "StructZone":
                 case "StructEmplacements":
+                case "StructPlan6":
                 case "StructPlanExtP1":
                 case "StructPlanExtP2":
                 case "StructPlanExtP3":
@@ -167,6 +188,7 @@ function parameter() {
                     $("#nameIDButton").val(this.id);
                     IDButton = this.id;
                     formPopup(this.id);
+                    formDel();
                     break;
             }
         });
@@ -213,6 +235,7 @@ function ControleinputSaisie() {
             case "StructPlanBudget":
             case "StructActivite":
             case "StructZone":
+            case "StructPlan6":
                 titre = this.cells[4].innerHTML;
                 abreviationTitre = this.cells[5].innerHTML;
                 $("#titre").val(titre);
@@ -242,6 +265,7 @@ function formPopup(id) {
         case "StructZone":
         case "StructPlanCompt":
         case "StructEmplacements":
+        case "StructPlan6":
         case "StructPlanExtP1":
         case "StructPlanExtP2":
         case "StructPlanExtP3":
@@ -340,6 +364,7 @@ function formPopup(id) {
         case "StructPlanBudget":
         case "StructZone":
         case "StructActivite":
+        case "StructPlan6":
             formPopupAbreTitre(id);
             formPopupTab(id);
             break;
@@ -393,15 +418,13 @@ function formPopupPlanCorresp(id) {
                         <div class="col-md-9">
                             <select class="input_focus choixSelect disabled_me" style="width:100%" id="PlanCorrespond">
                                 <option value="0"></option>
-                                <option value="RACTI1">Activité</option>
-                                <option value="RGEO1">Zones</option>
-                                <option value="RPOST1">Budget</option>
-                                <option value="RCOGE1">Plan Comptable</option>
                             </select>
                         </div>
                     </div>
                 `;
     container.insertAdjacentHTML("beforeend", formHTML);
+    chargerDropdownDepuisButtons();
+
 }
 function formPopupTab(id) {
     let container = document.getElementById('partieTab');
@@ -477,6 +500,76 @@ function formPopupTabFamily_P(id) {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
+function formDel() {
+    let container = document.getElementById("partieDelete");
+    container.innerHTML = "";
+    let formHTML = `
+            <div class="row justify-content-center" style="padding-top:12%">
+                <div class="col-md-4 pageView">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="float-start">
+                                <strong id="titreDel"></strong>
+                            </div>
+                            <div class="float-end">
+                                <button class="btn btn-sm btn-danger closeDel" onclick="closeDel()">&times;</button>
+                            </div>
+                        </div>
+                    </div><hr />
+                    <div class="row justify-content-center" style="text-align:center;padding-top:20px;padding-bottom:20px">
+                        <div class="col-md-12">
+                            <img src="../../images/question.png" style="width:20px" /><span id="messageDel"></span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" style="text-align:center;padding-top:8px;padding-bottom:8px">
+                        <div>
+                            <span id="errorCodif" style="color:red"></span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row justify-content-end" style="text-align:right">
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-success" onclick="validerDel()">Oui</button>
+                            <button class="btn btn-sm btn-danger closeDel" onclick="closeDel()">Non</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    container.insertAdjacentHTML("beforeend", formHTML);
+}
+function chargerDropdownDepuisButtons() {
+    const buttonIds = ["StructPlanBudget", "StructPlanCompt", "StructActivite", "StructZone", "StructPlan6"];
+    const choixList = document.getElementById("PlanCorrespond");
+
+    // Vider d'abord la liste existante
+    choixList.innerHTML = "";
+
+    // Ajouter une option par défaut
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "0";
+    defaultOption.textContent = "--";
+    choixList.appendChild(defaultOption);
+
+    buttonIds.forEach(id => {
+        const button = document.getElementById(id);
+        if (button) {
+            const style = window.getComputedStyle(button);
+            if (style.visibility === "visible") { // Vérifie que le bouton est visible
+                const text = button.textContent.trim();
+                if (text) {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = text;
+                    choixList.appendChild(option);
+                }
+            }
+        }
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", chargerDropdownDepuisButtons);
 
 //s’adapte automatiquement aux champs présents dans item.
 function updateTableWithData(id, listData) {
@@ -544,6 +637,7 @@ function fillFirstRowForm(id, firstRow) {
         StructActivite: "Structure Plan Analytique",
         StructPlanCompt: "Structure Plan Comptable",
         StructZone: "Zones d'intervention",
+        StructPlan6: "Plan 6",
         StructEmplacements: "Structure du Plan des Emplacements",
         StructPlanExtP1: "Plan 1",
         StructPlanExtP2: "Plan 2",
@@ -572,12 +666,20 @@ function GetNameButtonCodif() {
             document.getElementById('StructPlanCompt').textContent = data.PlanCompte;
             document.getElementById('StructActivite').textContent = data.activite;
             document.getElementById('StructZone').textContent = data.zones;
+            document.getElementById('StructPlan6').textContent = data.plan6;
             document.getElementById('StructEmplacements').textContent = data.emplacement;
 
             document.getElementById('StructPlanExtP1').textContent = data.p1;
             document.getElementById('StructPlanExtP2').textContent = data.p2;
             document.getElementById('StructPlanExtP3').textContent = data.p3;
             document.getElementById('StructPlanExtP4').textContent = data.p4;
+
+            //Vue button
+            if (data.statutP6 == true) {
+                document.getElementById('StructPlan6').style.visibility = "visible";
+            } else {
+                document.getElementById('StructPlan6').style.visibility = "hidden";
+            }
         }
     });
 }
@@ -601,6 +703,7 @@ function GedData(id) {
                     StructActivite: "Structure Plan Analytique",
                     StructPlanCompt: "Structure Plan Comptable",
                     StructZone: "Zones d'intervention",
+                    StructPlan6: "Plan 6",
                     StructEmplacements: "Structure du Plan des Emplacements",
                     StructPlanExtP1: "Plan 1",
                     StructPlanExtP2: "Plan 2",
@@ -655,10 +758,11 @@ function compterCaracteresColums(tab) {
 function resetForm() {
     $(".input_focus").val('');
     $('.input_focus').siblings('span.erreur').css('display', 'none');
+    totalPost = 0;
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
-    let forms = ["partieStructurePlan", ""];
+    let forms = ["partieStructurePlan", "partieDelete"];
     document.getElementById('fullscreen_popup').style.display = "block";
     forms.forEach(id => {
         let elem = document.getElementById(id);
