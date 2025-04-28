@@ -155,6 +155,9 @@ var validerInOut = function () {
         });
 
     }
+    setTimeout(function () {
+        document.getElementById('tabArticleVide').textContent = "";
+    },2500)
 }
 
 function LookAllAffect() {
