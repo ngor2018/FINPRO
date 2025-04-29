@@ -27,6 +27,7 @@ var Ajouter = function () {
             document.getElementById('Annuler').disabled = false;
             $(".disabled_me").prop("disabled", false);
             resetForm();
+            mettreAJourNiveau();
             $("#libelle").focus();
             break;
         case "Enregistrer":
@@ -137,6 +138,31 @@ var Supprimer = function () {
         }, 2500)
         return;
     }
+    const table = document.getElementById("tab_" + IDButton);
+    const selectedRow = table.querySelector("tbody tr.selected"); // suppose que la ligne sélectionnée a une classe `selected`
+
+    if (!selectedRow) {
+        alert("Veuillez sélectionner une ligne à supprimer.");
+        return;
+    }
+
+    const niveauSelectionne = parseInt(selectedRow.cells[0].textContent.trim(), 10);
+    const lignes = Array.from(table.querySelectorAll("tbody tr"));
+
+    const index = lignes.findIndex(row => row === selectedRow);
+
+    const aPrecedent = index > 0;
+    const aSuivant = index < lignes.length - 1;
+
+    //if (aPrecedent || aSuivant) {
+    if (aSuivant) {
+        //alert("Suppression impossible, ce niveau a un Précédent ou / et un Suivant.");
+        alert("Suppression impossible, ce niveau a un Suivant.");
+        return;
+    }
+
+    // Suppression possible
+    //selectedRow.remove();
     toggleForms("partieDelete");
     var niveau = $("#niveau").val();
     document.getElementById('titreDel').textContent = "Suppresssion";
@@ -151,6 +177,14 @@ var Annuler = function () {
     GedData(IDButton);
     $(".disabled_me").prop("disabled", true);
     $(".input_focus").siblings('span.erreur').css('display', 'none');
+    switch (IDButton) {
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            $("#PlanCorrespond").val(0).trigger('change');
+            break;
+    }
 }
 function parameter() {
     var pageNameTitreController = $("#pageNameTitreController").val();
@@ -206,38 +240,37 @@ function ControleinputSaisie() {
     })
     $('.choixSelect').select2();
     $("#tab_" + IDButton + " tbody").on("click", "tr", function () {
-        //if (isEditing) return; // Désactiver si en mode édition
-        $(this).toggleClass("selected").siblings(".selected").removeClass("selected");
-        var niveau = "", libelle = "", abreviation = "", format = "", titre = "", abreviationTitre = "", PlanCorrespond = "";
-        niveau = this.cells[0].innerHTML;
-        libelle = this.cells[1].innerHTML;
-        abreviation = this.cells[2].innerHTML;
-        format = this.cells[3].innerHTML;
+        const wasAlreadySelected = $(this).hasClass("selected");
+
+        if (!wasAlreadySelected) {
+            $("#tab_" + IDButton + " tbody tr").removeClass("selected");
+            $(this).addClass("selected");
+            chargerValeursDepuisLigne(this, IDButton);
+        }
+        // sinon : ne rien faire, garder la sélection
+    });
+
+
+    // Fonction de chargement des valeurs depuis la ligne sélectionnée
+    function chargerValeursDepuisLigne(row, IDButton) {
+        let niveau = row.cells[0].innerHTML;
+        let libelle = row.cells[1].innerHTML;
+        let abreviation = row.cells[2].innerHTML;
+        let format = row.cells[3].innerHTML;
+
         $("#niveau").val(niveau);
         $("#libelle").val(libelle);
         $("#abreviation").val(abreviation);
         $("#format").val(format);
 
-        // Vérifie si c'est la première ligne
-        var table = document.getElementById("tab_" + IDButton);
-        if (table && table.tBodies[0].rows.length > 0) {
-            var firstRow = table.tBodies[0].rows[0];
-            if (this === firstRow) {
-                //console.log("✅ Première ligne sélectionnée !");
-                CheckFirstLine = true;
-            } else {
-                //console.log("📌 Ligne normale sélectionnée.");
-                CheckFirstLine = false;
-            }
-        }
-
+        let titre = "", abreviationTitre = "", PlanCorrespond = "";
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
             case "StructZone":
             case "StructPlan6":
-                titre = this.cells[4].innerHTML;
-                abreviationTitre = this.cells[5].innerHTML;
+                titre = row.cells[4].innerHTML;
+                abreviationTitre = row.cells[5].innerHTML;
                 $("#titre").val(titre);
                 $("#abreviationTitre").val(abreviationTitre);
                 break;
@@ -245,15 +278,23 @@ function ControleinputSaisie() {
             case "StructPlanExtP2":
             case "StructPlanExtP3":
             case "StructPlanExtP4":
-                titre = this.cells[4].innerHTML;
-                abreviationTitre = this.cells[5].innerHTML;
-                PlanCorrespond = this.cells[6].innerHTML;
+                titre = row.cells[4].innerHTML;
+                abreviationTitre = row.cells[5].innerHTML;
+                PlanCorrespond = row.cells[6].innerHTML;
                 $("#titre").val(titre);
                 $("#abreviationTitre").val(abreviationTitre);
                 $("#PlanCorrespond").val(PlanCorrespond).trigger('change');
                 break;
         }
-    })
+
+        // Vérifie si c'est la première ligne
+        const table = document.getElementById("tab_" + IDButton);
+        if (table && table.tBodies[0].rows.length > 0) {
+            const firstRow = table.tBodies[0].rows[0];
+            window.CheckFirstLine = row === firstRow;
+        }
+    }
+    
 }
 function formPopup(id) {
     let container = document.getElementById('partieStructurePlan');
@@ -423,8 +464,9 @@ function formPopupPlanCorresp(id) {
                     </div>
                 `;
     container.insertAdjacentHTML("beforeend", formHTML);
-    chargerDropdownDepuisButtons();
-
+    requestAnimationFrame(() => {
+        chargerDropdownDepuisButtons();
+    });
 }
 function formPopupTab(id) {
     let container = document.getElementById('partieTab');
@@ -432,7 +474,7 @@ function formPopupTab(id) {
     let formHTML = `
                     <div class="row">
                         <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                            <table class="table-bordered tabList" id="tab_${id}" width="100%">
+                            <table class="table-bordered tabList" id="tab_${id}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="niveau">Niveau</th>
@@ -538,28 +580,46 @@ function formDel() {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
-function chargerDropdownDepuisButtons() {
-    const buttonIds = ["StructPlanBudget", "StructPlanCompt", "StructActivite", "StructZone", "StructPlan6"];
-    const choixList = document.getElementById("PlanCorrespond");
+function mettreAJourNiveau() {
+    const table = document.getElementById("tab_" + IDButton);
+    const tbody = table.querySelector("tbody");
+    const lignes = tbody ? tbody.rows.length : 0;
+    const inputNiveau = document.getElementById("niveau");
+    if (lignes === 0) {
+        inputNiveau.value = "1";
+    } else {
+        inputNiveau.value = lignes + 1;
+    }
+}
 
-    // Vider d'abord la liste existante
+function chargerDropdownDepuisButtons() {
+    const choixList = document.getElementById("PlanCorrespond");
+    if (!choixList) return; // Évite l'erreur si le select n'existe pas
+
+    const buttonValueMap = {
+        "StructPlanBudget": "RPOST1",
+        "StructPlanCompt": "RCOGE1",
+        "StructActivite": "RACTI1",
+        "StructZone": "RGEO1",
+        "StructPlan6": "RPLAN6"
+    };
+
     choixList.innerHTML = "";
 
-    // Ajouter une option par défaut
     const defaultOption = document.createElement("option");
     defaultOption.value = "0";
     defaultOption.textContent = "--";
     choixList.appendChild(defaultOption);
 
-    buttonIds.forEach(id => {
+    Object.keys(buttonValueMap).forEach(id => {
         const button = document.getElementById(id);
         if (button) {
             const style = window.getComputedStyle(button);
-            if (style.visibility === "visible") { // Vérifie que le bouton est visible
+            if (style.visibility === "visible") {
                 const text = button.textContent.trim();
                 if (text) {
                     const option = document.createElement("option");
-                    option.value = id;
+                    option.value = buttonValueMap[id]; // valeur par défaut associée
                     option.textContent = text;
                     choixList.appendChild(option);
                 }
@@ -569,7 +629,6 @@ function chargerDropdownDepuisButtons() {
 }
 
 
-document.addEventListener("DOMContentLoaded", chargerDropdownDepuisButtons);
 
 //s’adapte automatiquement aux champs présents dans item.
 function updateTableWithData(id, listData) {

@@ -668,7 +668,7 @@ function formContentVue2() {
                                                                     <label for="codeBar">Code barre</label>
                                                                 </div>
                                                                 <div class="col-md-8">
-                                                                    <input type="text" id="codeBar" class="input_focus"/>
+                                                                    <input type="text" id="codeBar" maxlength="14" class="input_focus"/>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -162,7 +162,7 @@ thead, tbody, tfoot, tr, td, th {
     z-index: 10;
 }
 .selected {
-    background-color: #f5d279;
+    background-color: #f5d279 !important;
     font-weight: bold;
     color: #000;
     cursor: pointer;
