@@ -10,6 +10,7 @@ using DBINSTALL;
 using BDD;
 using FINPRO.Models;
 using System.Globalization;
+using System.Reflection;
 
 namespace FINPRO.Controllers
 {
@@ -817,63 +818,69 @@ namespace FINPRO.Controllers
             var niveau = objData.niveau;
             bool statut = objData.statut;
 
-            DataTable table = new DataTable();
-            DataRow row;
             var extraFields = SetExtraFields(niveau, objData);
             var filtre = GetFiltre(objData);
-            var tableInstance = GetTableInstance(niveau);
-
-            // Vérification et enregistrement
+            var (tableInstance, isValidPlan) = GetTableInstance(niveau, objData.rattachement);
+            if (!isValidPlan) isAllValid = false;
+            switch (niveau)
+            {
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    if (isAllValid == false)
+                    {
+                        result = "Rattachement déjà utilisé";
+                        return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+                    }
+                    break;
+            }
             if (tableInstance != null)
             {
                 var tableType = tableInstance.GetType();
                 var remplirDataTableMethod = tableType.GetMethod("RemplirDataTable", new Type[] { typeof(string) });
                 var enregistrerMethod = tableType.GetMethod("Enregistrer", new Type[] { typeof(DataTable) });
+
                 if (remplirDataTableMethod != null)
                 {
-                    table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
-                    switch (statut)
+                    DataTable table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
+                    DataRow row;
+
+                    if (!statut) // AJOUT
                     {
-                        //Ajout
-                        case false:
-                            if (table.Rows.Count > 0)
-                            {
-                                isAllValid = false;
-                            }
-                            else
-                            {
-                                table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
-                                row = table.NewRow();
-                                // Ajout des champs supplémentaires s'ils existent
-                                if (extraFields != null)
-                                {
-                                    foreach (var field in extraFields)
-                                    {
-                                        row[field.Key] = field.Value;
-                                    }
-                                }
-                                table.Rows.Add(row);
-                            }
-                            break;
-                        //Edition
-                        default:
+                        if (table.Rows.Count > 0)
+                        {
+                            isAllValid = false;
+                        }
+                        else
+                        {
+                            table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
+                            row = table.NewRow();
+                            foreach (var field in extraFields)
+                                row[field.Key] = field.Value;
+                            table.Rows.Add(row);
+                        }
+                    }
+                    else // MODIFICATION
+                    {
+                        if (isAllValid && table.Rows.Count > 0)
+                        {
                             row = table.Rows[0];
                             row.BeginEdit();
                             foreach (var field in extraFields)
-                            {
                                 row[field.Key] = field.Value;
-                            }
                             row.EndEdit();
-                            break;
+                        }
                     }
+
                     try
                     {
-                        // Enregistrer si la méthode existe
                         if (isAllValid)
-                        {
                             enregistrerMethod?.Invoke(tableInstance, new object[] { table });
-                        }
-                        result = statut ? "Enregistrement modifié avec succès" : (isAllValid ? "Enregistrement ajouté avec succès" : "Code existe déjà");
+
+                        result = statut
+                            ? "Enregistrement modifié avec succès"
+                            : (isAllValid ? "Enregistrement ajouté avec succès" : "Code existe déjà");
                     }
                     catch (Exception ex)
                     {
@@ -884,14 +891,15 @@ namespace FINPRO.Controllers
 
             return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
         }
-        
+
+
         // Génère les champs supplémentaires en fonction du niveau
         private Dictionary<string, object> SetExtraFields(string niveau, parametre objData)
         {
-            bool statut = objData.statut;
             var fields = new Dictionary<string, object>();
-            DataTable objTab = new DataTable();
-            var filtre = "";
+            var statut = objData.statut;
+            DataTable objTab;
+            string filtre;
 
             switch (niveau)
             {
@@ -923,21 +931,21 @@ namespace FINPRO.Controllers
                     fields["NOMDECIMALE"] = objData.libelleM;
                     fields["NBDECIMALE"] = objData.valeur;
                     break;
+
                 case "Articles":
-                    Tables_Sto.rStkArticle article = new Tables_Sto.rStkArticle();
                     filtre = $"GROUPE = '{objData.code1}' and FAMILLE = '{objData.code2}'";
-                    objTab = article.RemplirDataTable(filtre);
-                    Int32 codeLast = 0;
+                    objTab = new Tables_Sto.rStkArticle().RemplirDataTable(filtre);
+                    int serie = 1;
                     if (objTab.Rows.Count > 0)
                     {
                         DataRow lastRow = objTab.Rows[objTab.Rows.Count - 1];
-                        codeLast = Convert.ToInt32(lastRow["SERIE"]) + 1;
+                        int lastSerie = Convert.ToInt32(lastRow["SERIE"]);
+                        serie = lastSerie + 1;
                     }
-                    if (statut != true) //Ajout
+                    if (!statut)
                     {
-                        //CODE recevra comme valeur GROUPE+FAMILLE+SERIE
-                        fields["CODE"] = objData.code1 + objData.code2 + codeLast;
-                        fields["SERIE"] = codeLast;
+                        fields["CODE"] = objData.code1 + objData.code2 + serie;
+                        fields["SERIE"] = serie;
                     }
                     fields["CodeBarre"] = objData.codeBarre;
                     fields["GROUPE"] = objData.code1;
@@ -948,27 +956,39 @@ namespace FINPRO.Controllers
                     fields["UNITE"] = objData.unite;
                     fields["OBSERVATION"] = objData.observation;
                     break;
+
+
                 case "Affectations":
                     fields["SITE"] = objData.code1;
                     fields["MAGASIN"] = objData.code2;
                     fields["ARTICLE"] = objData.unite;
                     fields["STOCKMIN"] = objData.stockMin;
                     fields["STOCKMAX"] = objData.stockMax;
-                    Tables_Sto.rStkArticle article1 = new Tables_Sto.rStkArticle();
-                    filtre = $"CODE = '{objData.unite}'";
-                    objTab = article1.RemplirDataTable(filtre);
-                    var pu = objTab.Rows[0]["PU"].ToString();
-                    if (objData.prixUnitaire == "0")
-                    {
-                        fields["PRIXUNITAIRE"] = pu;
-                    }
-                    else
-                    {
-                        fields["PRIXUNITAIRE"] = objData.prixUnitaire;
-                    }
+                    objTab = new Tables_Sto.rStkArticle().RemplirDataTable($"CODE = '{objData.unite}'");
+                    fields["PRIXUNITAIRE"] = objData.prixUnitaire == "0" ? objTab.Rows[0]["PU"].ToString() : objData.prixUnitaire;
                     fields["DERNIERPRIX"] = objData.lastPrice;
                     fields["QUANTITEINITIALE"] = objData.QteInitiale;
                     fields["VALEURINITIALE"] = objData.valInitiale;
+                    break;
+
+                case "StructPlanBudget":
+                case "StructPlanCompt":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlan6":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    fields["NIVEAU"] = objData.niveauVal;
+                    fields["libelle"] = objData.libelle;
+                    fields["ABREVIATION"] = objData.abreviation;
+                    fields["format"] = objData.format;
+                    fields["TITRE"] = objData.titre;
+                    fields["TITRECOURT"] = objData.abreviationTitre;
+                    if (niveau.StartsWith("StructPlanExtP"))
+                        fields["rattachement"] = objData.rattachement;
                     break;
             }
 
@@ -976,15 +996,16 @@ namespace FINPRO.Controllers
         }
 
 
+
         // Génère le filtre SQL en fonction du niveau
         private string GetFiltre(parametre objData)
         {
-            DataTable objTab = new DataTable();
-            string niveau = objData.niveau,
-                    code = objData.code,
-                    site = objData.code1,
-                    annee = objData.annee;
-            bool statut = objData.statut;
+            string code = objData.code;
+            string niveau = objData.niveau;
+            string site = objData.code1;
+            string annee = objData.annee;
+
+            string filtre = "";
 
             switch (niveau)
             {
@@ -993,56 +1014,178 @@ namespace FINPRO.Controllers
                 case "groupes":
                 case "unites":
                 case "Monnaie":
-                    return $"CODE = '{code}'";
+                    filtre = $"CODE = '{code}'";
+                    break;
+
                 case "magasins":
-                    return $"CODE = '{code}' AND SITE = '{site}'";
+                    filtre = $"CODE = '{code}' AND SITE = '{site}'";
+                    break;
+
                 case "Exercices":
-                    return $"ANNEE = '{annee}'";
-                case "Articles":
-                    Tables_Sto.rStkArticle article = new Tables_Sto.rStkArticle();
-                    var filter = $"GROUPE = '{objData.code1}' and FAMILLE = '{objData.code2}'";
-                    objTab = article.RemplirDataTable(filter);
-                    Int32 codeLast = 0;
-                    if (objTab.Rows.Count > 0)
-                    {
-                        DataRow lastRow = objTab.Rows[objTab.Rows.Count - 1];
-                        codeLast = Convert.ToInt32(lastRow["SERIE"]) + 1;
-                    }
-                    if (statut == true) //Edition
-                    {
-                        //CODE recevra comme valeur GROUPE+FAMILLE+SERIE
-                        code = objData.code1 + objData.code2 + (codeLast - 1);
-                    }
-                    else //Ajout
-                    {
-                        //CODE recevra comme valeur GROUPE+FAMILLE+SERIE
-                        code = objData.code1 + objData.code2 + codeLast;
-                    }
-                    return $"CODE = '{code}'";
+                    filtre = $"ANNEE = '{annee}'";
+                    break;
+
                 case "Affectations":
-                    return $"SITE = '{objData.code1}' AND MAGASIN = '{objData.code2}' AND ARTICLE = '{objData.unite}'";
+                    filtre = $"SITE = '{site}' AND MAGASIN = '{objData.code2}' AND ARTICLE = '{objData.unite}'";
+                    break;
+
+                case "StructPlanBudget":
+                case "StructPlanCompt":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlan6":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    filtre = $"niveau = '{objData.niveauVal}'";
+                    break;
+
+                case "Articles":
+                    filtre = GetFiltreArticles(objData);
+                    break;
+
                 default:
-                    return "";
+                    filtre = "";
+                    break;
             }
+
+            return filtre;
         }
 
 
-        // Retourne l'instance de la table en fonction du niveau
-        private object GetTableInstance(string niveau)
+        private string GetFiltreArticles(parametre objData)
         {
+            var statut = objData.statut;
+            var groupe = objData.code1;
+            var famille = objData.code2;
+            var filtre = $"GROUPE = '{groupe}' and FAMILLE = '{famille}'";
+
+            var objTab = new Tables_Sto.rStkArticle().RemplirDataTable(filtre);
+            int serie;
+
+            if (objTab.Rows.Count > 0)
+            {
+                // Accès classique au dernier élément
+                DataRow lastRow = objTab.Rows[objTab.Rows.Count - 1];
+                int lastSerie = Convert.ToInt32(lastRow["SERIE"]);
+                serie = statut ? lastSerie : lastSerie + 1;
+            }
+            else
+            {
+                serie = 1;
+            }
+
+            string code = groupe + famille + (statut ? serie - 1 : serie);
+            return $"CODE = '{code}'";
+        }
+
+
+
+
+        // Retourne l'instance de la table en fonction du niveau
+        private (object, bool) GetTableInstance(string niveau, string rattachement)
+        {
+            object instance = null;
+
             switch (niveau)
             {
-                case "Pays": return new Tables_Sto.rPays();
-                case "services": return new Tables_Sto.rService();
-                case "groupes": return new Tables_Sto.rGroupeFamille();
-                case "unites": return new Tables_Sto.rUnite();
-                case "magasins": return new Tables_Sto.rMagasin();
-                case "Exercices": return new Tables_Sto.rExercice();
-                case "Monnaie": return new Tables_Sto.rMonnaie();
-                case "Articles": return new Tables_Sto.rStkArticle();
-                case "Affectations": return new Tables_Sto.mAffectation();
-                default: return null;
+                case "Pays":
+                    instance = new Tables_Sto.rPays();
+                    break;
+                case "services":
+                    instance = new Tables_Sto.rService();
+                    break;
+                case "groupes":
+                    instance = new Tables_Sto.rGroupeFamille();
+                    break;
+                case "unites":
+                    instance = new Tables_Sto.rUnite();
+                    break;
+                case "magasins":
+                    instance = new Tables_Sto.rMagasin();
+                    break;
+                case "Exercices":
+                    instance = new Tables_Sto.rExercice();
+                    break;
+                case "Monnaie":
+                    instance = new Tables_Sto.rMonnaie();
+                    break;
+                case "Articles":
+                    instance = new Tables_Sto.rStkArticle();
+                    break;
+                case "Affectations":
+                    instance = new Tables_Sto.mAffectation();
+                    break;
+                case "StructPlanBudget":
+                    instance = new Tables.rStruPost();
+                    break;
+                case "StructPlanCompt":
+                    instance = new Tables.rStruCoge();
+                    break;
+                case "StructActivite":
+                    instance = new Tables.rStruActi();
+                    break;
+                case "StructZone":
+                    instance = new Tables.rStruGeo();
+                    break;
+                case "StructEmplacements":
+                    instance = new Tables.rStruEmplacement();
+                    break;
+                case "StructPlan6":
+                    instance = new Tables.rStruPlan6();
+                    break;
+                case "StructPlanExtP1":
+                    instance = new Tables.RSTRUPLAN1EXT();
+                    break;
+                case "StructPlanExtP2":
+                    instance = new Tables.RSTRUPLAN2EXT();
+                    break;
+                case "StructPlanExtP3":
+                    instance = new Tables.RSTRUPLAN3EXT();
+                    break;
+                case "StructPlanExtP4":
+                    instance = new Tables.RSTRUPLAN4EXT();
+                    break;
+                default:
+                    instance = null;
+                    break;
             }
+
+
+            // Vérification si StructPlanExtP
+            if (niveau.StartsWith("StructPlanExtP"))
+            {
+                int nbreFoisExistance = 0;
+                string filtre = $"rattachement = '{rattachement}'";
+                var tabs = new List<object>
+                {
+                    new Tables.RSTRUPLAN1EXT(),
+                    new Tables.RSTRUPLAN2EXT(),
+                    new Tables.RSTRUPLAN3EXT(),
+                    new Tables.RSTRUPLAN4EXT()
+                };
+                foreach (var tab in tabs)
+                {
+                    var remplirMethod = tab.GetType().GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+
+                    if (remplirMethod != null)
+                    {
+                        var data = (DataTable)remplirMethod.Invoke(tab, new object[] { filtre });
+                        if (data != null && data.Rows.Count > 0)
+                        {
+                            nbreFoisExistance += data.Rows.Count;
+                        }
+                    }
+                }
+
+                bool isAllowed = nbreFoisExistance == 0; // true si aucun rattachement trouvé
+                return (instance, isAllowed);
+            }
+
+
+            return (instance, true);
         }
 
         [HttpPost]

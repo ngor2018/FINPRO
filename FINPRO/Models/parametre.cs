@@ -21,6 +21,7 @@ namespace FINPRO.Models
         public string libelleM { get; set; }
         public string nbreDecimale { get; set; }
         public string niveau { get; set; }
+        public string niveauVal { get; set; }
         public string abreviation { get; set; }
         public string abreviationTitre { get; set; }
         public string PlanCorrespond { get; set; }

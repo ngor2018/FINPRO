@@ -1,88 +1,64 @@
-﻿var isEditing = false, CheckFirstLine = false;
+﻿var isEditing = false  // Désactiver si en mode édition ou Ajout
+    , CheckFirstLine = false;
 var pageName = $("#pageName").val();
 var totalPost = 0;
 GetNameButtonCodif();
 parameter();
 var IDButton = null;
+var etatCRUD = false;//Defini statut Ajout
 
 var Ajouter = function () {
-    var selectButton = document.getElementById('Ajouter');
+    isEditing = true;
+    const btnAjouter = document.getElementById('Ajouter');
+
     if (totalPost > 0) {
-        document.getElementById('errorCRUD').textContent = "Vous ne pouvez plus créer de niveaux, des codes ont été déjà saisis";
-        setTimeout(function () {
-            document.getElementById('errorCRUD').textContent = "";
-        },2500)
+        afficherErreur("Vous ne pouvez plus créer de niveaux, des codes ont été déjà saisis");
         return;
     }
-    //document.getElementById('niveau').disabled = false;
-    switch (selectButton.textContent) {
-        case "Ajouter":
-            document.getElementById('Ajouter').textContent = "Enregistrer";
 
-            document.getElementById('Modifier').disabled = true;
-            document.getElementById('Supprimer').disabled = true;
-            document.getElementById('closeSt').disabled = true;
-            document.getElementById('Imprimer').disabled = true;
-
-            document.getElementById('Annuler').disabled = false;
-            $(".disabled_me").prop("disabled", false);
-            resetForm();
-            mettreAJourNiveau();
-            $("#libelle").focus();
-            break;
-        case "Enregistrer":
-            var isAllValid = true;
-            var niveau = $("#niveau").val();
-            var libelle = $("#libelle").val();
-            var abreviation = $("#abreviation").val();
-            var format = $("#format").val();
-            var titre = $("#titre").val();
-            var abreviationTitre = $("#abreviationTitre").val();
-            var PlanCorrespond = $("#PlanCorrespond").val();
-            if (libelle.trim() == '') {
-                isAllValid = false;
-                $("#libelle").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
-            }
-            if (abreviation.trim() == '') {
-                isAllValid = false;
-                $("#abreviation").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
-            }
-            if (format.trim() == '') {
-                isAllValid = false;
-                $("#format").siblings('span.erreur').html('champ obligatoire').css('display', 'block');
-            } else {
-                let input = document.getElementById('format').value;
-                let isValid = false;
-                let formatType = "";
-                var totalForm = $("#totalForm").val();
-                // Vérifier si la chaîne ne contient que des 'A', '9' ou 'C' et qu'ils sont tous du même type
-                if (/^A+$/.test(input.trim())) {
-                    formatType = "Alphabétique";
-                    isValid = true;
-                } else if (/^9+$/.test(input.trim())) {
-                    formatType = "Numérique";
-                    isValid = true;
-                } else if (/^C+$/.test(input.trim())) {
-                    formatType = "AlphaNumérique";
-                    isValid = true;
-                }
-                if (!isValid) {
-                    isAllValid = false;
-                    $("#format").siblings('span.erreur').html("Format invalide ! Utilisez uniquement 'A', '9' ou 'C' sans mélange.").css('display', 'block');
-                } else {
-                    if (input.length > totalForm) {
-                        isAllValid = false;
-                        $("#format").siblings('span.erreur').html("Vous avez le maximum de niveaux gérés").css('display', 'block');
-                    }
-                }
-            }
-            if (isAllValid) {
-                alert('Mario')
-            }
-            break;
+    if (btnAjouter.textContent === "Ajouter") {
+        initialiserFormulaire();
+        return;
     }
-}
+    // En mode "Enregistrer"
+    if (!validerChamps()) return;
+
+    const table = document.getElementById("tab_" + IDButton);
+    const objData = collecterDonneesFormulaire();
+
+    $.ajax({
+        url: "/CRUD/Add_EditParam",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(objData),
+        success: function (data) {
+            if (etatCRUD === true) {  //Edition
+                if (data.statut === true) {
+                    miseAJourLigneTable(table, objData);
+                    afficherMessage(data.message);
+                } else {
+                    afficherErreurPlanCorrespond(data.message);
+                }
+            } else { //Ajout
+                if (data.statut === true) {
+                    afficherMessage(data.message);
+                    GetNameButtonCodif();
+                    //setTimeout(() => GedData(IDButton), 1000);
+                    setTimeout(() => Annuler(), 1000);
+                } else {
+                    afficherErreurPlanCorrespond(data.message);
+                }
+            }
+        },
+        error: function () {
+            alert("Erreur lors de l'envoi des données.");
+        }
+    });
+};
+
 var Modifier = function () {
+    isEditing = true;
+    etatCRUD = true;  //Defini statut modifier
     document.getElementById('Ajouter').textContent = "Enregistrer";
 
     document.getElementById('Modifier').disabled = true;
@@ -95,6 +71,18 @@ var Modifier = function () {
     document.getElementById('libelle').disabled = false;
     document.getElementById('abreviation').disabled = false;
     document.getElementById('format').disabled = false;
+    statutChampCRUD();
+}
+// ------------------ Fonctions Utilitaires ------------------
+function statutChampCRUD() {
+    switch (IDButton) {
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            document.getElementById('PlanCorrespond').disabled = false;
+            break;
+    }
     if (CheckFirstLine == true) {
         //✅ Première ligne sélectionnée !";
         switch (IDButton) {
@@ -102,6 +90,10 @@ var Modifier = function () {
             case "StructActivite":
             case "StructZone":
             case "StructPlan6":
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
                 document.getElementById('titre').disabled = false;
                 document.getElementById('abreviationTitre').disabled = false;
                 break;
@@ -115,8 +107,16 @@ var Modifier = function () {
                 document.getElementById('titre').disabled = true;
                 document.getElementById('abreviationTitre').disabled = true;
                 break;
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+                document.getElementById('titre').disabled = true;
+                document.getElementById('abreviationTitre').disabled = true;
+                document.getElementById('PlanCorrespond').disabled = true;
+                break;
         }
-    } 
+    }
     if (totalPost > 0) {
         switch (IDButton) {
             case "StructPlanCompt":
@@ -127,9 +127,166 @@ var Modifier = function () {
             case "StructEmplacements":
                 document.getElementById('format').disabled = true;
                 break;
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+                document.getElementById('format').disabled = true;
+                document.getElementById('PlanCorrespond').disabled = true;
+                break;
         }
     }
 }
+function afficherErreur(message) {
+    document.getElementById('errorCRUD').textContent = message;
+    setTimeout(() => {
+        document.getElementById('errorCRUD').textContent = "";
+    }, 2500);
+}
+
+function initialiserFormulaire() {
+    CheckFirstLine = false;
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+    $("#Modifier, #Supprimer, #closeSt, #Imprimer").prop("disabled", true);
+    $("#Annuler, .disabled_me").prop("disabled", false);
+    resetForm();
+    mettreAJourNiveau();
+    $("#libelle").focus();
+    const table = document.getElementById("tab_" + IDButton);
+    if (table.tBodies[0].rows.length == 0) {
+        $(".disabled_me").prop("disabled", false);
+    } else {
+        statutChampCRUD();
+    }
+}
+
+function validerChamps() {
+    let isValid = true;
+
+    const champs = [
+        { id: "#libelle", nom: "libelle" },
+        { id: "#abreviation", nom: "abreviation" },
+        { id: "#format", nom: "format" }
+    ];
+
+    champs.forEach(c => {
+        const val = $(c.id).val().trim();
+        if (!val) {
+            isValid = false;
+            $(c.id).siblings("span.erreur").html("champ obligatoire").show();
+        }
+    });
+
+    if (!validerFormat()) isValid = false;
+
+    const table = document.getElementById("tab_" + IDButton);
+    if (table && table.tBodies[0].rows.length === 0) {
+        if (["StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"].includes(IDButton)) {
+            const champsSpec = [
+                { id: "#titre", nom: "titre" },
+                { id: "#abreviationTitre", nom: "abreviationTitre" },
+                { id: "#PlanCorrespond", nom: "PlanCorrespond", test: val => val != 0 }
+            ];
+            champsSpec.forEach(c => {
+                const val = $(c.id).val().trim();
+                const condition = c.test ? c.test(val) : !!val;
+                if (!condition) {
+                    isValid = false;
+                    $(c.id).siblings("span.erreur").html("champ obligatoire").show();
+                }
+            });
+        }
+    }
+
+    return isValid;
+}
+
+function validerFormat() {
+    const format = $("#format").val().trim();
+    const valFormatActuel = parseInt($("#totalForm").val()) || 0;
+    let totalForm = (IDButton === "StructActivite") ? 14 : 10;
+
+    const motifs = {
+        "A": /^A+$/,
+        "9": /^9+$/,
+        "C": /^C+$/
+    };
+
+    let isValid = false;
+    for (let key in motifs) {
+        if (motifs[key].test(format)) {
+            isValid = true;
+            break;
+        }
+    }
+
+    if (!isValid) {
+        $("#format").siblings("span.erreur")
+            .html("Format invalide ! Utilisez uniquement 'A', '9' ou 'C' sans mélange.")
+            .show();
+        return false;
+    }
+
+    if ((format.length + valFormatActuel) > totalForm) {
+        $("#format").siblings("span.erreur")
+            .html("Vous avez le maximum de niveaux gérés")
+            .show();
+        return false;
+    }
+
+    return true;
+}
+
+function collecterDonneesFormulaire() {
+    return {
+        statut: etatCRUD,
+        niveau: IDButton,
+        niveauVal: $("#niveau").val(),
+        libelle: $("#libelle").val(),
+        abreviation: $("#abreviation").val(),
+        format: $("#format").val(),
+        titre: $("#titre").val(),
+        abreviationTitre: $("#abreviationTitre").val(),
+        rattachement: $("#PlanCorrespond").val()
+    };
+}
+
+function miseAJourLigneTable(table, data) {
+    for (let i = 1; i < table.rows.length; i++) {
+        let row = table.rows[i];
+        if (row.cells[0].innerHTML == data.niveauVal) {
+            row.cells[1].innerHTML = data.libelle;
+            row.cells[2].innerHTML = data.abreviation;
+            row.cells[3].innerHTML = data.format;
+
+            if (["StructPlanBudget", "StructActivite", "StructZone", "StructPlan6"].includes(IDButton)) {
+                row.cells[4].innerHTML = data.titre;
+                row.cells[5].innerHTML = data.abreviationTitre;
+            }
+
+            if (["StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"].includes(IDButton)) {
+                row.cells[4].innerHTML = data.titre;
+                row.cells[5].innerHTML = data.abreviationTitre;
+                row.cells[6].innerHTML = data.rattachement;
+            }
+        }
+    }
+}
+
+function afficherMessage(message) {
+    $('.alert_Param').removeClass("hide").addClass("show showAlert");
+    $(".result_Param").html(`<font style="color: #ce8500;">${message}</font>`);
+    setTimeout(() => {
+        $('.alert_Param').addClass("hide").removeClass("show");
+    }, 1000);
+}
+
+function afficherErreurPlanCorrespond(message) {
+    if (["StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"].includes(IDButton)) {
+        $("#PlanCorrespond").siblings("span.erreur").html(message).show();
+    }
+}
+
 var Supprimer = function () {
     if (totalPost > 0) {
         document.getElementById('errorCRUD').textContent = "Vous ne pouvez plus supprimer de niveaux, des codes ont été déjà saisis";
@@ -157,7 +314,10 @@ var Supprimer = function () {
     //if (aPrecedent || aSuivant) {
     if (aSuivant) {
         //alert("Suppression impossible, ce niveau a un Précédent ou / et un Suivant.");
-        alert("Suppression impossible, ce niveau a un Suivant.");
+        document.getElementById('errorCRUD').textContent = "Suppression impossible, ce niveau a un Suivant.";
+        setTimeout(function () {
+            document.getElementById('errorCRUD').textContent = "";
+        },2500)
         return;
     }
 
@@ -173,7 +333,6 @@ var closeDel = function () {
     $("#errorCodif").html('');
 }
 var Annuler = function () {
-    isEditing = false;
     GedData(IDButton);
     $(".disabled_me").prop("disabled", true);
     $(".input_focus").siblings('span.erreur').css('display', 'none');
@@ -235,11 +394,44 @@ function ControleinputSaisie() {
     $('.input_focus').keyup(function () {
         $(this).siblings('span.erreur').css('display', 'none');
     })
+    $('.input_focus').change(function () {
+        $(this).siblings('span.erreur').css('display', 'none');
+    })
+    // Blocage des touches non autorisées
+    $("#format").on("keydown", function (e) {
+        const allowedKeys = [
+            "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+        ];
+        const allowedChars = ["A", "9", "C"];
+
+        if (
+            allowedKeys.includes(e.key) ||                // touches de navigation
+            (e.ctrlKey || e.metaKey)                      // permet copier/coller avec Ctrl/Cmd
+        ) {
+            return;
+        }
+
+        const key = e.key.toUpperCase();
+        if (!allowedChars.includes(key)) {
+            e.preventDefault(); // empêche la saisie du caractère non autorisé
+        }
+    });
     $("#format").keyup(function () {
-        this.value = this.value.toUpperCase();
+        let val = $(this).val().toUpperCase();
+
+        // Supprime tout caractère autre que A, 9, C
+        val = val.replace(/[^A9C]/g, '');
+        $(this).val(val);
+        // Facultatif : validation visuelle immédiate
+        if (!TypeFormatAccept(val) && val !== '') {
+            $(this).siblings('span.erreur').html("Utilisez uniquement 'A', '9' ou 'C' sans mélange.").css('display', 'block');
+        } else {
+            $(this).siblings('span.erreur').html('').hide();
+        }
     })
     $('.choixSelect').select2();
     $("#tab_" + IDButton + " tbody").on("click", "tr", function () {
+        if (isEditing) return; // Désactiver si en mode édition
         const wasAlreadySelected = $(this).hasClass("selected");
 
         if (!wasAlreadySelected) {
@@ -296,6 +488,21 @@ function ControleinputSaisie() {
     }
     
 }
+// Fonction de validation du format
+function TypeFormatAccept(format) {
+    const motifs = {
+        "A": /^A+$/,
+        "9": /^9+$/,
+        "C": /^C+$/
+    };
+
+    for (let key in motifs) {
+        if (motifs[key].test(format)) {
+            return true;
+        }
+    }
+    return false;
+}
 function formPopup(id) {
     let container = document.getElementById('partieStructurePlan');
     container.innerHTML = "";
@@ -314,7 +521,7 @@ function formPopup(id) {
             tailleFormat = 10;
             break;
         case "StructActivite":
-            tailleFormat = 12;
+            tailleFormat = 14;
             break;
     }
     let formHTML = `
@@ -328,6 +535,14 @@ function formPopup(id) {
                         </div>
                     </div>
                     <div class="form_padd">
+                        <div class="row justify-content-center" style="text-align:center">
+                            <div class="col-md-12">
+                                <div class="alert_Param hide">
+                                    <span class="fas fa-exclamation-circle"></span>
+                                    <span class="result_Param"></span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -343,7 +558,7 @@ function formPopup(id) {
                                         <label for="libelle">Libellé</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" name="libelle" value="" id="libelle" class=" input_focus disabled_me" />
+                                        <input type="text" name="libelle" value="" id="libelle" maxlength="45" class=" input_focus disabled_me" />
                                         <span class="erreur"></span>
                                     </div>
                                 </div>
@@ -352,7 +567,7 @@ function formPopup(id) {
                                         <label for="abreviation">Abréviation</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" name="abreviation" value="" id="abreviation" class=" input_focus disabled_me" />
+                                        <input type="text" name="abreviation" value="" maxlength="10" id="abreviation" class=" input_focus disabled_me" />
                                         <span class="erreur"></span>
                                     </div>
                                 </div>
@@ -434,7 +649,8 @@ function formPopupAbreTitre(id) {
                         <label for="titre">Titre</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="titre" value="" id="titre" class=" input_focus disabled_me" />
+                        <input type="text" name="titre" maxlength="20" value="" id="titre" class=" input_focus disabled_me" />
+                        <span class="erreur"></span>
                     </div>
                 </div>
                 <div class="row">
@@ -442,7 +658,8 @@ function formPopupAbreTitre(id) {
                         <label for="abreviationTitre">Abréviation Titre</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="abreviationTitre" value="" id="abreviationTitre" class=" input_focus disabled_me" />
+                        <input type="text" name="abreviationTitre" maxlength="10" value="" id="abreviationTitre" class=" input_focus disabled_me" />
+                        <span class="erreur"></span>
                     </div>
                 </div>
             `;
@@ -460,6 +677,7 @@ function formPopupPlanCorresp(id) {
                             <select class="input_focus choixSelect disabled_me" style="width:100%" id="PlanCorrespond">
                                 <option value="0"></option>
                             </select>
+                            <span class="erreur"></span>
                         </div>
                     </div>
                 `;
@@ -757,6 +975,7 @@ function GedData(id) {
             document.getElementById('Annuler').disabled = true;
 
             if (data.listData.length === 0) {
+                isEditing = true;
                 const defaultTitles = {
                     StructPlanBudget: "Structure Plan Budgétaire",
                     StructActivite: "Structure Plan Analytique",
@@ -779,6 +998,7 @@ function GedData(id) {
                 document.getElementById('Supprimer').disabled = true;
                 resetForm();
             } else {
+                isEditing = false;
                 document.getElementById('Ajouter').disabled = false;
                 totalPost = parseInt(data.total);
                 updateTableWithData(id, data.listData);
@@ -789,35 +1009,47 @@ function GedData(id) {
                     fillFirstRowForm(id, table.tBodies[0].rows[0]);
                 }
 
-                compterCaracteresColums(id);
                 document.getElementById('Imprimer').disabled = false;
                 document.getElementById('Modifier').disabled = false;
                 document.getElementById('Supprimer').disabled = false;
             }
+            compterCaracteresColums(id);
 
             $(".disabled_me").prop("disabled", true);
         }
     });
 }
 
-function compterCaracteresColums(tab) {
+function compterCaracteresColums(id) {
     let totalCaracteres = 0;
-    let tableau = document.getElementById("tab_" + tab);
+    let tableau = document.getElementById("tab_" + id);
 
-    // Boucle sur toutes les lignes du tbody (évite le thead)
-    for (let i = 1; i < tableau.rows.length; i++) {
-        let formatCell = tableau.rows[i].cells[3]; // 4e colonne (index 2)
-        let formatText = formatCell.textContent.trim(); // Récupérer le texte sans espace
-        totalCaracteres += formatText.length; // Ajouter la longueur au total
+    if (tableau.rows.length === 0) {
+        totalCaracteres = 0;
+    } else {
+        // Boucle sur toutes les lignes du tbody (en supposant que la première ligne est un thead)
+        for (let i = 1; i < tableau.rows.length; i++) {
+            let formatCell = tableau.rows[i].cells[3]; // 4e colonne (index 3)
+            let formatText = formatCell.textContent.trim();
+            totalCaracteres += formatText.length;
+        }
     }
 
-    // Afficher le résultat
     $("#totalForm").val(totalCaracteres);
 }
+
 function resetForm() {
     $(".input_focus").val('');
     $('.input_focus').siblings('span.erreur').css('display', 'none');
     totalPost = 0;
+    switch (IDButton) {
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            $("#PlanCorrespond").val(0).trigger('change');
+        default:
+    }
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
