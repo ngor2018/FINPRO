@@ -988,7 +988,14 @@ namespace FINPRO.Controllers
                     fields["TITRE"] = objData.titre;
                     fields["TITRECOURT"] = objData.abreviationTitre;
                     if (niveau.StartsWith("StructPlanExtP"))
-                        fields["rattachement"] = objData.rattachement;
+                        if (objData.rattachement == "0")
+                        {
+                            fields["rattachement"] = null;
+                        }
+                        else
+                        {
+                            fields["rattachement"] = objData.rattachement;
+                        }
                     break;
             }
 
@@ -1091,88 +1098,51 @@ namespace FINPRO.Controllers
 
             switch (niveau)
             {
-                case "Pays":
-                    instance = new Tables_Sto.rPays();
-                    break;
-                case "services":
-                    instance = new Tables_Sto.rService();
-                    break;
-                case "groupes":
-                    instance = new Tables_Sto.rGroupeFamille();
-                    break;
-                case "unites":
-                    instance = new Tables_Sto.rUnite();
-                    break;
-                case "magasins":
-                    instance = new Tables_Sto.rMagasin();
-                    break;
-                case "Exercices":
-                    instance = new Tables_Sto.rExercice();
-                    break;
-                case "Monnaie":
-                    instance = new Tables_Sto.rMonnaie();
-                    break;
-                case "Articles":
-                    instance = new Tables_Sto.rStkArticle();
-                    break;
-                case "Affectations":
-                    instance = new Tables_Sto.mAffectation();
-                    break;
-                case "StructPlanBudget":
-                    instance = new Tables.rStruPost();
-                    break;
-                case "StructPlanCompt":
-                    instance = new Tables.rStruCoge();
-                    break;
-                case "StructActivite":
-                    instance = new Tables.rStruActi();
-                    break;
-                case "StructZone":
-                    instance = new Tables.rStruGeo();
-                    break;
-                case "StructEmplacements":
-                    instance = new Tables.rStruEmplacement();
-                    break;
-                case "StructPlan6":
-                    instance = new Tables.rStruPlan6();
-                    break;
-                case "StructPlanExtP1":
-                    instance = new Tables.RSTRUPLAN1EXT();
-                    break;
-                case "StructPlanExtP2":
-                    instance = new Tables.RSTRUPLAN2EXT();
-                    break;
-                case "StructPlanExtP3":
-                    instance = new Tables.RSTRUPLAN3EXT();
-                    break;
-                case "StructPlanExtP4":
-                    instance = new Tables.RSTRUPLAN4EXT();
-                    break;
-                default:
-                    instance = null;
-                    break;
+                case "Pays": instance = new Tables_Sto.rPays(); break;
+                case "services": instance = new Tables_Sto.rService(); break;
+                case "groupes": instance = new Tables_Sto.rGroupeFamille(); break;
+                case "unites": instance = new Tables_Sto.rUnite(); break;
+                case "magasins": instance = new Tables_Sto.rMagasin(); break;
+                case "Exercices": instance = new Tables_Sto.rExercice(); break;
+                case "Monnaie": instance = new Tables_Sto.rMonnaie(); break;
+                case "Articles": instance = new Tables_Sto.rStkArticle(); break;
+                case "Affectations": instance = new Tables_Sto.mAffectation(); break;
+                case "StructPlanBudget": instance = new Tables.rStruPost(); break;
+                case "StructPlanCompt": instance = new Tables.rStruCoge(); break;
+                case "StructActivite": instance = new Tables.rStruActi(); break;
+                case "StructZone": instance = new Tables.rStruGeo(); break;
+                case "StructEmplacements": instance = new Tables.rStruEmplacement(); break;
+                case "StructPlan6": instance = new Tables.rStruPlan6(); break;
+                case "StructPlanExtP1": instance = new Tables.RSTRUPLAN1EXT(); break;
+                case "StructPlanExtP2": instance = new Tables.RSTRUPLAN2EXT(); break;
+                case "StructPlanExtP3": instance = new Tables.RSTRUPLAN3EXT(); break;
+                case "StructPlanExtP4": instance = new Tables.RSTRUPLAN4EXT(); break;
+                default: instance = null; break;
             }
 
-
-            // Vérification si StructPlanExtP
             if (niveau.StartsWith("StructPlanExtP"))
             {
                 int nbreFoisExistance = 0;
                 string filtre = $"rattachement = '{rattachement}'";
-                var tabs = new List<object>
+
+                // dictionnaire avec nom du niveau pour comparaison + instance
+                var tabs = new Dictionary<string, object>
                 {
-                    new Tables.RSTRUPLAN1EXT(),
-                    new Tables.RSTRUPLAN2EXT(),
-                    new Tables.RSTRUPLAN3EXT(),
-                    new Tables.RSTRUPLAN4EXT()
+                    { "StructPlanExtP1", new Tables.RSTRUPLAN1EXT() },
+                    { "StructPlanExtP2", new Tables.RSTRUPLAN2EXT() },
+                    { "StructPlanExtP3", new Tables.RSTRUPLAN3EXT() },
+                    { "StructPlanExtP4", new Tables.RSTRUPLAN4EXT() }
                 };
+
                 foreach (var tab in tabs)
                 {
-                    var remplirMethod = tab.GetType().GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+                    if (tab.Key == niveau) continue; // Exclure l'instance courante
+
+                    var remplirMethod = tab.Value.GetType().GetMethod("RemplirDataTable", new Type[] { typeof(string) });
 
                     if (remplirMethod != null)
                     {
-                        var data = (DataTable)remplirMethod.Invoke(tab, new object[] { filtre });
+                        var data = (DataTable)remplirMethod.Invoke(tab.Value, new object[] { filtre });
                         if (data != null && data.Rows.Count > 0)
                         {
                             nbreFoisExistance += data.Rows.Count;
@@ -1180,13 +1150,13 @@ namespace FINPRO.Controllers
                     }
                 }
 
-                bool isAllowed = nbreFoisExistance == 0; // true si aucun rattachement trouvé
+                bool isAllowed = nbreFoisExistance == 0; // autorisé si aucun autre ne contient ce rattachement
                 return (instance, isAllowed);
             }
 
-
             return (instance, true);
         }
+
 
         [HttpPost]
         public JsonResult DelParam(parametre objData)
@@ -1228,6 +1198,36 @@ namespace FINPRO.Controllers
                 case "Affectations":
                     tableInstance = new Tables_Sto.mAffectation();
                     break;
+                case "StructPlanBudget":
+                    tableInstance = new Tables.rStruPost();
+                    break;
+                case "StructPlanCompt":
+                    tableInstance = new Tables.rStruCoge();
+                    break;
+                case "StructActivite":
+                    tableInstance = new Tables.rStruActi();
+                    break;
+                case "StructZone":
+                    tableInstance = new Tables.rStruGeo();
+                    break;
+                case "StructEmplacements":
+                    tableInstance = new Tables.rStruEmplacement();
+                    break;
+                case "StructPlan6":
+                    tableInstance = new Tables.rStruPlan6();
+                    break;
+                case "StructPlanExtP1":
+                    tableInstance = new Tables.RSTRUPLAN1EXT();
+                    break;
+                case "StructPlanExtP2":
+                    tableInstance = new Tables.RSTRUPLAN2EXT();
+                    break;
+                case "StructPlanExtP3":
+                    tableInstance = new Tables.RSTRUPLAN3EXT();
+                    break;
+                case "StructPlanExtP4":
+                    tableInstance = new Tables.RSTRUPLAN4EXT();
+                    break;
             }
             if (tableInstance != null)
             {
@@ -1251,6 +1251,18 @@ namespace FINPRO.Controllers
                     case "Monnaie":
                     case "Articles":
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "'";
+                        break;
+                    case "StructPlanBudget":
+                    case "StructPlanCompt":
+                    case "StructActivite":
+                    case "StructZone":
+                    case "StructEmplacements":
+                    case "StructPlan6":
+                    case "StructPlanExtP1":
+                    case "StructPlanExtP2":
+                    case "StructPlanExtP3":
+                    case "StructPlanExtP4":
+                        requete = "DELETE FROM " + tableType + " where niveau = '" + objData.niveauVal + "'";
                         break;
                     case "magasins":
                         requete = "DELETE FROM " + tableType + " where CODE = '" + code + "' and SITE = '" + site + "'";
@@ -1492,6 +1504,18 @@ namespace FINPRO.Controllers
                     {
                         totalCount = Convert.ToInt64(objTable.Rows.Count);
                     }
+                    break;
+                case "StructPlanBudget":
+                case "StructPlanCompt":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlan6":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                    totalCount = 0;
                     break;
                 default:
                     dr = com.ExecuteReader();

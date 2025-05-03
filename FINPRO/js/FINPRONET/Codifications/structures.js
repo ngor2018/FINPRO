@@ -11,7 +11,7 @@ var Ajouter = function () {
     isEditing = true;
     const btnAjouter = document.getElementById('Ajouter');
 
-    if (totalPost > 0) {
+    if (totalPost > 0 && btnAjouter.textContent === "Ajouter") {
         afficherErreur("Vous ne pouvez plus créer de niveaux, des codes ont été déjà saisis");
         return;
     }
@@ -36,6 +36,8 @@ var Ajouter = function () {
                 if (data.statut === true) {
                     miseAJourLigneTable(table, objData);
                     afficherMessage(data.message);
+                    GetNameButtonCodif();
+                    Annuler();
                 } else {
                     afficherErreurPlanCorrespond(data.message);
                 }
@@ -72,6 +74,40 @@ var Modifier = function () {
     document.getElementById('abreviation').disabled = false;
     document.getElementById('format').disabled = false;
     statutChampCRUD();
+}
+function afficherErreur(message) {
+    document.getElementById('errorCRUD').textContent = message;
+    setTimeout(() => {
+        document.getElementById('errorCRUD').textContent = "";
+    }, 2500);
+}
+
+function initialiserFormulaire() {
+    CheckFirstLine = false;
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+    $("#Modifier, #Supprimer, #closeSt, #Imprimer").prop("disabled", true);
+    $("#Annuler, .disabled_me").prop("disabled", false);
+    resetForm();
+    mettreAJourNiveau();
+    $("#libelle").focus();
+    const table = document.getElementById("tab_" + IDButton);
+    if (table.tBodies[0].rows.length == 0) {
+        $(".disabled_me").prop("disabled", false);
+    } else {
+        statutChampCRUD();
+    }
+}
+
+function mettreAJourNiveau() {
+    const table = document.getElementById("tab_" + IDButton);
+    const tbody = table.querySelector("tbody");
+    const lignes = tbody ? tbody.rows.length : 0;
+    const inputNiveau = document.getElementById("niveau");
+    if (lignes === 0) {
+        inputNiveau.value = "1";
+    } else {
+        inputNiveau.value = lignes + 1;
+    }
 }
 // ------------------ Fonctions Utilitaires ------------------
 function statutChampCRUD() {
@@ -137,29 +173,6 @@ function statutChampCRUD() {
         }
     }
 }
-function afficherErreur(message) {
-    document.getElementById('errorCRUD').textContent = message;
-    setTimeout(() => {
-        document.getElementById('errorCRUD').textContent = "";
-    }, 2500);
-}
-
-function initialiserFormulaire() {
-    CheckFirstLine = false;
-    document.getElementById('Ajouter').textContent = "Enregistrer";
-    $("#Modifier, #Supprimer, #closeSt, #Imprimer").prop("disabled", true);
-    $("#Annuler, .disabled_me").prop("disabled", false);
-    resetForm();
-    mettreAJourNiveau();
-    $("#libelle").focus();
-    const table = document.getElementById("tab_" + IDButton);
-    if (table.tBodies[0].rows.length == 0) {
-        $(".disabled_me").prop("disabled", false);
-    } else {
-        statutChampCRUD();
-    }
-}
-
 function validerChamps() {
     let isValid = true;
 
@@ -262,12 +275,14 @@ function miseAJourLigneTable(table, data) {
             if (["StructPlanBudget", "StructActivite", "StructZone", "StructPlan6"].includes(IDButton)) {
                 row.cells[4].innerHTML = data.titre;
                 row.cells[5].innerHTML = data.abreviationTitre;
+                document.getElementById('titleStruct').textContent = data.titre;
             }
 
             if (["StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"].includes(IDButton)) {
                 row.cells[4].innerHTML = data.titre;
                 row.cells[5].innerHTML = data.abreviationTitre;
                 row.cells[6].innerHTML = data.rattachement;
+                document.getElementById('titleStruct').textContent = data.titre;
             }
         }
     }
@@ -325,8 +340,31 @@ var Supprimer = function () {
     //selectedRow.remove();
     toggleForms("partieDelete");
     var niveau = $("#niveau").val();
-    document.getElementById('titreDel').textContent = "Suppresssion";
+    document.getElementById('titreDel').textContent = "Suppression";
     $("#messageDel").html("Voulez-vous supprimer Niveau <strong>" + niveau + "</strong>");
+}
+var validerDel = function () {
+    var niveau = $("#niveau").val();
+    const objData = {
+        niveau: IDButton,
+        niveauVal: niveau,
+    }
+    $.ajax({
+        url: "/CRUD/DelParam",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(objData),
+        success: function (data) {
+            GedData(IDButton);
+            GetNameButtonCodif();
+            closeDel();
+        },
+
+        error: function (error) {
+            alert("Erreur lors de l'envoi des données.");
+            console.error(error);
+        }
+    });
 }
 var closeDel = function () {
     toggleForms("partieStructurePlan");
@@ -349,6 +387,7 @@ function parameter() {
     var pageNameTitreController = $("#pageNameTitreController").val();
     var pageNameController = $("#pageNameController").val();
     var pageNameProjet = $("#pageNameProjet").val();
+    var FormHTM = "";
     var titre = $("#nameTitre");
     switch (pageName) {
         case "Structures":
@@ -798,17 +837,6 @@ function formDel() {
         `;
     container.insertAdjacentHTML("beforeend", formHTML);
 }
-function mettreAJourNiveau() {
-    const table = document.getElementById("tab_" + IDButton);
-    const tbody = table.querySelector("tbody");
-    const lignes = tbody ? tbody.rows.length : 0;
-    const inputNiveau = document.getElementById("niveau");
-    if (lignes === 0) {
-        inputNiveau.value = "1";
-    } else {
-        inputNiveau.value = lignes + 1;
-    }
-}
 
 function chargerDropdownDepuisButtons() {
     const choixList = document.getElementById("PlanCorrespond");
@@ -969,7 +997,7 @@ function GedData(id) {
         data: { id: id },
         url: '/FINPRO_Codifications/GetListDataStruct',
         success: function (data) {
-            //$("#contentTab tbody").empty();
+            $("#tab_" + id + " tbody").empty();
             document.getElementById('Ajouter').textContent = "Ajouter";
             document.getElementById('closeSt').disabled = false;
             document.getElementById('Annuler').disabled = true;

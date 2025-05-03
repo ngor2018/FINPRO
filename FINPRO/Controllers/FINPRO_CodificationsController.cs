@@ -42,7 +42,8 @@ namespace FINPRO.Controllers
             }
             else
             {
-                ViewBag.Projet = "FINPRONET";
+                ViewBag.NameTitrecontroller = "FINPRO";
+                ViewBag.Projet = "PlanCompte";
                 ViewBag.Controleur = "Plans de comptes";
                 return View();
             }

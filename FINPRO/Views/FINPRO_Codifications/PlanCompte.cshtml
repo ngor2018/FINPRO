@@ -1,6 +1,6 @@
 ﻿<div class="row">
     <div class="col-md-12">
-        <h3 class="mb-2">Plan Compte</h3>
+        <h3 class="mb-2" id="nameTitre"></h3>
     </div>
 </div>
 <div class="row">
@@ -15,44 +15,55 @@
             <div class="tab-pane fade active show" id="tab-EntiteBudgetTech" role="tabpanel" aria-labelledby="EntiteBudgetTech-tab">
                 <div class="row" style="padding-bottom:10px">
                     <div class="col-md-12">
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Budget" onclick="Budget()">Budget</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Activite" onclick="Activite()">Activité</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="zone" onclick="zone()">Zone</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanBudget"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructActivite"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructZone"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructEmplacements"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlan6"></button>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="tab-PlanExterne" role="tabpanel" aria-labelledby="PlanExterne-tab">
                 <div class="row" style="padding-bottom:10px">
                     <div class="col-md-12">
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p1" onclick="p1()">P1</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p2" onclick="p2()">P2</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p3" onclick="p3()">P3</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="p4" onclick="p4()">P4</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="CorrespondPlan" onclick="CorrespondPlan()">Correspondance des Plans</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanExtP1"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanExtP2"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanExtP3"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanExtP4"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructCorrespondPlan">Correspondance des Plans</button>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="tab-EntiteComptable" role="tabpanel" aria-labelledby="EntiteComptable-tab">
                 <div class="row" style="padding-bottom:10px">
                     <div class="col-md-12">
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanComptable" onclick="PlanComptable()">Plan Comptable</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanTier" onclick="PlanTier()">Plan des tiers</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="PlanJournaux" onclick="PlanJournaux()">Plan des journaux</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanCompt"></button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanTier">Plan des tiers</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructPlanJournaux">Plan des journaux</button>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="tab-EntiteFinancier" role="tabpanel" aria-labelledby="EntiteFinancier-tab">
                 <div class="row" style="padding-bottom:10px">
                     <div class="col-md-12">
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="BailleurFond" onclick="BailleurFond()">Bailleur de fonds</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Conventions" onclick="Conventions()">Conventions</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="CategorieFinance" onclick="CategorieFinance()">Catégories financières</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Ventilation" onclick="Ventilation()">Ventilation</button>
-                        <button class="btn btn-secondary me-1 mb-1" type="button" id="Signataires" onclick="Signataires()">Signataires</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructBailleurFond">Bailleur de fonds</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructConventions">Conventions</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructCategorieFinance">Catégories financières</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructVentilation">Ventilation</button>
+                        <button class="btn btn-secondary me-1 mb-1 PlCompte" type="button" id="StructSignataires">Signataires</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div id="fullscreen_popup" style="display:none;">
+    <div class="forme" id="partieStructurePlan">
+
+    </div>
+    <div class="forme" id="partieDelete">
+
+    </div>
+</div>
 <script src="~/js/FINPRONET/Codifications/PlanCompte.js"></script>
+

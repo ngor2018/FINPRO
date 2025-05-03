@@ -198,12 +198,12 @@
                                                 <ul class="nav collapse parent @(Namecontroller == "FINPRO_Codifications"?"show":"")" data-bs-parent="#appFinpronet" id="nv-CRM">
                                                     <li class="collapsed-nav-item-title d-none">Codifications</li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINPRO_Codifications @(action == "Structures"?"active":"")" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINPRO_Codifications @((action == "Structures" && Namecontroller == "FINPRO_Codifications") ? "active" : "")" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
                                                         </a> 
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINPRO_Codifications" name="PlanCompte" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINPRO_Codifications @((action == "PlanCompte" && Namecontroller == "FINPRO_Codifications") ? "active" : "")" name="PlanCompte" href="#" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Plans de comptes</span></div>
                                                         </a> 
                                                     </li>
@@ -522,7 +522,7 @@
                                             <div class="parent-wrapper">
                                                 <ul class="nav collapse parent @(Namecontroller == "FINSTOCKParam"?"show":"")" data-bs-parent="#appFinStock" id="nv-events8">
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKParam @(action == "Structures"?"active":"")" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam  @((action == "Structures" && Namecontroller == "FINSTOCKParam") ? "active" : "")" href="#" name="Structures" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Structures</span></div>
                                                         </a>
                                                     </li>
@@ -532,7 +532,7 @@
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKParam @(action == "magasins"?"active":"")" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @((action == "magasins" && Namecontroller == "FINSTOCKParam") ? "active" : "")" href="#" name="magasins" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Magasins</span></div>
                                                         </a>
                                                     </li>
@@ -542,12 +542,12 @@
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKParam @(action == "groupes"?"active":"")" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @((action == "groupes" && Namecontroller == "FINSTOCKParam") ? "active" : "")" href="#" name="groupes" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Groupes</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKParam @(action == "services"?"active":"")" href="#" name="services" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKParam @((action == "services" && Namecontroller == "FINSTOCKParam") ? "active" : "")" href="#" name="services" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Services</span></div>
                                                         </a>
                                                     </li>
@@ -575,17 +575,17 @@
                                                 <ul class="nav collapse parent @(Namecontroller == "FINSTOCKSaisie"?"show":"")" data-bs-parent="#appFinStock" id="nv-events9">
                                                     <li class="collapsed-nav-item-title d-none">Saisie</li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKSaisie @(action == "Articles"?"active":"")" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKSaisie @((action == "Articles" && Namecontroller == "FINSTOCKSaisie") ? "active" : "")" href="#" name="Articles" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Articles</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKSaisie @(action == "Affectations"?"active":"")" href="#" name="Affectations" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKSaisie @((action == "Affectations" && Namecontroller == "FINSTOCKSaisie") ? "active" : "")" href="#" name="Affectations" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Affectations</span></div>
                                                         </a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link FINSTOCKSaisie @(action == "EntreeStock"?"active":"")" href="#" name="EntreeStock" data-bs-toggle="" aria-expanded="false">
+                                                        <a class="nav-link FINSTOCKSaisie @((action == "EntreeStock" && Namecontroller == "FINSTOCKSaisie") ? "active" : "")" href="#" name="EntreeStock" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Entrée de stock</span></div>
                                                         </a>
                                                     </li>
