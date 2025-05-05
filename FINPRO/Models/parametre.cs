@@ -35,6 +35,7 @@ namespace FINPRO.Models
         public string nomUtilisateur { get; set; }
         public string motDePasse { get; set; }
         public string versionSql { get; set; }
+        public string status { get; set; }
         public bool statut { get; set; }
         public bool Encours { get; set; }
         public string annee { get; set; }

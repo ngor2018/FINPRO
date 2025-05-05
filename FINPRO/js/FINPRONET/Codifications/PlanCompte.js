@@ -1,6 +1,7 @@
 ﻿var pageName = $("#pageName").val();
 var IDButton = null; //clique button parent
 var IDbuttonCorresp = "P1Activite-tab";  //valeur par default
+var isEditing = false  // Désactiver si en mode édition ou Ajout
 $(function () {
     parameter();
 })
@@ -109,7 +110,7 @@ function formPopup() {
                                             <label for="code">Code</label>
                                         </div>
                                         <div class="col-md-3">
-                                            <input type="text" name="code" value="" id="code" class="input_focus" />
+                                            <input type="text" name="code" value="" id="code" class="input_focus disabled_me" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -117,7 +118,7 @@ function formPopup() {
                                             <label for="libelle">Libellé</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus" />
+                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus disabled_me" />
                                         </div>
                                     </div>
                                     <div id="divLastniveau">
@@ -821,7 +822,7 @@ function formPopup() {
                                         <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <label for="c">Bailleur de Fond</label>
+                                                    <label for="BailleurFond">Bailleur de Fond</label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <select id="BailleurFond" class="input_focus choixSelect" style="width:100%">
@@ -1282,6 +1283,180 @@ function formPopup() {
                         </div>
                         `;
             break;
+        case "StructCategorieFinance":
+            formHTML = `
+                        <div class="row justify-content-center" style="padding-top:4%">
+                            <div class="col-md-11 pageView">
+                                <div class="row">
+                                    <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
+                                        <div class="float-start">
+                                            <strong id="titleStruct"></strong>
+                                        </div>
+                                        <div class="float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form_padd">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h5 style="color:#ff6a00">Saisie</h5>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="codeConvention">Code de la convention</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <select id="codeConvention" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                    </select>
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="codeCategorie">Code de la catégorie</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" name="codeCategorie" value="" id="codeCategorie" class="input_focus disabledCheck" />
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-md-12">
+                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="Detail-tab" data-bs-toggle="tab" href="#tab-Detail" role="tab" aria-controls="tab-Detail" aria-selected="true">Détails</a></li>
+                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="Liste-tab" data-bs-toggle="tab" href="#tab-Liste" role="tab" aria-controls="tab-Liste" aria-selected="false" tabindex="-1">Liste</a></li>
+                                                    </ul>
+                                                    <div class="row justify-content-right" style="text-align:right">
+                                                        <div class="col-md-12">
+                                                            <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                                            <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                                            <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                                            <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-content mt-3" id="myTab6Content">
+                                                        <div class="tab-pane fade active show" id="tab-Detail" role="tabpanel" aria-labelledby="Detail-tab">
+                                                            <div class="row" style="padding-bottom:10px">
+                                                                <div class="col-md-12">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <h5 style="color:#ff6a00"><u>Caractéristiques</u></h5>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <div class="row">
+                                                                                <div class="col-md-4">
+                                                                                    <label for="libelleCat">Libellé de la catégorie</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text" name="libelleCat" value="" id="libelleCat" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="form-check">
+                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="categorieTaxe" style="cursor:pointer">
+                                                                                        <label class="form-check-label" for="categorieTaxe" style="cursor:pointer">
+                                                                                            Catégorie représentant une TAXE
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6" style="border-left:1px solid #d0cccc;">
+                                                                            <div class="row">
+                                                                                <div class="col-md-4">
+                                                                                    <label for="modeleEtat">Modèle d'état</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <select id="modeleEtat" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="form-check">
+                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
+                                                                                        <label class="form-check-label" for="checkActif" style="cursor:pointer">
+                                                                                            Actif
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <div class="col-md-12">
+                                                                            <h5 style="color:#ff6a00"><u>LIGNES rattaché(e)s</u></h5>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-5">
+                                                                            <div class="list-container">
+                                                                                <label><strong>LIGNE (Liste Entière)</strong></label><br>
+                                                                                <select id="listeEntiere" multiple style="width:100%;height:150px;border:1px solid #d0cccc;">
+                                                                                    <option>62211 Acquisition terrains</option>
+                                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
+                                                                                    <option>62219 Autres terrains</option>
+                                                                                    <option>62241 BASSINS</option>
+                                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
+                                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
+                                                                                    <option>62319 Autres bâtiments à usage technique</option>
+                                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
+                                                                                    <option>62343 Forage</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-1">
+                                                                            <div class="list-buttons">
+                                                                                <button onclick="moveSelected('listeEntiere', 'listeSelection')">-&gt;</button>
+                                                                                <button onclick="moveSelected('listeSelection', 'listeEntiere')">&lt;-</button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <div class="list-container">
+                                                                                <label><strong>LIGNE Sélectionné(e)s</strong></label><br>
+                                                                                <select id="listeSelection" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="tab-Liste" role="tabpanel" aria-labelledby="Liste-tab">
+                                                            <div class="row">
+                                                                <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
+                                                                    <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                                                                        <thead class="sticky-top bg-white">
+                                                                            <tr>
+                                                                                <th data-field="code1">Code de la catégorie</th>
+                                                                                <th data-field="code2">Libellé de la catégorie</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+            break;
     }
     container.insertAdjacentHTML("beforeend", formHTML);
     let button = document.getElementById(IDButton);
@@ -1306,6 +1481,8 @@ function formPopup() {
             vueTable();
             break;
     }
+    vueFirstNiveau();
+    vueLastNiveau();
     controleInput();
     DataNiveau();
 }
@@ -1332,6 +1509,7 @@ function vueTable() {
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Libellé</th>
                                         <th data-field="niveau">Niveau</th>
+                                        <th data-field="status" >statut</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1580,8 +1758,8 @@ function vueFirstNiveau() {
             container.insertAdjacentHTML("beforeend", "");
             break;
     }
-
-    controleInput();
+    $('.choixSelect').select2();
+    //controleInput();
 }
 function vueLastNiveau() {
     let container = document.getElementById('divLastniveau');
@@ -1603,7 +1781,7 @@ function vueLastNiveau() {
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" id="checkActif" type="checkbox" value="" style="cursor:pointer"/>
+                                        <input class="form-check-input disabled_me" id="checkActif" type="checkbox" value="" style="cursor:pointer"/>
                                         <label class="form-check-label" style="cursor:pointer" for="checkActif"><strong>Actif</strong></label>
                                     </div>
                                 </div>
@@ -1658,16 +1836,14 @@ function vueLastNiveau() {
     container.insertAdjacentHTML("beforeend", formHTML);
 }
 function controleInput() {
-    $('.choixSelect').select2();
     $("#closeSt").click(function () {
         document.getElementById('fullscreen_popup').style.display = "none";
     })
     $('#Choixniveau').on('change', function () {
+        
         let selectedIndex = this.selectedIndex;
         let total = this.options.length;
-
-        const select = document.getElementById("Choixniveau");
-        const selectedOption = select.options[selectedIndex];
+        const select = this;
 
         let nameAttr = "";
         if (selectedIndex > 0) {
@@ -1675,27 +1851,38 @@ function controleInput() {
             const previousOption = select.options[selectedIndex - 1];
             nameAttr = previousOption.getAttribute("name");
         }
-        //alert('mario '+nameAttr)
-        //if (total === 1 || selectedIndex === total - 1) { //Dernière option sélectionnée.
+
         if (selectedIndex === total - 1) { //Dernière option sélectionnée.
-            //alert(1)
             vueLastNiveau();
             document.getElementById('label_next_niveau').textContent = nameAttr;
             $('#divTo_niveau').show();
             $(this).attr('data-position', 'last');
-        } else if (selectedIndex === 0) {  //Première option sélectionnée.
-            //alert(0)
+
+        } else if (selectedIndex === 0) { //Première option sélectionnée.
             vueFirstNiveau();
             $('#divTo_niveau').hide();
-            document.getElementById('label_next_niveau').textContent = ""; // Rien avant la première option
+            document.getElementById('label_next_niveau').textContent = "";
             $(this).attr('data-position', 'first');
-        } else {  //Option du milieu sélectionnée.
+
+        } else { //Option du milieu sélectionnée.
             $('#divTo_niveau').show();
             document.getElementById('label_next_niveau').textContent = nameAttr;
             document.getElementById('divLastniveau').innerHTML = "";
             $(this).removeAttr('data-position');
         }
+        if (this.id == "Choixniveau") {
+            $("#next_niveau").val(null);
+        }
+
+        var niveau1 = $(this).val();
+        var niveau2 = $("#next_niveau").val();
+        GetDataniveau2(niveau1, niveau2);
     });
+    $("#next_niveau").change(function () {
+        var niveau1 = $("#Choixniveau").val();
+        var niveau2 = $(this).val();
+        GetDataniveau2(niveau1, niveau2);
+    })
     
     document.querySelectorAll(".PlCorrespond").forEach(button => {
         button.addEventListener("click", function () {
@@ -1742,6 +1929,7 @@ function controleInput() {
         });
     });
 
+    $('.choixSelect').select2();
 }
 function DataNiveau() {
     $.ajax({
@@ -1760,9 +1948,19 @@ function DataNiveau() {
                 case "StructConventions":
                 case "StructSignataires":
                 case "StructVentilation":
+                case "StructCategorieFinance":
 
                     break;
-                default:
+                case "StructPlanBudget":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlan6":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP3":
+                case "StructPlanExtP4":
+                case "StructPlanCompt":
                     const $select = $('#Choixniveau');
                     $select.empty();
                     let list = data.listData;
@@ -1785,10 +1983,106 @@ function DataNiveau() {
                         vueFirstNiveau();
                         $select.attr('data-position', 'first');
                     }
+
+                    var niveau1 = $("#Choixniveau").val();
+                    var niveau2 = $("#next_niveau").val();
+                    GetDataniveau2(niveau1, niveau2);
                     break;
             }
         }
     });
+}
+function GetDataniveau2(niveau1,niveau2) {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            niveau: IDButton,
+            code1: niveau1,
+            code2: niveau2,
+        },
+        url: '/FINPRO_Codifications/GetListDataNiveau2',
+        success: function (data) {
+            const $select = $('#next_niveau');
+            let Dataniveau2 = data.listniveau;
+            if ($("#next_niveau").val() == "" || $("#next_niveau").val() == null) {
+                $select.empty();
+                //$("#next_niveau").append("<option value='0'></option>")
+                $.each(Dataniveau2, function (index, row) {
+                    $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
+            }
+            LoadTable(IDButton, data.listData);
+        }
+    });
+}
+function LoadTable(niveau, data) {
+    document.getElementById('Ajouter').disabled = false;
+
+    document.getElementById('Ajouter').textContent = "Ajouter";
+    document.getElementById('closeSt').disabled = false;
+    document.getElementById('Annuler').disabled = true;
+    if (data.length == 0) {
+        isEditing = true;
+        //document.getElementById('Imprimer').disabled = true;
+        document.getElementById('Modifier').disabled = true;
+        document.getElementById('Supprimer').disabled = true;
+    } else {
+        isEditing = false;
+
+
+        const table = document.getElementById("tab_" + niveau);
+        /*if (table && table.tBodies[0].rows.length > 0) {
+            CheckFirstLine = true;
+            fillFirstRowForm(id, table.tBodies[0].rows[0]);
+        }*/
+        //document.getElementById('Imprimer').disabled = false;
+        document.getElementById('Modifier').disabled = false;
+        document.getElementById('Supprimer').disabled = false;
+        $(".disabled_me").prop("disabled", true);
+    }
+    updateTableWithData(niveau, data);
+}
+function updateTableWithData(niveau, data) {
+    const tbody = $("#tab_" + niveau + " tbody");
+    tbody.empty();
+    // Récupère les colonnes visibles + leur statut "hidden" à partir du thead
+    const columns = [];
+    $("#tab_" + niveau + " thead th").each(function () {
+        const colName = $(this).data("field");
+        const isHidden = $(this).attr("hidden") !== undefined;
+        columns.push({ name: colName || "", hidden: isHidden });
+    });
+    // Génère les lignes du tableau
+    data.forEach(item => {
+        let row = "<tr>";
+        columns.forEach(col => {
+            const value = col.name ? (item[col.name] ?? "") : "";
+            const alignRight = col.name === "format" ? "style='text-align:right'" : "";
+            const hiddenAttr = col.hidden ? "hidden" : "";
+            row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+        });
+        row += "</tr>";
+        tbody.append(row);
+    });
+}
+function fillFirstRowForm(id, firstRow) {
+    const inputs = {};
+    const possibleFields = ["niveau", "libelle", "abreviation", "format", "titre", "abreviationTitre", "PlanCorrespond"];
+
+    for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
+        const cell = firstRow.cells[cellIndex];
+        const value = cell?.textContent.trim() ?? "";
+
+        const fieldId = possibleFields[cellIndex];
+        if (fieldId && $("#" + fieldId).length > 0) {
+            $("#" + fieldId).val(value);
+            inputs[fieldId] = value;
+        }
+    }
+    $(firstRow).addClass("selected").siblings().removeClass("selected");
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
@@ -1805,6 +2099,13 @@ function toggleForms(showId) {
                 elem.classList.add("hidden");
             }
         }
+    });
+}
+function moveSelected(fromId, toId) {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    Array.from(from.selectedOptions).forEach(option => {
+        to.appendChild(option);
     });
 }
 function GetNameButtonCodif() {

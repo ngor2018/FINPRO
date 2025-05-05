@@ -107,6 +107,104 @@ namespace FINPRO.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetListDataNiveau2(string niveau,string code1,string code2)
+        {
+            var listNiveau2 = new List<parametre>();
+            var listtab = new List<parametre>();
+            var filtre = string.Empty;
+            var filtreTab = string.Empty;
+            DataTable objNiveau2 = new DataTable();
+            DataTable objTab = new DataTable();
+            // Mapping ID -> instances des tables
+            var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
+                {
+                    { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) }, //Budget
+                    { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) }, //Plan Compte
+                    { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },  //Activite
+                    { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },        //Zone
+                    { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },  //Emplacements
+                    { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },  //Plan 6
+                    
+                    { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },  //Plan 1
+                    { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
+                    { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
+                    { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },  //Plan 4
+                    // Ajoute d'autres mappings ici si nécessaire
+                };
+
+            if (!tableMapping.TryGetValue(niveau, out var instances))
+            {
+                return Json(new { error = "ID non supporté" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Utilitaire pour remplir les DataTables via réflexion
+            DataTable RemplirDataTable(object instance, string param = "")
+            {
+                if (instance == null) return new DataTable();
+
+                var type = instance.GetType();
+                var method = type.GetMethod("RemplirDataTable", new[] { typeof(string) });
+
+                return method != null ? (DataTable)method.Invoke(instance, new object[] { param }) : new DataTable();
+            }
+            var nextNiveau = Convert.ToInt64(code1) - 1;
+            filtre = $"NIVEAU = '{nextNiveau}'";
+            // Remplissage des DataTables
+            objNiveau2 = RemplirDataTable(instances.tablePostInstance, filtre);
+            foreach (DataRow row in objNiveau2.Rows)
+            {
+                listNiveau2.Add(new parametre
+                {
+                    code = row["code"]?.ToString(),
+                    libelle = row["Libelle"]?.ToString(),
+                    niveau = row["niveau"]?.ToString(),
+                });
+            }
+            if (code1 != null || code1 != "" || code1 != "0")
+            {
+                if (objNiveau2.Rows.Count > 0)
+                {
+                    DataRow firstRow_2_niveau = objNiveau2.Rows[0];
+                    var FisrtCode = firstRow_2_niveau["CODE"].ToString();
+                    if (string.IsNullOrEmpty(code2))
+                    {
+                        code2 = FisrtCode;
+                    }
+                    filtreTab = $"NIVEAU = '{code1}' and CODE like '{code2}%'";
+                }
+                else
+                {
+                    code2 = null;
+                    filtreTab = $"NIVEAU = '{code1}'";
+                }
+                objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
+                try
+                {
+                    foreach (DataRow row in objTab.Rows)
+                    {
+                        listtab.Add(new parametre
+                        {
+                            code = row["code"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                            niveau = row["niveau"]?.ToString(),
+                            status = row["STATUT"]?.ToString(),
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+            }
+            var data = new
+            {
+                listniveau = listNiveau2,
+                listData = listtab
+            };
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }
 
         public JsonResult GetListDataStruct(string id)
         {

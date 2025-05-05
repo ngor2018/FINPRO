@@ -840,7 +840,7 @@ namespace FINPRO.Controllers
                 var tableType = tableInstance.GetType();
                 var remplirDataTableMethod = tableType.GetMethod("RemplirDataTable", new Type[] { typeof(string) });
                 var enregistrerMethod = tableType.GetMethod("Enregistrer", new Type[] { typeof(DataTable) });
-
+                
                 if (remplirDataTableMethod != null)
                 {
                     DataTable table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
