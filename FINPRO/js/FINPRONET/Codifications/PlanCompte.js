@@ -5,6 +5,100 @@ var isEditing = false  // Désactiver si en mode édition ou Ajout
 $(function () {
     parameter();
 })
+var Ajouter = function () {
+    $(".disabled_me").prop("disabled", false);
+    reset();
+
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+        case "StructPlanCompt":
+            CodeNiveau();
+            setTimeout(function () {
+                $("#code").focus();
+            },500)
+            break;
+    }
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+    document.getElementById('Annuler').disabled = false;
+    document.getElementById('Modifier').disabled = true;
+    document.getElementById('Supprimer').disabled = true;
+    document.getElementById('Imprimer').disabled = true;
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanCompt":
+            document.getElementById('Voir').disabled = true;
+            document.getElementById('TXT').disabled = true;
+            document.getElementById('excel').disabled = true;
+            document.getElementById('Importation').disabled = true;
+            break;
+    }
+}
+var Annuler = function () {
+    DataNiveau();
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+        case "StructPlanCompt":
+            document.getElementById('Choixniveau').disabled = false;
+            document.getElementById('aide_format').textContent = "";
+            const divVisible = $('#divTo_niveau').is(':visible');
+            if (divVisible) {
+                document.getElementById('next_niveau').disabled = false;
+            }
+            break;
+    }
+}
+function reset() {
+    var divVisible = null;
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            divVisible = $("#divLastniveau").is(':visible');
+            if (!divVisible) {
+                alert('')
+                //document.getElementById('checkActif').checked = false;
+            }
+            $("#code").val('');
+            $("#libelle").val('');
+            break;
+        case "StructPlanCompt":
+            $("#code").val('');
+            $("#libelle").val('');
+            divVisible = $("#divLastniveau").is(':visible');
+            if (!divVisible) {
+                $("#superClass").val("0").trigger('change');
+                document.getElementById('checkActif').checked = false;
+            }
+            break;
+    }
+    $('.input_focus').siblings('span.erreur').css('display', 'none');
+}
 function parameter() {
     GetNameButtonCodif();
     var pageNameTitreController = $("#pageNameTitreController").val();
@@ -66,7 +160,7 @@ function formPopup() {
         case "StructPlanCompt":
             formHTML = `
                         <div class="row justify-content-center" style="padding-top:8%">
-                            <div class="col-md-8 pageView">
+                            <div class="col-md-10 pageView">
                                 <div class="row">
                                     <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
                                         <div class="float-start">
@@ -74,68 +168,70 @@ function formPopup() {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row justify-content-center" style="text-align:center">
-                                        <div class="col-md-12">
-                                            <div class="alert_Param hide">
-                                                <span class="fas fa-exclamation-circle"></span>
-                                                <span class="result_Param"></span>
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="padding-bottom:20px">
-                                        <div class="col-md-3">
-                                            <label for="Choixniveau">Choix du niveau</label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <select class="input_focus choixSelect" style="width:100%" id="Choixniveau">
-                                            </select>
-                                            <span class="erreur"></span>
-                                        </div>
-                                    </div>
-                                    <div id="divTo_niveau" style="display:none">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label for="next_niveau" id="label_next_niveau"></label>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="Choixniveau">Choix du niveau</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <select class="input_focus choixSelect" style="width:100%" id="Choixniveau">
+                                                    </select>
+                                                    <span class="erreur"></span>
+                                                </div>
                                             </div>
-                                            <div class="col-md-9">
-                                                <select id="next_niveau" class="choixSelect input_focus" style="width:100%">
-                                                </select>
-                                                <span class="erreur"></span>
+                                            <div id="divTo_niveau" style="display:none">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <label for="next_niveau" id="label_next_niveau"></label>
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <select id="next_niveau" class="choixSelect input_focus" style="width:100%">
+                                                        </select>
+                                                        <span class="erreur"></span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label for="code">Code</label>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <input type="text" name="code" value="" id="code" class="input_focus disabled_me" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label for="libelle">Libellé</label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus disabled_me" />
-                                        </div>
-                                    </div>
-                                    <div id="divLastniveau">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="code">Code</label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" name="code" value="" id="code" class="input_focus disabled_me" />
+                                                    <small id="aide_format" class="form-text text-muted"></small>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label for="libelle">Libellé</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus disabled_me" />
+                                                </div>
+                                            </div>
+                                            <div id="divLastniveau">
 
+                                            </div>
+                                        </div>
+
+                                        <div id="partieTab" style="padding-top:10px">
+
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;;text-align:right">
-                                    <div class="col-md-12">
-                                        <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                        <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                        <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                        <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                        <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                                    <div class="col-md-2">
+                                        <div id="buttonUser">
+
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="partieTab">
-                            
                                 </div>
                             </div>
                         </div>
@@ -1459,6 +1555,7 @@ function formPopup() {
             break;
     }
     container.insertAdjacentHTML("beforeend", formHTML);
+    buttonAction();
     let button = document.getElementById(IDButton);
     document.getElementById('titleStruct').textContent = button.textContent;
     switch (IDButton) {
@@ -1486,6 +1583,54 @@ function formPopup() {
     controleInput();
     DataNiveau();
 }
+function buttonAction() {
+    let container = document.getElementById('buttonUser');
+    container.innerHTML = "";
+    let formHTML = "";
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanCompt":
+            formHTML = `
+                        <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                            <div class="col-md-12">
+                                <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                                <button class="btn_action" type="button" id="Voir" onclick="Voir()">Voir</button>
+                                <button class="btn_action" type="button" id="TXT" onclick="TXT()">TXT</button>
+                                <button class="btn_action" type="button" id="excel" onclick="excel()">Excel</button>
+                                <button class="btn_action" type="button" id="Importation" onclick="Importation()">Importation</button>
+                                <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                <button class="btn_action" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                <button class="btn_action" type="button" id="closeSt">Fermer</button>
+                            </div>
+                        </div>                               
+                        `;
+            break;
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            formHTML = `
+                        <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                            <div class="col-md-12">
+                                <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                                <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                <button class="btn_action" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                <button class="btn_action" type="button" id="closeSt">Fermer</button>
+                            </div>
+                        </div>                               
+                        `;
+            break;
+    }
+    container.insertAdjacentHTML("beforeend", formHTML);
+}
 function vueTable() {
     let container = document.getElementById('partieTab');
     container.innerHTML = "";
@@ -1502,14 +1647,14 @@ function vueTable() {
         case "StructPlanExtP4":
             formHTML = `
                     <div class="row">
-                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                            <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                        <div class="col-md-12">
+                            <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Libellé</th>
                                         <th data-field="niveau">Niveau</th>
-                                        <th data-field="status" >statut</th>
+                                        <th data-field="status" hidden>statut</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1972,7 +2117,7 @@ function DataNiveau() {
                     if (!list || list.length === 0) return;
 
                     $.each(list, function (index, row) {
-                        $select.append("<option value='" + row.niveau + "' name='" + row.abreviation + "'>" + row.niveau + " " + row.libelle + "</option>");
+                        $select.append("<option value='" + row.niveau + "' data-format='" + row.format + "' name='" + row.abreviation + "'>" + row.niveau + " " + row.libelle + "</option>");
                     });
 
                     if (list.length === 1) { //Une seule option : considérée comme dernière.");
@@ -2026,36 +2171,73 @@ function LoadTable(niveau, data) {
     document.getElementById('Annuler').disabled = true;
     if (data.length == 0) {
         isEditing = true;
+        $("#tab_" + niveau + " tbody").empty();
         //document.getElementById('Imprimer').disabled = true;
         document.getElementById('Modifier').disabled = true;
         document.getElementById('Supprimer').disabled = true;
+        document.getElementById('Imprimer').disabled = true;
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                document.getElementById('Voir').disabled = true;
+                document.getElementById('TXT').disabled = true;
+                document.getElementById('excel').disabled = true;
+                document.getElementById('Importation').disabled = true;
+                break;
+        }
     } else {
         isEditing = false;
-
-
+        updateTableWithData(niveau, data);
         const table = document.getElementById("tab_" + niveau);
-        /*if (table && table.tBodies[0].rows.length > 0) {
-            CheckFirstLine = true;
-            fillFirstRowForm(id, table.tBodies[0].rows[0]);
-        }*/
+        if (table && table.tBodies[0].rows.length > 0) {
+
+            fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
+        }
         //document.getElementById('Imprimer').disabled = false;
         document.getElementById('Modifier').disabled = false;
         document.getElementById('Supprimer').disabled = false;
-        $(".disabled_me").prop("disabled", true);
+        document.getElementById('Imprimer').disabled = false;
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                document.getElementById('Voir').disabled = false;
+                document.getElementById('TXT').disabled = false;
+                document.getElementById('excel').disabled = false;
+                document.getElementById('Importation').disabled = false;
+                break;
+        }
     }
-    updateTableWithData(niveau, data);
+    $(".disabled_me").prop("disabled", true);
 }
 function updateTableWithData(niveau, data) {
-    const tbody = $("#tab_" + niveau + " tbody");
-    tbody.empty();
-    // Récupère les colonnes visibles + leur statut "hidden" à partir du thead
+    const tableId = "#tab_" + niveau;
+    const $table = $(tableId);
+    const $tbody = $table.find("tbody");
+
+    // Supprimer DataTable si déjà initialisé
+    if ($.fn.DataTable.isDataTable(tableId)) {
+        $table.DataTable().clear().destroy();
+    }
+
+    $tbody.empty();
+
+    // Récupère les colonnes visibles + leur statut "hidden"
     const columns = [];
-    $("#tab_" + niveau + " thead th").each(function () {
+    $table.find("thead th").each(function () {
         const colName = $(this).data("field");
         const isHidden = $(this).attr("hidden") !== undefined;
         columns.push({ name: colName || "", hidden: isHidden });
     });
-    // Génère les lignes du tableau
+
+    // Génère les lignes
     data.forEach(item => {
         let row = "<tr>";
         columns.forEach(col => {
@@ -2065,24 +2247,223 @@ function updateTableWithData(niveau, data) {
             row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
         });
         row += "</tr>";
-        tbody.append(row);
+        $tbody.append(row);
     });
+
+    // Réinitialise et configure DataTable
+    $table.DataTable({
+        "pageLength": 10,
+        "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+        "responsive": false,
+        "lengthChange": true,
+        "ordering": false,
+        "initComplete": function () {
+            $(tableId + '_filter input').css({
+                'width': '150px',
+                'font-size': '0.9rem',
+                'padding': '3px 6px'
+            });
+        },
+        "language": {
+            "lengthMenu": "Afficher _MENU_ entrées",
+            "emptyTable": "Aucun élément trouvé",
+            "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
+            "loadingRecords": "Chargement...",
+            "processing": "En cours...",
+            "search": '<i class="fa fa-search" aria-hidden="true"></i>',
+            "searchPlaceholder": "Rechercher...",
+            "zeroRecords": "Aucun élément correspondant trouvé",
+            "paginate": {
+                "first": "Premier",
+                "last": "Dernier",
+                "next": "Suivant",
+                "previous": "Précédent"
+            }
+        }
+    });
+
+    // Nettoie classe si ajoutée par DataTables
+    $table.removeClass("dataTable");
+    $("#tab_" + niveau + " colgroup").remove();
 }
+
 function fillFirstRowForm(id, firstRow) {
     const inputs = {};
-    const possibleFields = ["niveau", "libelle", "abreviation", "format", "titre", "abreviationTitre", "PlanCorrespond"];
+    const possibleFields = ["code", "libelle","superClass", "checkActif"];
 
     for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
         const cell = firstRow.cells[cellIndex];
         const value = cell?.textContent.trim() ?? "";
 
         const fieldId = possibleFields[cellIndex];
-        if (fieldId && $("#" + fieldId).length > 0) {
-            $("#" + fieldId).val(value);
-            inputs[fieldId] = value;
+        if (!fieldId || $("#" + fieldId).length === 0) continue;
+
+        switch (id) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+                if (fieldId === "checkActif") {
+                    const $checkbox = $("#" + fieldId);
+                    $checkbox.prop("checked", value === "1" || value.toLowerCase() === "true");
+
+                } else {
+                    $("#" + fieldId).val(value);
+                    inputs[fieldId] = value;
+                }
+                break;
+
+            default:
+                $("#" + fieldId).val(value);
+                inputs[fieldId] = value;
+                break;
         }
     }
+
     $(firstRow).addClass("selected").siblings().removeClass("selected");
+}
+
+function CodeNiveau() {
+    document.getElementById('Choixniveau').disabled = true;
+    const divVisible = $('#divTo_niveau').is(':visible');
+    const $code = $('#code');
+    const $select = $('#Choixniveau');
+    const selectedVal = parseInt($select.val(), 10);
+
+    // Calculer la longueur totale du format cumulé
+    let totalFormatLength = 0;
+    $select.find('option').each(function () {
+        const val = parseInt($(this).val(), 10);
+        const fmt = String($(this).data('format') ?? '');
+        if (val <= selectedVal) {
+            totalFormatLength += fmt.length;
+        }
+    });
+
+    const currentFormat = String($('#Choixniveau option:selected').data('format') ?? '');
+    const previousLength = totalFormatLength - currentFormat.length;
+
+    $code.off('keydown input'); // Nettoyer
+    $code.val('');
+    $code.removeAttr('readonly');
+
+    // SANS préfixe imposé (div cachée)
+    if (!divVisible) {
+        $code.attr('maxlength', totalFormatLength);
+
+        if (/^[A]+$/.test(currentFormat)) {
+            formatAlpha($code[0]);
+        } else if (/^[9]+$/.test(currentFormat)) {
+            formatNumber($code[0]);
+        } else {
+            formatAlphaNumber($code[0]);
+        }
+
+        afficherAideFormat('', currentFormat); // ex: __ ou ____
+
+    } else {
+        document.getElementById('next_niveau').disabled = true;
+        // AVEC préfixe imposé
+        const prefix = $('#next_niveau').val() ?? '';
+        const prefixLength = prefix.length;
+        const suffixLength = totalFormatLength - prefixLength;
+
+        $code.val(prefix);
+        $code.attr('maxlength', prefixLength + suffixLength);
+
+        if (suffixLength <= 0) {
+            $code.attr('readonly', true);
+        } else {
+            // Empêche la suppression du préfixe
+            $code.on('keydown', function (event) {
+                if (this.selectionStart <= prefixLength &&
+                    ['Backspace', 'Delete'].includes(event.key)) {
+                    event.preventDefault();
+                }
+            });
+
+            // Réinsère automatiquement le préfixe si supprimé
+            $code.on('input', function () {
+                if (!this.value.startsWith(prefix)) {
+                    this.value = prefix + this.value.slice(prefix.length);
+                }
+            });
+
+            // Appliquer les formats restants (en fonction des caractères restants)
+            const suffixFormat = '_'.repeat(suffixLength);
+            if (/^[A]+$/.test(currentFormat)) {
+                formatAlpha($code[0], prefixLength);
+            } else if (/^[9]+$/.test(currentFormat)) {
+                formatNumber($code[0], prefixLength);
+            } else {
+                formatAlphaNumber($code[0], prefixLength);
+            }
+
+            afficherAideFormat(prefix, '_'.repeat(suffixLength)); // Exemple visuel
+        }
+    }
+}
+function afficherAideFormat(prefix, suffixPlaceholder) {
+    $('#aide_format').text(`Code attendu : ${prefix}${suffixPlaceholder}`);
+}
+
+
+
+//format numerique 9
+function formatNumber(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isNumber ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
+        if (!isAllowedKey) event.preventDefault();
+    });
+}
+//format Apha A
+function formatAlpha(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isLetter = /^[a-zA-Z]$/.test(key);
+        const isAllowedKey = (
+            isLetter ||
+            key === 'Backspace' ||
+            key === 'Delete' ||
+            key === 'ArrowLeft' ||
+            key === 'ArrowRight' ||
+            key === 'ArrowUp' ||
+            key === 'ArrowDown' ||
+            key === 'Tab'
+        );
+        if (!isAllowedKey) event.preventDefault();
+    });
+}
+//format Alphanumerique C
+function formatAlphaNumber(input) {
+    input.addEventListener('keydown', function (event) {
+        const key = event.key;
+        const isLetter = /^[a-zA-Z]$/.test(key);
+        const isNumber = /^[0-9]$/.test(key);
+        const isAllowedKey = (
+            isLetter || isNumber ||
+            key === 'Backspace' || key === 'Delete' ||
+            key === 'ArrowLeft' || key === 'ArrowRight' ||
+            key === 'ArrowUp' || key === 'ArrowDown' || key === 'Tab'
+        );
+        if (!isAllowedKey) event.preventDefault();
+    });
 }
 function toggleForms(showId) {
     // Liste des IDs des formulaires
