@@ -2,51 +2,102 @@
 var IDButton = null; //clique button parent
 var IDbuttonCorresp = "P1Activite-tab";  //valeur par default
 var isEditing = false  // Désactiver si en mode édition ou Ajout
+var etatCRUD = false;//Defini statut Ajout
 $(function () {
     parameter();
 })
 var Ajouter = function () {
-    $(".disabled_me").prop("disabled", false);
-    reset();
+    isEditing = true;    
+    const btnAjouter = document.getElementById('Ajouter');
+    if (btnAjouter.textContent === "Ajouter") {
+        initialiserFormulaire();
+        return;
+    }
+    // En mode "Enregistrer"
+    if (!validerChamps()) return;
 
-    switch (IDButton) {
-        case "StructPlanBudget":
-        case "StructActivite":
-        case "StructZone":
-        case "StructEmplacements":
-        case "StructPlan6":
-        case "StructPlanExtP1":
-        case "StructPlanExtP2":
-        case "StructPlanExtP3":
-        case "StructPlanExtP4":
-        case "StructPlanCompt":
-            CodeNiveau();
-            setTimeout(function () {
-                $("#code").focus();
-            },500)
-            break;
-    }
-    document.getElementById('Ajouter').textContent = "Enregistrer";
-    document.getElementById('Annuler').disabled = false;
-    document.getElementById('Modifier').disabled = true;
-    document.getElementById('Supprimer').disabled = true;
-    document.getElementById('Imprimer').disabled = true;
-    switch (IDButton) {
-        case "StructPlanBudget":
-        case "StructActivite":
-        case "StructZone":
-        case "StructEmplacements":
-        case "StructPlan6":
-        case "StructPlanCompt":
-            document.getElementById('Voir').disabled = true;
-            document.getElementById('TXT').disabled = true;
-            document.getElementById('excel').disabled = true;
-            document.getElementById('Importation').disabled = true;
-            break;
-    }
+    const table = document.getElementById("tab_" + IDButton);
+    const objData = collecterDonneesFormulaire();
+}
+var Modifier = function () {
+    isEditing = true;
+    etatCRUD = true;  //Defini statut modifier
+
 }
 var Annuler = function () {
-    DataNiveau();
+    isEditing = false;
+    $('.input_focus').siblings('span.erreur').hide();
+    const table = document.getElementById("tab_" + IDButton);
+    const rows = table.tBodies[0].rows;
+    $(".disabled_me").prop("disabled", true);
+
+
+    document.getElementById('Ajouter').textContent = "Ajouter";
+    document.getElementById('closeSt').disabled = false;
+    document.getElementById('Annuler').disabled = true;
+
+    if (table.tBodies[0].rows.length == 0) {
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+                break;
+        }
+        reset();
+    } else {
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
+        // Si des lignes existent, on récupère celle sélectionnée
+        const selectedRow = Array.from(rows).find(row => row.classList.contains('selected'));
+        var code = null, libelle = null, etatActif = null;
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+                document.getElementById('Choixniveau').disabled = false;
+                document.getElementById('aide_format').textContent = "";
+                if (selectedRow) {
+                    code = selectedRow.cells[0].innerHTML.trim();
+                    libelle = selectedRow.cells[1].innerHTML.trim();
+                    etatActif = selectedRow.cells[3].innerHTML.trim();
+
+                    $("#code").val(code);
+                    $("#libelle").val(libelle);
+
+                    // Si la div contient des balises (au moins un enfant)
+                    if ($('#divLastniveau').children().length > 0) {
+                        const $checkbox = $("#checkActif");
+                        $checkbox.prop("checked", etatActif === "1" || etatActif.toLowerCase() === "true");
+                    }
+                }
+                break;
+
+            case "StructPlanCompt":
+
+                break;
+        }
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                $("#Voir, #TXT, #excel, #Importation").prop("disabled", false);
+                break;
+        }
+    }
+    //DataNiveau();
     switch (IDButton) {
         case "StructPlanBudget":
         case "StructActivite":
@@ -60,15 +111,13 @@ var Annuler = function () {
         case "StructPlanCompt":
             document.getElementById('Choixniveau').disabled = false;
             document.getElementById('aide_format').textContent = "";
-            const divVisible = $('#divTo_niveau').is(':visible');
-            if (divVisible) {
+            if ($('#divTo_niveau').children().length > 0) {
                 document.getElementById('next_niveau').disabled = false;
             }
             break;
     }
 }
 function reset() {
-    var divVisible = null;
     switch (IDButton) {
         case "StructPlanBudget":
         case "StructActivite":
@@ -79,26 +128,118 @@ function reset() {
         case "StructPlanExtP2":
         case "StructPlanExtP3":
         case "StructPlanExtP4":
-            divVisible = $("#divLastniveau").is(':visible');
-            if (!divVisible) {
-                alert('')
-                //document.getElementById('checkActif').checked = false;
-            }
+            if ($('#divLastniveau').children().length > 0) {
+                document.getElementById('checkActif').checked = false;
+            } 
+
             $("#code").val('');
             $("#libelle").val('');
             break;
         case "StructPlanCompt":
             $("#code").val('');
             $("#libelle").val('');
-            divVisible = $("#divLastniveau").is(':visible');
-            if (!divVisible) {
-                $("#superClass").val("0").trigger('change');
+            if ($('#divLastniveau').children().length > 0) {
                 document.getElementById('checkActif').checked = false;
-            }
+            } 
             break;
     }
     $('.input_focus').siblings('span.erreur').css('display', 'none');
 }
+function initialiserFormulaire() {
+    $(".disabled_me").prop("disabled", false);
+    reset();
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+        case "StructPlanCompt":
+            CodeNiveau();
+            break;
+    }
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+    $("#Modifier, #Supprimer, #closeSt, #Imprimer").prop("disabled", true);
+    document.getElementById('Annuler').disabled = false;
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanCompt":
+            $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+            break;
+    }
+}
+function validerChamps() {
+    let isValid = true;
+    const champs = [
+        { id: "#code", nom: "code" },
+        { id: "#libelle", nom: "libelle" }
+    ];
+
+    champs.forEach(c => {
+        const $champ = $(".form_padd").find(c.id);
+        if ($champ.length === 0) return; // Champ non présent dans la vue
+
+        const val = $champ.val().trim();
+        if (!val) {
+            isValid = false;
+            $champ.siblings("span.erreur").html("champ obligatoire").show();
+        } else {
+            $champ.siblings("span.erreur").hide();
+
+            // Vérification du maxlength pour #code dans certains cas
+            if (c.id === "#code") {
+                switch (IDButton) {
+                    case "StructPlanBudget":
+                    case "StructActivite":
+                    case "StructZone":
+                    case "StructEmplacements":
+                    case "StructPlan6":
+                    case "StructPlanExtP1":
+                    case "StructPlanExtP2":
+                    case "StructPlanExtP3":
+                    case "StructPlanExtP4":
+                    case "StructPlanCompt":
+                        const maxLength = parseInt($champ.attr("maxlength") || 0, 10);
+                        if (val.length < maxLength) {
+                            isValid = false;
+                            $champ.siblings("span.erreur").html("remplir taille maximale").show();
+                        }
+                        break;
+                }
+            }
+        }
+    });
+
+    return isValid;
+}
+function collecterDonneesFormulaire() {
+    const $form = $(".form_padd");
+    const getValueIfExists = (selector) => {
+        const $el = $form.find(selector);
+        return $el.length ? $el.val() : null;
+    };
+
+    return {
+        statut: etatCRUD,
+        niveau: IDButton,
+        niveauVal: getValueIfExists("#niveau"),
+        libelle: getValueIfExists("#libelle"),
+        abreviation: getValueIfExists("#abreviation"),
+        format: getValueIfExists("#format"),
+        titre: getValueIfExists("#titre"),
+        abreviationTitre: getValueIfExists("#abreviationTitre"),
+        rattachement: getValueIfExists("#PlanCorrespond")
+    };
+}
+
 function parameter() {
     GetNameButtonCodif();
     var pageNameTitreController = $("#pageNameTitreController").val();
@@ -205,9 +346,10 @@ function formPopup() {
                                                 <div class="col-md-3">
                                                     <label for="code">Code</label>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-5">
                                                     <input type="text" name="code" value="" id="code" class="input_focus disabled_me" />
                                                     <small id="aide_format" class="form-text text-muted"></small>
+                                                    <span class="erreur"></span>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -216,6 +358,7 @@ function formPopup() {
                                                 </div>
                                                 <div class="col-md-9">
                                                     <input type="text" name="libelle" value="" id="libelle" class="input_focus disabled_me" />
+                                                    <span class="erreur"></span>
                                                 </div>
                                             </div>
                                             <div id="divLastniveau">
@@ -1654,7 +1797,7 @@ function vueTable() {
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Libellé</th>
                                         <th data-field="niveau">Niveau</th>
-                                        <th data-field="status" hidden>statut</th>
+                                        <th data-field="status">statut</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2075,6 +2218,49 @@ function controleInput() {
     });
 
     $('.choixSelect').select2();
+    $("#tab_" + IDButton + " tbody").on("click", "tr", function () {
+        if (isEditing) return; // Désactiver si en mode édition
+        const wasAlreadySelected = $(this).hasClass("selected");
+
+        if (!wasAlreadySelected) {
+            $("#tab_" + IDButton + " tbody tr").removeClass("selected");
+            $(this).addClass("selected");
+            chargerValeursDepuisLigne(this, IDButton);
+        }
+        // sinon : ne rien faire, garder la sélection
+    });
+    $('.input_focus').keyup(function () {
+        $(this).siblings('span.erreur').hide();
+    })
+}
+function chargerValeursDepuisLigne(row, IDButton) {
+    var code = null, libelle = null, etatActif = null;
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            code = row.cells[0].innerHTML;
+            libelle = row.cells[1].innerHTML;
+            $("#code").val(code);
+            $("#libelle").val(libelle);
+            etatActif = row.cells[3].innerHTML;
+            if ($('#divLastniveau').children().length > 0) {
+                document.getElementById('checkActif').checked = false;
+                const $checkbox = $("#checkActif");
+                $checkbox.prop("checked", etatActif === "1" || etatActif.toLowerCase() === "true");
+            }
+            break;
+
+        case "StructPlanCompt":
+
+            break;
+    }
 }
 function DataNiveau() {
     $.ajax({
@@ -2136,6 +2322,7 @@ function DataNiveau() {
             }
         }
     });
+    $('.input_focus').siblings('span.erreur').hide();
 }
 function GetDataniveau2(niveau1,niveau2) {
     $.ajax({
@@ -2172,10 +2359,7 @@ function LoadTable(niveau, data) {
     if (data.length == 0) {
         isEditing = true;
         $("#tab_" + niveau + " tbody").empty();
-        //document.getElementById('Imprimer').disabled = true;
-        document.getElementById('Modifier').disabled = true;
-        document.getElementById('Supprimer').disabled = true;
-        document.getElementById('Imprimer').disabled = true;
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -2183,24 +2367,18 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                document.getElementById('Voir').disabled = true;
-                document.getElementById('TXT').disabled = true;
-                document.getElementById('excel').disabled = true;
-                document.getElementById('Importation').disabled = true;
+                $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
                 break;
         }
+        reset();
     } else {
         isEditing = false;
         updateTableWithData(niveau, data);
         const table = document.getElementById("tab_" + niveau);
-        if (table && table.tBodies[0].rows.length > 0) {
-
+        if (table.tBodies[0].rows.length > 0) {
             fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
-        }
-        //document.getElementById('Imprimer').disabled = false;
-        document.getElementById('Modifier').disabled = false;
-        document.getElementById('Supprimer').disabled = false;
-        document.getElementById('Imprimer').disabled = false;
+        } 
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -2208,10 +2386,7 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                document.getElementById('Voir').disabled = false;
-                document.getElementById('TXT').disabled = false;
-                document.getElementById('excel').disabled = false;
-                document.getElementById('Importation').disabled = false;
+                $("#Voir, #TXT, #excel, #Importation").prop("disabled", false);
                 break;
         }
     }
@@ -2257,13 +2432,6 @@ function updateTableWithData(niveau, data) {
         "responsive": false,
         "lengthChange": true,
         "ordering": false,
-        "initComplete": function () {
-            $(tableId + '_filter input').css({
-                'width': '150px',
-                'font-size': '0.9rem',
-                'padding': '3px 6px'
-            });
-        },
         "language": {
             "lengthMenu": "Afficher _MENU_ entrées",
             "emptyTable": "Aucun élément trouvé",
@@ -2329,91 +2497,84 @@ function fillFirstRowForm(id, firstRow) {
 }
 
 function CodeNiveau() {
-    document.getElementById('Choixniveau').disabled = true;
-    const divVisible = $('#divTo_niveau').is(':visible');
-    const $code = $('#code');
     const $select = $('#Choixniveau');
+    const $code = $('#code');
+    const $next = $('#next_niveau');
     const selectedVal = parseInt($select.val(), 10);
+    const divVisible = $('#divTo_niveau').is(':visible');
 
-    // Calculer la longueur totale du format cumulé
+    $select.prop('disabled', true);
+    $code.off('keydown input keyup').val('').removeAttr('readonly');
+
+    // Calculer la longueur totale du format cumulé jusqu’au niveau sélectionné
     let totalFormatLength = 0;
     $select.find('option').each(function () {
         const val = parseInt($(this).val(), 10);
         const fmt = String($(this).data('format') ?? '');
-        if (val <= selectedVal) {
-            totalFormatLength += fmt.length;
-        }
+        if (val <= selectedVal) totalFormatLength += fmt.length;
     });
 
-    const currentFormat = String($('#Choixniveau option:selected').data('format') ?? '');
+    const currentFormat = String($select.find('option:selected').data('format') ?? '');
     const previousLength = totalFormatLength - currentFormat.length;
 
-    $code.off('keydown input'); // Nettoyer
-    $code.val('');
-    $code.removeAttr('readonly');
-
-    // SANS préfixe imposé (div cachée)
     if (!divVisible) {
+        // Mode SANS préfixe
         $code.attr('maxlength', totalFormatLength);
-
-        if (/^[A]+$/.test(currentFormat)) {
-            formatAlpha($code[0]);
-        } else if (/^[9]+$/.test(currentFormat)) {
-            formatNumber($code[0]);
-        } else {
-            formatAlphaNumber($code[0]);
-        }
-
-        afficherAideFormat('', currentFormat); // ex: __ ou ____
-
+        appliquerFormat($code[0], currentFormat);
+        afficherAideFormat('', currentFormat);
     } else {
-        document.getElementById('next_niveau').disabled = true;
-        // AVEC préfixe imposé
-        const prefix = $('#next_niveau').val() ?? '';
+        // Mode AVEC préfixe
+        $next.prop('disabled', true);
+        const prefix = $next.val() ?? '';
         const prefixLength = prefix.length;
         const suffixLength = totalFormatLength - prefixLength;
 
-        $code.val(prefix);
-        $code.attr('maxlength', prefixLength + suffixLength);
+        $code.val(prefix).attr('maxlength', totalFormatLength);
 
         if (suffixLength <= 0) {
-            $code.attr('readonly', true);
+            $code.prop('readonly', true);
         } else {
             // Empêche la suppression du préfixe
-            $code.on('keydown', function (event) {
+            $code.on('keydown', function (e) {
                 if (this.selectionStart <= prefixLength &&
-                    ['Backspace', 'Delete'].includes(event.key)) {
-                    event.preventDefault();
+                    ['Backspace', 'Delete'].includes(e.key)) {
+                    e.preventDefault();
                 }
             });
 
-            // Réinsère automatiquement le préfixe si supprimé
+            // Réinsère automatiquement le préfixe s’il est supprimé
             $code.on('input', function () {
                 if (!this.value.startsWith(prefix)) {
                     this.value = prefix + this.value.slice(prefix.length);
                 }
             });
 
-            // Appliquer les formats restants (en fonction des caractères restants)
-            const suffixFormat = '_'.repeat(suffixLength);
-            if (/^[A]+$/.test(currentFormat)) {
-                formatAlpha($code[0], prefixLength);
-            } else if (/^[9]+$/.test(currentFormat)) {
-                formatNumber($code[0], prefixLength);
-            } else {
-                formatAlphaNumber($code[0], prefixLength);
-            }
-
-            afficherAideFormat(prefix, '_'.repeat(suffixLength)); // Exemple visuel
+            appliquerFormat($code[0], currentFormat, prefixLength);
+            afficherAideFormat(prefix, '_'.repeat(suffixLength));
         }
     }
+
+    // Mise en majuscule automatique à chaque frappe
+    $code.on('keyup', function () {
+        this.value = this.value.toUpperCase();
+        $('.input_focus').siblings('span.erreur').hide();
+    });
+    $code.focus()[0].setSelectionRange($code.val().length, $code.val().length);
+
 }
+function appliquerFormat(input, format, startIndex = 0) {
+    if (/^[A]+$/.test(format)) {
+        formatAlpha(input, startIndex);
+    } else if (/^[9]+$/.test(format)) {
+        formatNumber(input, startIndex);
+    } else {
+        formatAlphaNumber(input, startIndex);
+    }
+}
+
 function afficherAideFormat(prefix, suffixPlaceholder) {
     $('#aide_format').text(`Code attendu : ${prefix}${suffixPlaceholder}`);
 }
-
-
-
 //format numerique 9
 function formatNumber(input) {
     input.addEventListener('keydown', function (event) {

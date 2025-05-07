@@ -1,3 +1,7 @@
+
+.dt-search .dt-input {
+    height: 28px !important;
+}
 .btn_action {
     display: inline-block;
     padding: 5px 12px;
