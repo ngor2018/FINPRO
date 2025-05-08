@@ -106,6 +106,23 @@ namespace FINPRO.Controllers
 
             return Json(data, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetListDataCorrespondance(string niveau)
+        {
+            var listCode = new List<parametre>();
+            var listCoresspond = new List<parametre>();
+            var listData = new List<parametre>();
+            DataTable tabCode = new DataTable();
+            DataTable tabCoresspond = new DataTable();
+            DataTable tabListData = new DataTable();
+            var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
+                {
+                    { "P1Activite-tab", (new Tables.RPLAN1EXT(), new Tables.RCORPLAN1EXT()) }, //P1 Activite
+                    { "P2Zones-tab", (new Tables.RPLAN2EXT(), new Tables.RCORPLAN2EXT()) }, //P2 Zones
+                    { "P3Budget-tab", (new Tables.RPLAN3EXT(), new Tables.RCORPLAN3EXT()) },  //P3 Budget
+                    { "P4Compte-tab", (new Tables.RPLAN4EXT(), new Tables.RCORPLAN4EXT()) },        //P4 Compte
+                    // Ajoute d'autres mappings ici si nécessaire
+                };
+        }
 
         public JsonResult GetListDataNiveau2(string niveau,string code1,string code2)
         {
@@ -180,15 +197,39 @@ namespace FINPRO.Controllers
                 objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
                 try
                 {
-                    foreach (DataRow row in objTab.Rows)
+                    switch (niveau)
                     {
-                        listtab.Add(new parametre
-                        {
-                            code = row["code"]?.ToString(),
-                            libelle = row["Libelle"]?.ToString(),
-                            niveau = row["niveau"]?.ToString(),
-                            status = row["STATUT"]?.ToString(),
-                        });
+                        case "StructPlanCompt":
+                            foreach (DataRow row in objTab.Rows)
+                            {
+                                listtab.Add(new parametre
+                                {
+                                    code = row["code"]?.ToString(),
+                                    libelle = row["Libelle"]?.ToString(),
+                                    niveau = row["niveau"]?.ToString(),
+                                    status = row["STATUT"]?.ToString(),
+                                    collectif = row["collectif"].ToString(),
+                                    gestionImmo = row["GESTIONIMMO"].ToString(),
+                                    budget = row["budget"].ToString(),
+                                    acti = row["acti"].ToString(),
+                                    geo = row["geo"].ToString(),
+                                    fin = row["fin"].ToString(),
+                                    superClasse = row["superClasse"].ToString(),
+                                });
+                            }
+                            break;
+                        default:
+                            foreach (DataRow row in objTab.Rows)
+                            {
+                                listtab.Add(new parametre
+                                {
+                                    code = row["code"]?.ToString(),
+                                    libelle = row["Libelle"]?.ToString(),
+                                    niveau = row["niveau"]?.ToString(),
+                                    status = row["STATUT"]?.ToString(),
+                                });
+                            }
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -297,12 +338,23 @@ namespace FINPRO.Controllers
 
                     // Ajoute d'autres cas si nécessaire
             }
-
+            var listSuperClass = new List<parametre>();
+            Tables.rSuperClasse rSuperClasse = new Tables.rSuperClasse();
+            DataTable tabSupClass = rSuperClasse.RemplirDataTable();
+            foreach (DataRow row in tabSupClass.Rows)
+            {
+                listSuperClass.Add(new parametre()
+                {
+                    code = row["code"].ToString(),
+                    libelle = row["libelle"].ToString()
+                });
+            }
             // Structure de retour
             var data = new
             {
                 total = cpte,
-                listData
+                listData,
+                listSuperClass
             };
 
             return Json(data, JsonRequestBehavior.AllowGet);

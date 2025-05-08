@@ -38,11 +38,11 @@
     }
 
 /* Responsive pour petits écrans */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .btn_action {
         font-size: 12px;
         padding: 6px 12px;
-        width: 80%;
+        width: 20%;
     }
 }
 

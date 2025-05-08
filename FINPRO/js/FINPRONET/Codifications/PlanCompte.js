@@ -3,11 +3,14 @@ var IDButton = null; //clique button parent
 var IDbuttonCorresp = "P1Activite-tab";  //valeur par default
 var isEditing = false  // Désactiver si en mode édition ou Ajout
 var etatCRUD = false;//Defini statut Ajout
+var nameButton = null;
 $(function () {
     parameter();
 })
 var Ajouter = function () {
-    isEditing = true;    
+    nameButton = "Ajout";
+    isEditing = true;  
+    bloquerZoneTable();
     const btnAjouter = document.getElementById('Ajouter');
     if (btnAjouter.textContent === "Ajouter") {
         initialiserFormulaire();
@@ -20,12 +23,16 @@ var Ajouter = function () {
     const objData = collecterDonneesFormulaire();
 }
 var Modifier = function () {
+    nameButton = "Modification";
     isEditing = true;
     etatCRUD = true;  //Defini statut modifier
+    bloquerInteractionsDataTable();
 
 }
 var Annuler = function () {
+    nameButton = null;
     isEditing = false;
+    debloquerZoneTable();
     $('.input_focus').siblings('span.erreur').hide();
     const table = document.getElementById("tab_" + IDButton);
     const rows = table.tBodies[0].rows;
@@ -83,7 +90,20 @@ var Annuler = function () {
                 break;
 
             case "StructPlanCompt":
+                document.getElementById('Choixniveau').disabled = false;
+                document.getElementById('aide_format').textContent = "";
+                if (selectedRow) {
+                    code = selectedRow.cells[0].innerHTML.trim();
+                    libelle = selectedRow.cells[1].innerHTML.trim();
+                    superClass = selectedRow.cells[10].innerHTML.trim();
 
+                    $("#code").val(code);
+                    $("#libelle").val(libelle);
+
+                    if ($('#superClass').length > 0) {
+                        $('#superClass').val(superClass).trigger('change');                        
+                    }
+                }
                 break;
         }
         switch (IDButton) {
@@ -139,12 +159,74 @@ function reset() {
             $("#code").val('');
             $("#libelle").val('');
             if ($('#divLastniveau').children().length > 0) {
-                document.getElementById('checkActif').checked = false;
+                //document.getElementById('checkActif').checked = false;
             } 
             break;
     }
     $('.input_focus').siblings('span.erreur').css('display', 'none');
 }
+function bloquerZoneTable() {
+    const $wrapper = $('#tab_' + IDButton + '_wrapper');
+
+    // Supprimer l'overlay s'il existe déjà
+    $wrapper.find('.datatable-overlay').remove();
+    var overlay = "";
+    switch (nameButton) {
+        case "Ajout":
+            overlay = `
+                        <div class="datatable-overlay" style="
+                            position: absolute;
+                            top: 0; left: 0;
+                            width: 100%; height: 100%;
+                            background: rgba(255, 255, 255, 0.7);
+                            z-index: 10;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            pointer-events: all;
+                        ">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <span style="margin-left: 10px;">Veuillez terminer l'ajout...</span>
+                        </div>
+                    `;
+            break;
+        default:
+            overlay = `
+                        <div class="datatable-overlay" style="
+                            position: absolute;
+                            top: 0; left: 0;
+                            width: 100%; height: 100%;
+                            background: rgba(255, 255, 255, 0.7);
+                            z-index: 10;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            pointer-events: all;
+                        ">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <span style="margin-left: 10px;">Veuillez terminer l'édition...</span>
+                        </div>
+                    `;
+            break;
+    }
+    // Positionnement relatif requis pour parent
+    $wrapper.css('position', 'relative');
+    $wrapper.append(overlay);
+}
+
+function debloquerZoneTable() {
+    const $wrapper = $('#tab_' + IDButton + '_wrapper');
+    $wrapper.find('.datatable-overlay').remove(); // Supprimer l'overlay
+    $wrapper.css('position', ''); // Réinitialiser si besoin
+}
+
+
+
+
 function initialiserFormulaire() {
     $(".disabled_me").prop("disabled", false);
     reset();
@@ -383,7 +465,7 @@ function formPopup() {
         case "StructCorrespondPlan":
             formHTML = `
                         <div class="row justify-content-center" style="padding-top:8%">
-                            <div class="col-md-8 pageView">
+                            <div class="col-md-10 pageView">
                                 <div class="row">
                                     <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
                                         <div class="float-start">
@@ -393,48 +475,54 @@ function formPopup() {
                                 </div>
                                 <div class="form_padd">
                                     <div class="row">
-                                        <div class="col-md-12">
-                                            <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                <li class="nav-item" role="presentation"><a class="nav-link active PlCorrespond" id="P1Activite-tab" data-bs-toggle="tab" href="#P1Activite-tab" role="tab" aria-controls="tab-P1Activite" aria-selected="true"></a></li>
-                                                <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P2Zones-tab" data-bs-toggle="tab" href="#P2Zones-tab" role="tab" aria-controls="tab-P2Zones" aria-selected="false" tabindex="-1"></a></li>
-                                                <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P3Budget-tab" data-bs-toggle="tab" href="#P3Budget-tab" role="tab" aria-controls="tab-P3Budget" aria-selected="false" tabindex="-1"></a></li>
-                                                <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P4Compte-tab" data-bs-toggle="tab" href="#P4Compte-tab" role="tab" aria-controls="tab-P4Compte" aria-selected="false" tabindex="-1"></a></li>
-                                            </ul>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code">Code</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <select id="code" class="input_focus choixSelect" style="width:100%">
-
-                                                    </select>
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="correspondance">Corespond à</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <select id="correspondance" class="input_focus choixSelect" style="width:100%">
-
-                                                    </select>
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                                        <div class="col-md-10">
+                                            <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
-                                                    <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                    <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                    <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                    <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                    <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div id="partieTab">
-                            
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                        <li class="nav-item" role="presentation"><a class="nav-link active PlCorrespond" id="P1Activite-tab" data-bs-toggle="tab" href="#" role="tab" aria-controls="tab-P1Activite" aria-selected="true"></a></li>
+                                                        <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P2Zones-tab" data-bs-toggle="tab" href="#" role="tab" aria-controls="tab-P2Zones" aria-selected="false" tabindex="-1"></a></li>
+                                                        <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P3Budget-tab" data-bs-toggle="tab" href="#" role="tab" aria-controls="tab-P3Budget" aria-selected="false" tabindex="-1"></a></li>
+                                                        <li class="nav-item" role="presentation"><a class="nav-link PlCorrespond" id="P4Compte-tab" data-bs-toggle="tab" href="#" role="tab" aria-controls="tab-P4Compte" aria-selected="false" tabindex="-1"></a></li>
+                                                    </ul>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="code">Code</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="code" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="correspondance">Corespond à</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="correspondance" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div id="partieTab">
+
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                            
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div id="buttonUser">
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1719,12 +1807,28 @@ function formPopup() {
         case "StructSignataires":
         case "StructVentilation":
             vueTable();
+            controleInput();
             break;
     }
-    vueFirstNiveau();
-    vueLastNiveau();
-    controleInput();
-    DataNiveau();
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+        case "StructPlanCompt":
+            vueTable();
+            vueFirstNiveau();
+            vueLastNiveau();
+            controleInput();
+            DataNiveau();
+            break;
+    }
+
 }
 function buttonAction() {
     let container = document.getElementById('buttonUser');
@@ -1758,6 +1862,7 @@ function buttonAction() {
         case "StructPlanExtP2":
         case "StructPlanExtP3":
         case "StructPlanExtP4":
+        case "StructCorrespondPlan":
             formHTML = `
                         <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
                             <div class="col-md-12">
@@ -1797,7 +1902,7 @@ function vueTable() {
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Libellé</th>
                                         <th data-field="niveau">Niveau</th>
-                                        <th data-field="status">statut</th>
+                                        <th data-field="status" hidden>statut</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1810,20 +1915,21 @@ function vueTable() {
         case "StructPlanCompt":
             formHTML = `
                     <div class="row">
-                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                            <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                        <div class="col-md-12">
+                            <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Libellé</th>
                                         <th data-field="niveau">Niveau</th>
-                                        <th data-field="compteCollectif">Compte Collectif</th>
-                                        <th data-field="compteSuiviImmo">Compte Suivi en Immobilisation</th>
+                                        <th data-field="collectif">Compte Collectif</th>
+                                        <th data-field="gestionImmo">Compte Suivi en Immobilisation</th>
                                         <th data-field="budget">Budget</th>
-                                        <th data-field="analyt">Analyt.</th>
+                                        <th data-field="acti">Analyt.</th>
                                         <th data-field="geo">Géo.</th>
-                                        <th data-field="finance">Finance</th>
+                                        <th data-field="fin">Finance</th>
                                         <th data-field="status">Status</th>
+                                        <th data-field="superClasse" hidden>superClasse</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1836,12 +1942,12 @@ function vueTable() {
         case "StructCorrespondPlan":
             formHTML = `
                     <div class="row">
-                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                            <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                        <div class="col-md-12">
+                            <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="code">code</th>
-                                        <th data-field="correspond_a">Correspond à</th>
+                                        <th data-field="libelle">Correspond à</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1974,8 +2080,7 @@ function vueTable() {
                 `;
             break;
 
-    }
-        
+    }        
     container.insertAdjacentHTML("beforeend", formHTML);
 }
 function formDel() {
@@ -2034,7 +2139,7 @@ function vueFirstNiveau() {
                                 <label for="superClass">Super-Classe de Rattachement</label>
                             </div>
                             <div class="col-md-8">
-                                <select id="superClass" class="choixSelect input_focus" style="width:100%">
+                                <select id="superClass" class="choixSelect input_focus disabled_me" style="width:100%">
                                 </select>
                                 <span class="erreur"></span>
                             </div>
@@ -2046,7 +2151,24 @@ function vueFirstNiveau() {
             container.insertAdjacentHTML("beforeend", "");
             break;
     }
-    $('.choixSelect').select2();
+    if ($('#superClass').length > 0) {
+        $('#superClass').select2();
+        $.ajax({
+            async: true,
+            type: 'GET',
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            data: { id: IDButton },
+            url: '/FINPRO_Codifications/GetListDataStruct',
+            success: function (data) {
+                const $select = $('#superClass');
+                let list = data.listSuperClass;
+                $.each(list, function (index, row) {
+                    $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
+            }
+        });
+    }
     //controleInput();
 }
 function vueLastNiveau() {
@@ -2217,7 +2339,10 @@ function controleInput() {
         });
     });
 
-    $('.choixSelect').select2();
+
+    if ($('#divTo_niveau').length > 0 && $('#next_niveau').length > 0) {
+        $('.choixSelect').select2();
+    }
     $("#tab_" + IDButton + " tbody").on("click", "tr", function () {
         if (isEditing) return; // Désactiver si en mode édition
         const wasAlreadySelected = $(this).hasClass("selected");
@@ -2232,6 +2357,7 @@ function controleInput() {
     $('.input_focus').keyup(function () {
         $(this).siblings('span.erreur').hide();
     })
+    $('.choixSelect').select2();
 }
 function chargerValeursDepuisLigne(row, IDButton) {
     var code = null, libelle = null, etatActif = null;
@@ -2258,7 +2384,13 @@ function chargerValeursDepuisLigne(row, IDButton) {
             break;
 
         case "StructPlanCompt":
-
+            code = row.cells[0].innerHTML;
+            libelle = row.cells[1].innerHTML;
+            $("#code").val(code);
+            $("#libelle").val(libelle);
+            if ($('#superClass').length > 0) {
+                $("#superClass").val(row.cells[10].innerHTML).trigger('change');
+            }
             break;
     }
 }
@@ -2271,6 +2403,7 @@ function DataNiveau() {
         data: { id: IDButton },
         url: '/FINPRO_Codifications/GetListDataStruct',
         success: function (data) {
+            var $select = null, list = null;
             switch (IDButton) {
                 case "StructCorrespondPlan":
                 case "StructPlanTier":
@@ -2291,10 +2424,9 @@ function DataNiveau() {
                 case "StructPlanExtP2":
                 case "StructPlanExtP3":
                 case "StructPlanExtP4":
-                case "StructPlanCompt":
-                    const $select = $('#Choixniveau');
+                    $select = $('#Choixniveau');
                     $select.empty();
-                    let list = data.listData;
+                    list = data.listData;
                     if (list.length === 0) {
                         $('#divTo_niveau').hide();
                         return;
@@ -2319,6 +2451,42 @@ function DataNiveau() {
                     var niveau2 = $("#next_niveau").val();
                     GetDataniveau2(niveau1, niveau2);
                     break;
+                case "StructPlanCompt":
+                    $select = $('#Choixniveau');
+                    //$select.empty();
+                    list = data.listData;
+                    if (list.length === 0) {
+                        $('#divTo_niveau').hide();
+                        return;
+                    }
+
+                    if (!list || list.length === 0) return;
+
+                    $.each(list, function (index, row) {
+                        $select.append("<option value='" + row.niveau + "' data-format='" + row.format + "' name='" + row.abreviation + "'>" + row.niveau + " " + row.libelle + "</option>");
+                    });
+
+                    if (list.length === 1) { //Une seule option : considérée comme dernière.");
+                        vueLastNiveau();
+                        $('#divTo_niveau').hide();
+                        $select.attr('data-position', 'last');
+                    } else {  // Première option sélectionnée par défaut.");
+                        vueFirstNiveau();
+                        $select.attr('data-position', 'first');
+                    }
+
+                    var niveau1 = $("#Choixniveau").val();
+                    var niveau2 = $("#next_niveau").val();
+                    GetDataniveau2(niveau1, niveau2); 
+                    if ($('#divLastniveau').length > 0 && $('#superClass').length > 0) {
+                        const $selectCl = $('#superClass');
+                        $selectCl.empty();
+                        let listCl = data.listSuperClass;
+                        $.each(listCl, function (index, row) {
+                            $selectCl.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                        });
+                    }
+                    break;
             }
         }
     });
@@ -2336,6 +2504,30 @@ function GetDataniveau2(niveau1,niveau2) {
             code2: niveau2,
         },
         url: '/FINPRO_Codifications/GetListDataNiveau2',
+        success: function (data) {
+            const $select = $('#next_niveau');
+            let Dataniveau2 = data.listniveau;
+            if ($("#next_niveau").val() == "" || $("#next_niveau").val() == null) {
+                $select.empty();
+                //$("#next_niveau").append("<option value='0'></option>")
+                $.each(Dataniveau2, function (index, row) {
+                    $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
+            }
+            LoadTable(IDButton, data.listData);
+        }
+    });
+}
+function GetDataCorrespondance(niveau) {
+    $.ajax({
+        async: true,
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            niveau: IDbuttonCorresp,
+        },
+        url: '/FINPRO_Codifications/GetListDataCorrespondance',
         success: function (data) {
             const $select = $('#next_niveau');
             let Dataniveau2 = data.listniveau;
@@ -2419,11 +2611,27 @@ function updateTableWithData(niveau, data) {
             const value = col.name ? (item[col.name] ?? "") : "";
             const alignRight = col.name === "format" ? "style='text-align:right'" : "";
             const hiddenAttr = col.hidden ? "hidden" : "";
-            row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+
+            // Champs spéciaux affichés en checkbox désactivée
+            switch (IDButton) {
+                case "StructPlanCompt":
+                    const checkboxFields = ["collectif", "gestionImmo", "budget", "acti", "geo", "fin", "status"];
+                    const checkedAttr = (value === true || value === "1" || value === 1 || value === "True") ? "checked" : "";
+                    if (checkboxFields.includes(col.name)) {
+                        row += `<td ${alignRight} ${hiddenAttr} style="text-align:center"><input type="checkbox" disabled ${checkedAttr}></td>`;
+                    } else {
+                        row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+                    }
+                    break;
+                default:
+                    row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+                    break;
+            }
         });
         row += "</tr>";
         $tbody.append(row);
     });
+
 
     // Réinitialise et configure DataTable
     $table.DataTable({
@@ -2457,44 +2665,38 @@ function updateTableWithData(niveau, data) {
 
 function fillFirstRowForm(id, firstRow) {
     const inputs = {};
-    const possibleFields = ["code", "libelle","superClass", "checkActif"];
+    const possibleFields = ["code", "libelle", "superClass", "checkActif"];
 
     for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
         const cell = firstRow.cells[cellIndex];
         const value = cell?.textContent.trim() ?? "";
-
         const fieldId = possibleFields[cellIndex];
         if (!fieldId || $("#" + fieldId).length === 0) continue;
 
-        switch (id) {
-            case "StructPlanBudget":
-            case "StructActivite":
-            case "StructZone":
-            case "StructEmplacements":
-            case "StructPlan6":
-            case "StructPlanExtP1":
-            case "StructPlanExtP2":
-            case "StructPlanExtP3":
-            case "StructPlanExtP4":
-                if (fieldId === "checkActif") {
-                    const $checkbox = $("#" + fieldId);
-                    $checkbox.prop("checked", value === "1" || value.toLowerCase() === "true");
-
-                } else {
-                    $("#" + fieldId).val(value);
-                    inputs[fieldId] = value;
-                }
-                break;
-
-            default:
-                $("#" + fieldId).val(value);
-                inputs[fieldId] = value;
-                break;
+        // Spécial traitement pour checkboxes
+        if (fieldId === "checkActif") {
+            const $checkbox = $("#" + fieldId);
+            $checkbox.prop("checked", value === "1" || value.toLowerCase() === "true");
+            continue;
         }
+
+        // Traitement spécial pour superClass (dropdownlist)
+        if (fieldId === "superClass" && $("#" + fieldId).is("select")) {
+            var classSup = firstRow.cells[10]?.textContent.trim();
+            const $select = $("#" + fieldId);
+            $select.val(classSup).trigger('change'); // trigger pour Select2 ou autre
+            inputs[fieldId] = value;
+            continue;
+        }
+
+        // Cas générique
+        $("#" + fieldId).val(value);
+        inputs[fieldId] = value;
     }
 
     $(firstRow).addClass("selected").siblings().removeClass("selected");
 }
+
 
 function CodeNiveau() {
     const $select = $('#Choixniveau');
