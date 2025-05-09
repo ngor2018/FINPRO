@@ -8,6 +8,7 @@ namespace FINPRO.Models
     public class parametre
     {
         public string id { get; set; }
+        public string cle { get; set; }
         public string code { get; set; }
         public string code1 { get; set; }
         public string code2 { get; set; }

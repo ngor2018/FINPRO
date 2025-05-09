@@ -1002,8 +1002,6 @@ namespace FINPRO.Controllers
             return fields;
         }
 
-
-
         // Génère le filtre SQL en fonction du niveau
         private string GetFiltre(parametre objData)
         {
@@ -1061,7 +1059,6 @@ namespace FINPRO.Controllers
             return filtre;
         }
 
-
         private string GetFiltreArticles(parametre objData)
         {
             var statut = objData.statut;
@@ -1087,8 +1084,6 @@ namespace FINPRO.Controllers
             string code = groupe + famille + (statut ? serie - 1 : serie);
             return $"CODE = '{code}'";
         }
-
-
 
 
         // Retourne l'instance de la table en fonction du niveau

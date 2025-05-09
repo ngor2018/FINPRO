@@ -108,21 +108,76 @@ namespace FINPRO.Controllers
         }
         public JsonResult GetListDataCorrespondance(string niveau)
         {
-            var listCode = new List<parametre>();
-            var listCoresspond = new List<parametre>();
-            var listData = new List<parametre>();
-            DataTable tabCode = new DataTable();
-            DataTable tabCoresspond = new DataTable();
-            DataTable tabListData = new DataTable();
-            var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
-                {
-                    { "P1Activite-tab", (new Tables.RPLAN1EXT(), new Tables.RCORPLAN1EXT()) }, //P1 Activite
-                    { "P2Zones-tab", (new Tables.RPLAN2EXT(), new Tables.RCORPLAN2EXT()) }, //P2 Zones
-                    { "P3Budget-tab", (new Tables.RPLAN3EXT(), new Tables.RCORPLAN3EXT()) },  //P3 Budget
-                    { "P4Compte-tab", (new Tables.RPLAN4EXT(), new Tables.RCORPLAN4EXT()) },        //P4 Compte
-                    // Ajoute d'autres mappings ici si nécessaire
-                };
+            // Mapping des niveaux vers les instances de classes concernées
+            var tableMapping = new Dictionary<string, (object tablePlan, object tableRef, object tableCorrespondance)>
+            {
+                { "P1Activite-tab", (new Tables.RPLAN1EXT(), new Tables.rActi1(), new Tables.RCORPLAN1EXT()) },
+                { "P2Zones-tab",    (new Tables.RPLAN2EXT(), new Tables.rGeo1(),  new Tables.RCORPLAN2EXT()) },
+                { "P3Budget-tab",   (new Tables.RPLAN3EXT(), new Tables.rPost1(), new Tables.RCORPLAN3EXT()) },
+                { "P4Compte-tab",   (new Tables.RPLAN4EXT(), new Tables.rCoge1(), new Tables.RCORPLAN4EXT()) },
+            };
+
+            if (!tableMapping.TryGetValue(niveau, out var instances))
+            {
+                return Json(new { error = "ID non supporté" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Méthode utilitaire pour appeler dynamiquement RemplirDataTable
+            DataTable InvokeRemplirDataTable(object instance, string param = "")
+            {
+                var method = instance?.GetType().GetMethod("RemplirDataTable", new[] { typeof(string) });
+                return method?.Invoke(instance, new object[] { param }) as DataTable ?? new DataTable();
+            }
+
+            // Méthode pour récupérer la table avec filtre sur le NIVEAU max
+            DataTable GetFilteredTable(object instance)
+            {
+                string tableName = instance.GetType().Name;
+                string filter = $"NIVEAU = (SELECT MAX(NIVEAU) FROM {tableName})";
+                return InvokeRemplirDataTable(instance, filter);
+            }
+
+            // Conversion d’un DataTable vers List<parametre>
+            List<parametre> ToParametreList(DataTable table)
+            {
+                return table.AsEnumerable()
+                            .Select(row => new parametre
+                            {
+                                code = row["code"].ToString(),
+                                libelle = row["libelle"].ToString()
+                            })
+                            .ToList();
+            }
+            List<parametre> ToParametreListTab(DataTable table)
+            {
+                return table.AsEnumerable()
+                            .Select(row => new parametre
+                            {
+                                cle = row["NUMENREG"].ToString(),
+                                code = row["code"].ToString(),
+                                libelle = row["correspondance"].ToString()
+                            })
+                            .ToList();
+            }
+
+            // Récupération des trois sources de données
+            var tabCode = GetFilteredTable(instances.tablePlan);
+            var tabRef = GetFilteredTable(instances.tableRef);
+            var tabAssigned = InvokeRemplirDataTable(instances.tableCorrespondance);
+
+            // Construction de la réponse
+            var result = new
+            {
+                listCode = ToParametreList(tabCode),
+                listCoresspond = ToParametreList(tabRef),
+                listData = ToParametreListTab(tabAssigned)
+            };
+
+            var jsonResult = Json(result, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
         }
+
 
         public JsonResult GetListDataNiveau2(string niveau,string code1,string code2)
         {

@@ -359,6 +359,7 @@ function parameter() {
                     document.getElementById('P3Budget-tab').textContent = button3.textContent + " (Budget)";
                     document.getElementById('P4Compte-tab').textContent = button4.textContent + " (Compte)";
                     document.getElementById('P1Activite-tab').click();
+                    GetDataCorrespondance();
                     break;
             }
             //formDel();
@@ -504,9 +505,9 @@ function formPopup() {
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-4">
-                                                            <label for="correspondance">Corespond à</label>
+                                                            <label for="correspondance">Correspond à</label>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-8">
                                                             <select id="correspondance" class="input_focus choixSelect" style="width:100%">
                                                             </select>
                                                             <span class="erreur"></span>
@@ -1946,6 +1947,7 @@ function vueTable() {
                             <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
+                                        <th data-field="cle" hidden>numEnreg</th>
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Correspond à</th>
                                     </tr>
@@ -2297,45 +2299,7 @@ function controleInput() {
     document.querySelectorAll(".PlCorrespond").forEach(button => {
         button.addEventListener("click", function () {
             IDbuttonCorresp = this.id;
-            var list = "";
-            $("#tab_StructCorrespondPlan tbody").empty();
-            for (var i = 1; i < 10; i++) {
-                switch (IDbuttonCorresp) {
-                    case "P1Activite-tab":
-                        list = `
-                                <tr>
-                                    <td>${i}</td>
-                                    <td>P1_${i}</td>
-                                </tr>
-                                `;
-                        break;
-                    case "P2Zones-tab":
-                        list = `
-                                <tr>
-                                    <td>${i}</td>
-                                    <td>P2_${i}</td>
-                                </tr>
-                                `;
-                        break;
-                    case "P3Budget-tab":
-                        list = `
-                                <tr>
-                                    <td>${i}</td>
-                                    <td>P3_${i}</td>
-                                </tr>
-                                `;
-                        break;
-                    case "P4Compte-tab":
-                        list = `
-                                <tr>
-                                    <td>${i}</td>
-                                    <td>P4_${i}</td>
-                                </tr>
-                                `;
-                        break;
-                }
-                $("#tab_StructCorrespondPlan tbody").append(list);
-            }
+            
         });
     });
 
@@ -2518,7 +2482,7 @@ function GetDataniveau2(niveau1,niveau2) {
         }
     });
 }
-function GetDataCorrespondance(niveau) {
+function GetDataCorrespondance() {
     $.ajax({
         async: true,
         type: 'GET',
@@ -2529,18 +2493,41 @@ function GetDataCorrespondance(niveau) {
         },
         url: '/FINPRO_Codifications/GetListDataCorrespondance',
         success: function (data) {
-            const $select = $('#next_niveau');
-            let Dataniveau2 = data.listniveau;
-            if ($("#next_niveau").val() == "" || $("#next_niveau").val() == null) {
-                $select.empty();
-                //$("#next_niveau").append("<option value='0'></option>")
-                $.each(Dataniveau2, function (index, row) {
-                    $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+            const $selectCode = $('#code');
+            let dataCode = data.listCode;
+            $selectCode.empty();
+            $selectCode.append("<option value='0'></option>")
+                $.each(dataCode, function (index, row) {
+                    $selectCode.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
                 });
-            }
-            LoadTable(IDButton, data.listData);
+            const $selectCorresp = $('#correspondance');
+            let dataCorresp = data.listCoresspond;
+            $selectCorresp.empty();
+            $selectCorresp.append("<option value='0'></option>")
+                $.each(dataCorresp, function (index, row) {
+                    $selectCorresp.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
+            LoadTableCorrespondance(data.listData);
         }
     });
+}
+function LoadTableCorrespondance(data) {
+    document.getElementById('Ajouter').disabled = false;
+
+    document.getElementById('Ajouter').textContent = "Ajouter";
+    document.getElementById('closeSt').disabled = false;
+    document.getElementById('Annuler').disabled = true;
+    if (data.length == 0) {
+        isEditing = true;
+        $("#tab_StructCorrespondPlan tbody").empty();
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
+        reset();
+    } else {
+        isEditing = false;
+        updateTableWithDataCorresp(data);
+        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
+    }
+    $(".disabled_me").prop("disabled", true);
 }
 function LoadTable(niveau, data) {
     document.getElementById('Ajouter').disabled = false;
@@ -2662,7 +2649,69 @@ function updateTableWithData(niveau, data) {
     $table.removeClass("dataTable");
     $("#tab_" + niveau + " colgroup").remove();
 }
+function updateTableWithDataCorresp(data) {
+    const tableId = "#tab_StructCorrespondPlan";
+    const $table = $(tableId);
+    const $tbody = $table.find("tbody");
 
+    // Supprimer DataTable si déjà initialisé
+    if ($.fn.DataTable.isDataTable(tableId)) {
+        $table.DataTable().clear().destroy();
+    }
+
+    $tbody.empty();
+
+    // Récupère les colonnes visibles + leur statut "hidden"
+    const columns = [];
+    $table.find("thead th").each(function () {
+        const colName = $(this).data("field");
+        const isHidden = $(this).attr("hidden") !== undefined;
+        columns.push({ name: colName || "", hidden: isHidden });
+    });
+    // Génère les lignes
+    data.forEach(item => {
+        let row = "<tr>";
+        columns.forEach(col => {
+            const value = col.name ? (item[col.name] ?? "") : "";
+            const alignRight = col.name === "format" ? "style='text-align:right'" : "";
+            const hiddenAttr = col.hidden ? "hidden" : "";
+
+            // Champs spéciaux affichés en checkbox désactivée
+
+            row += `<td ${alignRight} ${hiddenAttr}>${value}</td>`;
+        });
+        row += "</tr>";
+        $tbody.append(row);
+    });
+    // Réinitialise et configure DataTable
+    $table.DataTable({
+        "pageLength": 10,
+        "lengthMenu": [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+        "responsive": false,
+        "lengthChange": true,
+        "ordering": false,
+        "language": {
+            "lengthMenu": "Afficher _MENU_ entrées",
+            "emptyTable": "Aucun élément trouvé",
+            "info": "Affichage _START_ à _END_ de _TOTAL_ entrées",
+            "loadingRecords": "Chargement...",
+            "processing": "En cours...",
+            "search": '<i class="fa fa-search" aria-hidden="true"></i>',
+            "searchPlaceholder": "Rechercher...",
+            "zeroRecords": "Aucun élément correspondant trouvé",
+            "paginate": {
+                "first": "Premier",
+                "last": "Dernier",
+                "next": "Suivant",
+                "previous": "Précédent"
+            }
+        }
+    });
+
+    // Nettoie classe si ajoutée par DataTables
+    $table.removeClass("dataTable");
+    $("#tab_StructCorrespondPlan colgroup").remove();
+}
 function fillFirstRowForm(id, firstRow) {
     const inputs = {};
     const possibleFields = ["code", "libelle", "superClass", "checkActif"];
