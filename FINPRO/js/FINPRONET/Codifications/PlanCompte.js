@@ -1,9 +1,10 @@
 ﻿var pageName = $("#pageName").val();
 var IDButton = null; //clique button parent
-var IDbuttonCorresp = "P1Activite-tab";  //valeur par default
+var IDbuttonCorresp = null;  //valeur par default
 var isEditing = false  // Désactiver si en mode édition ou Ajout
 var etatCRUD = false;//Defini statut Ajout
 var nameButton = null;
+var numEnregCores = null;
 $(function () {
     parameter();
 })
@@ -44,7 +45,7 @@ var Annuler = function () {
     document.getElementById('Annuler').disabled = true;
 
     if (table.tBodies[0].rows.length == 0) {
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -52,12 +53,12 @@ var Annuler = function () {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+                $("#TXT, #excel, #Importation").prop("disabled", true);
                 break;
         }
         reset();
     } else {
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
         // Si des lignes existent, on récupère celle sélectionnée
         const selectedRow = Array.from(rows).find(row => row.classList.contains('selected'));
         var code = null, libelle = null, etatActif = null;
@@ -105,6 +106,28 @@ var Annuler = function () {
                     }
                 }
                 break;
+            case "StructCorrespondPlan":
+                if (selectedRow) {
+                    numEnregCores = selectedRow.cells[1].innerHTML.trim();
+                    code = selectedRow.cells[1].innerHTML.trim();
+                    correspond = selectedRow.cells[2].innerHTML.trim();
+                    $("#code").val(code).trigger('change');
+                    $("#correspondance").val(correspond).trigger('change');
+                }
+                break;
+            case "StructSousCategorie":
+                document.getElementById('codeConvention').disabled = false;
+                document.getElementById('codeCategorie').disabled = false;
+                if (selectedRow) {
+                    $("#codeSousCat").val(selectedRow.cells[2].innerHTML.trim());
+                    $("#libelle").val(selectedRow.cells[3].innerHTML.trim());
+                    if (selectedRow.cells[4].innerHTML.trim() == "True") {
+                        document.getElementById('checkActif').checked = true;
+                    } else {
+                        document.getElementById('checkActif').checked = false;
+                    }
+                }
+                break;
         }
         switch (IDButton) {
             case "StructPlanBudget":
@@ -113,7 +136,7 @@ var Annuler = function () {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Voir, #TXT, #excel, #Importation").prop("disabled", false);
+                $("#TXT, #excel, #Importation").prop("disabled", false);
                 break;
         }
     }
@@ -151,7 +174,6 @@ function reset() {
             if ($('#divLastniveau').children().length > 0) {
                 document.getElementById('checkActif').checked = false;
             } 
-
             $("#code").val('');
             $("#libelle").val('');
             break;
@@ -161,6 +183,17 @@ function reset() {
             if ($('#divLastniveau').children().length > 0) {
                 //document.getElementById('checkActif').checked = false;
             } 
+            break;
+        case "StructCorrespondPlan":
+            $("#code").val(0).trigger('change');
+            $("#correspondance").val(0).trigger('change');
+            break;
+        case "StructSousCategorie":
+            document.getElementById('checkActif').checked = false;
+            document.getElementById('codeConvention').disabled = false;
+            document.getElementById('codeCategorie').disabled = false;
+            $("#codeSousCat").val('');
+            $("#libelle").val('');
             break;
     }
     $('.input_focus').siblings('span.erreur').css('display', 'none');
@@ -224,9 +257,6 @@ function debloquerZoneTable() {
     $wrapper.css('position', ''); // Réinitialiser si besoin
 }
 
-
-
-
 function initialiserFormulaire() {
     $(".disabled_me").prop("disabled", false);
     reset();
@@ -245,7 +275,7 @@ function initialiserFormulaire() {
             break;
     }
     document.getElementById('Ajouter').textContent = "Enregistrer";
-    $("#Modifier, #Supprimer, #closeSt, #Imprimer").prop("disabled", true);
+    $("#Modifier, #Supprimer, #closeSt, #Imprimer, #Voir").prop("disabled", true);
     document.getElementById('Annuler').disabled = false;
     switch (IDButton) {
         case "StructPlanBudget":
@@ -254,7 +284,14 @@ function initialiserFormulaire() {
         case "StructEmplacements":
         case "StructPlan6":
         case "StructPlanCompt":
-            $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+            $("#TXT, #excel, #Importation").prop("disabled", true);
+            break;
+        case "StructSousCategorie":
+            document.getElementById('codeConvention').disabled = true;
+            document.getElementById('codeCategorie').disabled = true;
+            setTimeout(function () {
+                $("#codeSousCat").focus();
+            },500)
             break;
     }
 }
@@ -359,12 +396,13 @@ function parameter() {
                     document.getElementById('P3Budget-tab').textContent = button3.textContent + " (Budget)";
                     document.getElementById('P4Compte-tab').textContent = button4.textContent + " (Compte)";
                     document.getElementById('P1Activite-tab').click();
-                    GetDataCorrespondance();
+                    //GetDataCorrespondance();
                     break;
             }
             //formDel();
         });
     });
+
 }
 function formPopup() {
     let container = document.getElementById('partieStructurePlan');
@@ -498,7 +536,7 @@ function formPopup() {
                                                             <label for="code">Code</label>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <select id="code" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="code" class="input_focus choixSelect disabled_me" style="width:100%">
                                                             </select>
                                                             <span class="erreur"></span>
                                                         </div>
@@ -508,7 +546,7 @@ function formPopup() {
                                                             <label for="correspondance">Correspond à</label>
                                                         </div>
                                                         <div class="col-md-8">
-                                                            <select id="correspondance" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="correspondance" class="input_focus choixSelect disabled_me" style="width:100%">
                                                             </select>
                                                             <span class="erreur"></span>
                                                         </div>
@@ -1634,10 +1672,10 @@ function formPopup() {
                                         <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-3">
-                                                    <label for="codeConvention">Code de la convention</label>
+                                                    <label for="codeConventionF">Code de la convention</label>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <select id="codeConvention" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                    <select id="codeConventionF" class="input_focus choixSelect disabledCheck" style="width:100%">
                                                     </select>
                                                     <span class="erreur"></span>
                                                 </div>
@@ -1785,6 +1823,89 @@ function formPopup() {
                         </div>
                         `;
             break;
+        case "StructSousCategorie":
+            formHTML = `
+                        <div class="row justify-content-center" style="padding-top:8%">
+                            <div class="col-md-10 pageView">
+                                <div class="row">
+                                    <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
+                                        <div class="float-start">
+                                            <strong id="titleStruct"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="codeConvention">Code de la convention</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <select class="input_focus choixSelect" style="width:100%" id="codeConvention">
+                                                    </select>
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="codeCategorie">Code de la catégorie</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <select class="input_focus choixSelect" style="width:100%" id="codeCategorie">
+                                                    </select>
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="codeSousCat">Code Sous-Catégorie</label>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="text" name="code" value="" maxlength="3" id="codeSousCat" class="input_focus disabled_me" />
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="libelle">Libellé</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus disabled_me" />
+                                                    <span class="erreur"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input disabled_me" id="checkActif" type="checkbox" value="" style="cursor:pointer"/>
+                                                        <label class="form-check-label" style="cursor:pointer" for="checkActif"><strong>Actif</strong></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="partieTab" style="padding-top:10px">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div id="buttonUser">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+            break;
     }
     container.insertAdjacentHTML("beforeend", formHTML);
     buttonAction();
@@ -1807,6 +1928,7 @@ function formPopup() {
         case "StructConventions":
         case "StructSignataires":
         case "StructVentilation":
+        case "StructSousCategorie":
             vueTable();
             controleInput();
             break;
@@ -1826,6 +1948,11 @@ function formPopup() {
             vueFirstNiveau();
             vueLastNiveau();
             controleInput();
+            DataNiveau();
+            break;
+        case "StructSousCategorie":
+            //vueTable();
+            //controleInput();
             DataNiveau();
             break;
     }
@@ -1864,10 +1991,12 @@ function buttonAction() {
         case "StructPlanExtP3":
         case "StructPlanExtP4":
         case "StructCorrespondPlan":
+        case "StructSousCategorie":
             formHTML = `
                         <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
                             <div class="col-md-12">
                                 <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                                <button class="btn_action" type="button" id="Voir" onclick="Imprimer()">Voir</button>
                                 <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
                                 <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
                                 <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
@@ -1950,6 +2079,27 @@ function vueTable() {
                                         <th data-field="cle" hidden>numEnreg</th>
                                         <th data-field="code">code</th>
                                         <th data-field="libelle">Correspond à</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            break;
+        case "StructSousCategorie":
+            formHTML = `
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th data-field="convention" hidden>convention</th>
+                                        <th data-field="categorie" hidden>categorie</th>
+                                        <th data-field="code">Code Sous-Catégorie</th>
+                                        <th data-field="libelle">Libelle</th>
+                                        <th data-field="status" hidden>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2202,40 +2352,94 @@ function vueLastNiveau() {
             break;
         case "StructPlanCompt":
             formHTML = `
-                        <div class="row">
-                            <div class="col-md-12">
-                                <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                    <li class="nav-item" role="presentation"><a class="nav-link active" id="Caracteristiques-tab" data-bs-toggle="tab" href="#tab-Caracteristiques" role="tab" aria-controls="tab-Caracteristiques" aria-selected="true">Caractéristiques</a></li>
-                                    <li class="nav-item" role="presentation"><a class="nav-link" id="ActiviteRatt-tab" data-bs-toggle="tab" href="#tab-ActiviteRatt" role="tab" aria-controls="tab-ActiviteRatt" aria-selected="false" tabindex="-1">Activité Ratt.</a></li>
-                                    <li class="nav-item" role="presentation"><a class="nav-link" id="BudgetRatt-tab" data-bs-toggle="tab" href="#tab-BudgetRatt" role="tab" aria-controls="tab-BudgetRatt" aria-selected="false" tabindex="-1">Budget Ratt.</a></li>
-                                    <li class="nav-item" role="presentation"><a class="nav-link" id="ComportDefaut-tab" data-bs-toggle="tab" href="#tab-ComportDefaut" role="tab" aria-controls="tab-ComportDefaut" aria-selected="false" tabindex="-1">Comport. Défaut</a></li>
-                                </ul>
-                                <div class="tab-content mt-3" id="myTab1Content">
-                                    <div class="tab-pane fade active show" id="tab-Caracteristiques" role="tabpanel" aria-labelledby="Caracteristiques-tab">
-                                        <div class="row" style="padding-bottom:10px">
-                                            <div class="col-md-12">
-                                                <h1>Caracteristiques</h1>
+                        <div id="formLast">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="Caracteristiques-tab" data-bs-toggle="tab" href="#tab-Caracteristiques" role="tab" aria-controls="tab-Caracteristiques" aria-selected="true">Caractéristiques</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link" id="ActiviteRatt-tab" data-bs-toggle="tab" href="#tab-ActiviteRatt" role="tab" aria-controls="tab-ActiviteRatt" aria-selected="false" tabindex="-1">Activité Ratt.</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link" id="BudgetRatt-tab" data-bs-toggle="tab" href="#tab-BudgetRatt" role="tab" aria-controls="tab-BudgetRatt" aria-selected="false" tabindex="-1">Budget Ratt.</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link" id="ComportDefaut-tab" data-bs-toggle="tab" href="#tab-ComportDefaut" role="tab" aria-controls="tab-ComportDefaut" aria-selected="false" tabindex="-1">Comport. Défaut</a></li>
+                                    </ul>
+                                    <div class="tab-content mt-3" id="myTab1Content">
+                                        <div class="tab-pane fade active show" id="tab-Caracteristiques" role="tabpanel" aria-labelledby="Caracteristiques-tab">
+                                            <div class="row" style="padding-bottom:10px">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-6" style="border-right:1px solid #c7c3c3">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkCpteCollectif">
+                                                                <label class="form-check-label cursorPointer" for="checkCpteCollectif">
+                                                                    Compte Collectif Tiers
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkCpteSuivi">
+                                                                <label class="form-check-label cursorPointer" for="checkCpteSuivi">
+                                                                    Compte Suivi en Immobilisation
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkActif">
+                                                                <label class="form-check-label cursorPointer" for="checkActif">
+                                                                    Actif
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkImputation">
+                                                                <label class="form-check-label cursorPointer" for="checkImputation">
+                                                                    Pas d'imputation/JL Trésor
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <!-- Groupe des checkbox concernées -->
+                                                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                                                    <div style="background-color: #fbe5b6; padding: 4px 8px;">Budget</div>
+                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                </div>
+                                                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                                                    <div style="background-color: #fbe5b6; padding: 4px 8px;">Analyt.</div>
+                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                </div>
+                                                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                                                    <div style="background-color: #fbe5b6; padding: 4px 8px;">Géo.</div>
+                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                </div>
+                                                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                                                    <div style="background-color: #fbe5b6; padding: 4px 8px;">Financ.</div>
+                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                </div>
+                                                            </div>
+
+                                                            <button id="btnToggle" class="btn_action" onclick="toggleCheckboxes()">Cocher Tout</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="tab-ActiviteRatt" role="tabpanel" aria-labelledby="ActiviteRatt-tab">
-                                        <div class="row" style="padding-bottom:10px">
-                                            <div class="col-md-12">
-                                                <h1>ActiviteRatt</h1>
+                                        <div class="tab-pane fade" id="tab-ActiviteRatt" role="tabpanel" aria-labelledby="ActiviteRatt-tab">
+                                            <div class="row" style="padding-bottom:10px">
+                                                <div class="col-md-12">
+                                                    <h1>ActiviteRatt</h1>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="tab-BudgetRatt" role="tabpanel" aria-labelledby="BudgetRatt-tab">
-                                        <div class="row" style="padding-bottom:10px">
-                                            <div class="col-md-12">
-                                                <h1>BudgetRatt</h1>
+                                        <div class="tab-pane fade" id="tab-BudgetRatt" role="tabpanel" aria-labelledby="BudgetRatt-tab">
+                                            <div class="row" style="padding-bottom:10px">
+                                                <div class="col-md-12">
+                                                    <h1>BudgetRatt</h1>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="tab-ComportDefaut" role="tabpanel" aria-labelledby="ComportDefaut-tab">
-                                        <div class="row" style="padding-bottom:10px">
-                                            <div class="col-md-12">
-                                                <h1>ComportDefaut</h1>
+                                        <div class="tab-pane fade" id="tab-ComportDefaut" role="tabpanel" aria-labelledby="ComportDefaut-tab">
+                                            <div class="row" style="padding-bottom:10px">
+                                                <div class="col-md-12">
+                                                    <h1>ComportDefaut</h1>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2289,17 +2493,37 @@ function controleInput() {
         var niveau1 = $(this).val();
         var niveau2 = $("#next_niveau").val();
         GetDataniveau2(niveau1, niveau2);
+
+        if ($('#divLastniveau').length > 0 && $('#formLast').length > 0) {
+            initializeCheckboxListeners();
+        }
     });
     $("#next_niveau").change(function () {
         var niveau1 = $("#Choixniveau").val();
         var niveau2 = $(this).val();
         GetDataniveau2(niveau1, niveau2);
     })
-    
+    $("#codeConvention").change(function () {
+        var idCode = this.id;
+        if (idCode == "codeConvention") {
+            $("#codeCategorie").val(null);
+        }
+        var niveau1 = $(this).val();
+        var niveau2 = $("#codeCategorie").val();
+        GetDataniveau2(niveau1, niveau2);
+    })
+    $("#codeCategorie").change(function () {
+        var niveau1 = $("#codeConvention").val();
+        var niveau2 = $(this).val();
+        GetDataniveau2(niveau1, niveau2);
+    })
+    $("#codeSousCat").keyup(function () {
+        this.value = this.value.toUpperCase();
+    })
     document.querySelectorAll(".PlCorrespond").forEach(button => {
         button.addEventListener("click", function () {
             IDbuttonCorresp = this.id;
-            
+            GetDataCorrespondance();
         });
     });
 
@@ -2322,6 +2546,7 @@ function controleInput() {
         $(this).siblings('span.erreur').hide();
     })
     $('.choixSelect').select2();
+    
 }
 function chargerValeursDepuisLigne(row, IDButton) {
     var code = null, libelle = null, etatActif = null;
@@ -2356,7 +2581,43 @@ function chargerValeursDepuisLigne(row, IDButton) {
                 $("#superClass").val(row.cells[10].innerHTML).trigger('change');
             }
             break;
+        case "StructCorrespondPlan":
+            numEnregCores = row.cells[0].innerHTML;
+            $("#code").val(row.cells[1].innerHTML).trigger('change');
+            $("#correspondance").val(row.cells[2].innerHTML).trigger('change');
+            break;
+        case "StructSousCategorie":
+            $("#codeSousCat").val(row.cells[2].innerHTML);
+            $("#libelle").val(row.cells[3].innerHTML);
+            etatActif = row.cells[4].innerHTML;
+            if (etatActif == "True") {
+                document.getElementById('checkActif').checked = true;
+            } else {
+                document.getElementById('checkActif').checked = false;
+            }
+            break;
     }
+}
+
+function updateToggleButtonText() {
+    const checkboxes = document.querySelectorAll(".groupe-check");
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    document.getElementById("btnToggle").textContent = allChecked ? "Décocher Tout" : "Cocher Tout";
+}
+
+function toggleCheckboxes() {
+    const checkboxes = document.querySelectorAll(".groupe-check");
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+    updateToggleButtonText();
+}
+
+function initializeCheckboxListeners() {
+    const checkboxes = document.querySelectorAll(".groupe-check");
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", updateToggleButtonText);
+    });
+    updateToggleButtonText(); // met à jour au chargement
 }
 function DataNiveau() {
     $.ajax({
@@ -2415,6 +2676,20 @@ function DataNiveau() {
                     var niveau2 = $("#next_niveau").val();
                     GetDataniveau2(niveau1, niveau2);
                     break;
+                case "StructSousCategorie":
+                    $select = $('#codeConvention');
+                    $select.empty();
+                    list = data.listData;
+                    if (!list || list.length === 0) return;
+
+                    $.each(list, function (index, row) {
+                        $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                    });
+
+                    var niveau1 = $("#codeConvention").val();
+                    var niveau2 = $("#codeCategorie").val();
+                    GetDataniveau2(niveau1, niveau2); 
+                    break;
                 case "StructPlanCompt":
                     $select = $('#Choixniveau');
                     //$select.empty();
@@ -2469,14 +2744,37 @@ function GetDataniveau2(niveau1,niveau2) {
         },
         url: '/FINPRO_Codifications/GetListDataNiveau2',
         success: function (data) {
-            const $select = $('#next_niveau');
+            var $select = null;
             let Dataniveau2 = data.listniveau;
-            if ($("#next_niveau").val() == "" || $("#next_niveau").val() == null) {
-                $select.empty();
-                //$("#next_niveau").append("<option value='0'></option>")
-                $.each(Dataniveau2, function (index, row) {
-                    $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
-                });
+            switch (IDButton) {
+                case "StructPlanBudget":
+                case "StructActivite":
+                case "StructZone":
+                case "StructEmplacements":
+                case "StructPlan6":
+                case "StructPlanCompt":
+                case "StructPlanExtP1":
+                case "StructPlanExtP2":
+                case "StructPlanExtP2":
+                case "StructPlanExtP4":
+                    $select = $('#next_niveau');
+                    if ($("#next_niveau").val() == "" || $("#next_niveau").val() == null) {
+                        $select.empty();
+                        //$("#next_niveau").append("<option value='0'></option>")
+                        $.each(Dataniveau2, function (index, row) {
+                            $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                        });
+                    }
+                    break;
+                case "StructSousCategorie":
+                    $select = $('#codeCategorie');
+                    if ($("#codeCategorie").val() == "" || $("#codeCategorie").val() == null) {
+                        $select.empty();
+                        $.each(Dataniveau2, function (index, row) {
+                            $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                        });
+                    }
+                    break;
             }
             LoadTable(IDButton, data.listData);
         }
@@ -2520,12 +2818,16 @@ function LoadTableCorrespondance(data) {
     if (data.length == 0) {
         isEditing = true;
         $("#tab_StructCorrespondPlan tbody").empty();
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
         reset();
     } else {
         isEditing = false;
         updateTableWithDataCorresp(data);
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
+        const table = document.getElementById("tab_StructCorrespondPlan");
+        if (table.tBodies[0].rows.length > 0) {
+            fillFirstRowFormCorresp(table.tBodies[0].rows[0]);
+        } 
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
     }
     $(".disabled_me").prop("disabled", true);
 }
@@ -2538,7 +2840,7 @@ function LoadTable(niveau, data) {
     if (data.length == 0) {
         isEditing = true;
         $("#tab_" + niveau + " tbody").empty();
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", true);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -2546,18 +2848,19 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+                $("#TXT, #excel, #Importation").prop("disabled", true);
                 break;
         }
         reset();
-    } else {
+    }
+    else {
         isEditing = false;
         updateTableWithData(niveau, data);
         const table = document.getElementById("tab_" + niveau);
         if (table.tBodies[0].rows.length > 0) {
             fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
         } 
-        $("#Modifier, #Supprimer, #Imprimer").prop("disabled", false);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -2565,7 +2868,7 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Voir, #TXT, #excel, #Importation").prop("disabled", false);
+                $("#TXT, #excel, #Importation").prop("disabled", false);
                 break;
         }
     }
@@ -2712,9 +3015,55 @@ function updateTableWithDataCorresp(data) {
     $table.removeClass("dataTable");
     $("#tab_StructCorrespondPlan colgroup").remove();
 }
-function fillFirstRowForm(id, firstRow) {
+function fillFirstRowForm(niveau, firstRow) {
+    // Retirer la sélection précédente
+    $("#tab_" + niveau + " tbody tr").removeClass("selected");
+
+    // Ajouter la classe 'selected' à la première ligne
+    const $firstRow = $(firstRow);
+    $firstRow.addClass("selected");
+
+    // Appeler le remplissage automatique en simulant un clic
+    chargerValeursDepuisLigne(firstRow, niveau);
+}
+
+//function fillFirstRowForm(id, firstRow) {
+//    const inputs = {};
+//    const possibleFields = ["code", "libelle", "superClass", "codeConvention", "codeCategorie","codeSousCat", "checkActif"];
+
+//    for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
+//        const cell = firstRow.cells[cellIndex];
+//        const value = cell?.textContent.trim() ?? "";
+//        const fieldId = possibleFields[cellIndex];
+//        if (!fieldId || $("#" + fieldId).length === 0) continue;
+//        alert(fieldId)
+//        // Spécial traitement pour checkboxes
+//        if (fieldId === "checkActif") {
+//            alert(value)
+//            const $checkbox = $("#" + fieldId);
+//            $checkbox.prop("checked", value === "1" || value.toLowerCase() === "true" || value.toLowerCase() === "True");
+//            continue;
+//        }
+
+//        // Traitement spécial pour superClass (dropdownlist)
+//        if (fieldId === "superClass" && $("#" + fieldId).is("select")) {
+//            var classSup = firstRow.cells[10]?.textContent.trim();
+//            const $select = $("#" + fieldId);
+//            $select.val(classSup).trigger('change'); // trigger pour Select2 ou autre
+//            inputs[fieldId] = value;
+//            continue;
+//        }
+
+//        // Cas générique
+//        $("#" + fieldId).val(value);
+//        inputs[fieldId] = value;
+//    }
+
+//    $(firstRow).addClass("selected").siblings().removeClass("selected");
+//}
+function fillFirstRowFormCorresp(firstRow) {
     const inputs = {};
-    const possibleFields = ["code", "libelle", "superClass", "checkActif"];
+    const possibleFields = ["code", "correspondance"];
 
     for (let cellIndex = 0; cellIndex < firstRow.cells.length; cellIndex++) {
         const cell = firstRow.cells[cellIndex];
@@ -2722,22 +3071,23 @@ function fillFirstRowForm(id, firstRow) {
         const fieldId = possibleFields[cellIndex];
         if (!fieldId || $("#" + fieldId).length === 0) continue;
 
-        // Spécial traitement pour checkboxes
-        if (fieldId === "checkActif") {
-            const $checkbox = $("#" + fieldId);
-            $checkbox.prop("checked", value === "1" || value.toLowerCase() === "true");
+        // Traitement spécial pour code (dropdownlist)
+        if (fieldId === "code" && $("#" + fieldId).is("select")) {
+            var classSupC = firstRow.cells[1]?.textContent.trim();
+            const $select = $("#" + fieldId);
+            $select.val(classSupC).trigger('change'); // trigger pour Select2 ou autre
+            inputs[fieldId] = value;
             continue;
         }
-
-        // Traitement spécial pour superClass (dropdownlist)
-        if (fieldId === "superClass" && $("#" + fieldId).is("select")) {
-            var classSup = firstRow.cells[10]?.textContent.trim();
+        // Traitement spécial pour correspondance (dropdownlist)
+        if (fieldId === "correspondance" && $("#" + fieldId).is("select")) {
+            var classSup = firstRow.cells[2]?.textContent.trim();
             const $select = $("#" + fieldId);
             $select.val(classSup).trigger('change'); // trigger pour Select2 ou autre
             inputs[fieldId] = value;
             continue;
         }
-
+        numEnregCores = firstRow.cells[0]?.textContent.trim();
         // Cas générique
         $("#" + fieldId).val(value);
         inputs[fieldId] = value;

@@ -201,6 +201,7 @@ namespace FINPRO.Controllers
                     { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
                     { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
                     { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },  //Plan 4
+                    { "StructSousCategorie", (new Tables.rCategorie(), new Tables.rSousCategorie()) },  //Sous Categorie
                     // Ajoute d'autres mappings ici si nécessaire
                 };
 
@@ -219,79 +220,121 @@ namespace FINPRO.Controllers
 
                 return method != null ? (DataTable)method.Invoke(instance, new object[] { param }) : new DataTable();
             }
-            var nextNiveau = Convert.ToInt64(code1) - 1;
-            filtre = $"NIVEAU = '{nextNiveau}'";
-            // Remplissage des DataTables
-            objNiveau2 = RemplirDataTable(instances.tablePostInstance, filtre);
-            foreach (DataRow row in objNiveau2.Rows)
+            switch (niveau)
             {
-                listNiveau2.Add(new parametre
-                {
-                    code = row["code"]?.ToString(),
-                    libelle = row["Libelle"]?.ToString(),
-                    niveau = row["niveau"]?.ToString(),
-                });
-            }
-            if (code1 != null || code1 != "" || code1 != "0")
-            {
-                if (objNiveau2.Rows.Count > 0)
-                {
-                    DataRow firstRow_2_niveau = objNiveau2.Rows[0];
-                    var FisrtCode = firstRow_2_niveau["CODE"].ToString();
-                    if (string.IsNullOrEmpty(code2))
+                case "StructSousCategorie":
+                    filtre = $"CONVENTION = '{code1}'";
+                    objNiveau2 = RemplirDataTable(instances.tableInstance, filtre);
+                    foreach (DataRow row in objNiveau2.Rows)
                     {
-                        code2 = FisrtCode;
+                        listNiveau2.Add(new parametre
+                        {
+                            code = row["code"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                        });
                     }
-                    filtreTab = $"NIVEAU = '{code1}' and CODE like '{code2}%'";
-                }
-                else
-                {
-                    code2 = null;
-                    filtreTab = $"NIVEAU = '{code1}'";
-                }
-                objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
-                try
-                {
-                    switch (niveau)
+                    if (code1 != null || code1 != "" || code1 != "0")
                     {
-                        case "StructPlanCompt":
+                        if (objNiveau2.Rows.Count > 0)
+                        {
+                            DataRow firstRow_2_niveau = objNiveau2.Rows[0];
+                            var FisrtCode = firstRow_2_niveau["CODE"].ToString();
+                            if (string.IsNullOrEmpty(code2))
+                            {
+                                code2 = FisrtCode;
+                            }
+                            filtreTab = $"CONVENTION = '{code1}' and CATEGORIE = '{code2}'";
+                            objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
                             foreach (DataRow row in objTab.Rows)
                             {
-                                listtab.Add(new parametre
+                                listtab.Add(new parametre()
                                 {
-                                    code = row["code"]?.ToString(),
-                                    libelle = row["Libelle"]?.ToString(),
-                                    niveau = row["niveau"]?.ToString(),
-                                    status = row["STATUT"]?.ToString(),
-                                    collectif = row["collectif"].ToString(),
-                                    gestionImmo = row["GESTIONIMMO"].ToString(),
-                                    budget = row["budget"].ToString(),
-                                    acti = row["acti"].ToString(),
-                                    geo = row["geo"].ToString(),
-                                    fin = row["fin"].ToString(),
-                                    superClasse = row["superClasse"].ToString(),
+                                    convention = row["convention"].ToString(),
+                                    categorie = row["categorie"].ToString(),
+                                    code = row["code"].ToString(),
+                                    libelle = row["libelle"].ToString(),
+                                    status = row["statut"].ToString()
                                 });
                             }
-                            break;
-                        default:
-                            foreach (DataRow row in objTab.Rows)
-                            {
-                                listtab.Add(new parametre
-                                {
-                                    code = row["code"]?.ToString(),
-                                    libelle = row["Libelle"]?.ToString(),
-                                    niveau = row["niveau"]?.ToString(),
-                                    status = row["STATUT"]?.ToString(),
-                                });
-                            }
-                            break;
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
+                    break;
+                default:
+                    var nextNiveau = Convert.ToInt64(code1) - 1;
+                    filtre = $"NIVEAU = '{nextNiveau}'";
+                    // Remplissage des DataTables
+                    objNiveau2 = RemplirDataTable(instances.tablePostInstance, filtre);
+                    foreach (DataRow row in objNiveau2.Rows)
+                    {
+                        listNiveau2.Add(new parametre
+                        {
+                            code = row["code"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                            niveau = row["niveau"]?.ToString(),
+                        });
+                    }
+                    if (code1 != null || code1 != "" || code1 != "0")
+                    {
+                        if (objNiveau2.Rows.Count > 0)
+                        {
+                            DataRow firstRow_2_niveau = objNiveau2.Rows[0];
+                            var FisrtCode = firstRow_2_niveau["CODE"].ToString();
+                            if (string.IsNullOrEmpty(code2))
+                            {
+                                code2 = FisrtCode;
+                            }
+                            filtreTab = $"NIVEAU = '{code1}' and CODE like '{code2}%'";
+                        }
+                        else
+                        {
+                            code2 = null;
+                            filtreTab = $"NIVEAU = '{code1}'";
+                        }
+                        objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
+                        try
+                        {
+                            switch (niveau)
+                            {
+                                case "StructPlanCompt":
+                                    foreach (DataRow row in objTab.Rows)
+                                    {
+                                        listtab.Add(new parametre
+                                        {
+                                            code = row["code"]?.ToString(),
+                                            libelle = row["Libelle"]?.ToString(),
+                                            niveau = row["niveau"]?.ToString(),
+                                            status = row["STATUT"]?.ToString(),
+                                            collectif = row["collectif"].ToString(),
+                                            gestionImmo = row["GESTIONIMMO"].ToString(),
+                                            budget = row["budget"].ToString(),
+                                            acti = row["acti"].ToString(),
+                                            geo = row["geo"].ToString(),
+                                            fin = row["fin"].ToString(),
+                                            superClasse = row["superClasse"].ToString(),
+                                        });
+                                    }
+                                    break;
+                                default:
+                                    foreach (DataRow row in objTab.Rows)
+                                    {
+                                        listtab.Add(new parametre
+                                        {
+                                            code = row["code"]?.ToString(),
+                                            libelle = row["Libelle"]?.ToString(),
+                                            niveau = row["niveau"]?.ToString(),
+                                            status = row["STATUT"]?.ToString(),
+                                        });
+                                    }
+                                    break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
 
-                    throw;
-                }
+                            throw;
+                        }
+                    }
+                    break;
             }
             var data = new
             {
@@ -324,6 +367,7 @@ namespace FINPRO.Controllers
                     { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
                     { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
                     { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },  //Plan 4
+                    { "StructSousCategorie", (new Tables.rConvention(), new Tables.rCategorie()) },  //Sous Categorie
                     // Ajoute d'autres mappings ici si nécessaire
                 };
 
@@ -352,6 +396,16 @@ namespace FINPRO.Controllers
             // Traitement des données selon l'ID
             switch (id)
             {
+                case "StructSousCategorie":
+                    foreach (DataRow row in objTab.Rows)
+                    {
+                        listData.Add(new parametre
+                        {
+                            code = row["code"]?.ToString(),
+                            libelle = row["Libelle"]?.ToString(),
+                        });
+                    }
+                    break;
                 case "StructPlanBudget":
                 case "StructPlanCompt":
                 case "StructActivite":

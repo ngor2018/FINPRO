@@ -76,6 +76,8 @@ namespace FINPRO.Models
         public string numBl { get; set; }
         public string compte { get; set; }
         public string compteAuxi { get; set; }
+        public string convention { get; set; }
+        public string categorie { get; set; }
         public HttpPostedFileWrapper ImageUpload { get; set; }
         public IEnumerable<FINPRO.Models.parametre> all_parametre { get; set; }
         public IEnumerable<tabList> tabList { get; set; }
