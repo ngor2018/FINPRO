@@ -431,7 +431,7 @@ function formPopup() {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-10">
+                                    <div class="col-md-10" style="width:89%">
                                         <div class="form_padd">
                                             <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
@@ -491,7 +491,7 @@ function formPopup() {
 
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
                                         <div id="buttonUser">
 
                                         </div>
@@ -514,7 +514,7 @@ function formPopup() {
                                 </div>
                                 <div class="form_padd">
                                     <div class="row">
-                                        <div class="col-md-10">
+                                        <div class="col-md-10" style="width:89%">
                                             <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
                                                     <div class="alert_Param hide">
@@ -558,7 +558,7 @@ function formPopup() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
                                             <div id="buttonUser">
 
                                             </div>
@@ -570,245 +570,251 @@ function formPopup() {
                         `;
             break;
         case "StructPlanTier":
-                formHTML = `
-                            <div class="row justify-content-center" style="padding-top:4%">
-                                <div class="col-md-11 pageView">
-                                    <div class="row">
-                                        <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
-                                            <div class="float-start">
-                                                <strong id="titleStruct"></strong>
-                                            </div>
-                                            <div class="float-end">
-                                                <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
-                                            </div>
+            formHTML = `
+                        <div class="row justify-content-center" style="padding-top:4%">
+                            <div class="col-md-11 pageView">
+                                <div class="row">
+                                    <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
+                                        <div class="float-start">
+                                            <strong id="titleStruct"></strong>
                                         </div>
                                     </div>
-                                    <div class="form_padd">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <h5 style="color:#ff6a00">Saisie</h5>
-                                            </div>
-                                        </div>
-                                        <div class="row justify-content-center" style="text-align:center">
-                                            <div class="col-md-11" style="border:1px solid #e0d8d8;border-radius:5px;padding:10px">
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <label for="afficheCpeGen">Afficher par Compte Général</label>
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <select id="afficheCpeGen" class="input_focus choixSelect" style="width:100%">
-                                                        </select>
-                                                        <span class="erreur"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <label for="compteGene">Compte Général</label>
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <select id="compteGene" class="input_focus choixSelect" style="width:100%">
-                                                        </select>
-                                                        <span class="erreur"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <label for="compteAuxi">Compte auxiliaire</label>
-                                                    </div>
-                                                    <div class="col-md-7">
-                                                        <select id="compteAuxi" class="input_focus choixSelect" style="width:100%">
-                                                        </select>
-                                                        <span class="erreur"></span>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label" for="checkActif" style="cursor:pointer">Actif</label>
-                                                            <input class="form-check-input" type="checkbox" value="" id="checkActif" style="cursor:pointer">
-                                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row" style="padding-top:10px">
-                                            <div class="col-md-12">
-                                                <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                    <li class="nav-item" role="presentation"><a class="nav-link active" id="ficheSign-tab" data-bs-toggle="tab" href="#tab-ficheSign" role="tab" aria-controls="tab-ficheSign" aria-selected="true">Fiche Signalétique</a></li>
-                                                    <li class="nav-item" role="presentation"><a class="nav-link" id="ListeTiers-tab" data-bs-toggle="tab" href="#tab-ListeTiers" role="tab" aria-controls="tab-ListeTiers" aria-selected="false" tabindex="-1">Liste des Tiers</a></li>
-                                                </ul>
-                                                <div class="tab-content mt-3" id="myTab2Content">
-                                                    <div class="tab-pane fade active show" id="tab-ficheSign" role="tabpanel" aria-labelledby="ficheSign-tab">
-                                                        <div class="row justify-content-right" style="text-align:right">
-                                                            <div class="col-md-12">
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-11" style="border:1px solid #e0d8d8;border-radius:5px;padding:10px">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="afficheCpeGen">Afficher par Compte Général</label>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <h6 style="color:#ff6a00"><u>Identification</u></h6>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="nomRaisonSociale">Nom ou Raison Sociale</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="nomRaisonSociale" value="" id="nomRaisonSociale" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="nomContact">Nom Contact</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="nomContact" value="" id="nomContact" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2">
-                                                                    <div class="col-md-12">
-                                                                        <h6 style="color:#ff6a00"><u>Adresse</u></h6>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="Ligne_1_Adresse">1ère ligne d'adresse</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="Ligne_1_Adresse" value="" id="Ligne_1_Adresse" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="Ligne_2_Adresse">2ème ligne d'adresse</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="Ligne_2_Adresse" value="" id="Ligne_2_Adresse" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="ville">Ville</label>
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        <input type="text" name="ville" value="" id="ville" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                    <div class="col-md-2">
-                                                                        <label for="pays">Pays</label>
-                                                                    </div>
-                                                                    <div class="col-md-4">
-                                                                        <select id="pays" class="input_focus choixSelect" style="width:100%">
-                                                                        </select>
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="telephone">Téléphone</label>
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        <input type="text" name="telephone" value="" id="telephone" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                    <div class="col-md-2">
-                                                                        <label for="fax">Fax</label>
-                                                                    </div>
-                                                                    <div class="col-md-4">
-                                                                        <input type="text" name="fax" value="" id="fax" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="email">Email</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="email" value="" id="email" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2">
-                                                                    <div class="col-md-12">
-                                                                        <h6 style="color:#ff6a00"><u>Coordonnées Bancaires</u></h6>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="numCompteBanque">No de compte bancaire</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="numCompteBanque" value="" id="numCompteBanque" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="numCompteBanque_next" value="" id="numCompteBanque_next" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <label for="domiciliation">Domiciliation</label>
-                                                                    </div>
-                                                                    <div class="col-md-9">
-                                                                        <input type="text" name="domiciliation" value="" id="domiciliation" class="input_focus" />
-                                                                        <span class="erreur"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div class="col-md-9">
+                                                            <select id="afficheCpeGen" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
                                                         </div>
                                                     </div>
-                                                    <div class="tab-pane fade" id="tab-ListeTiers" role="tabpanel" aria-labelledby="ListeTiers-tab">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="col-md-12" style="max-height: 400px; overflow-y: auto">
-                                                                    <table class="table-bordered tabList" id="tab_Tiers" width="100%" tabindex="0">
-                                                                        <thead class="sticky-top bg-white">
-                                                                            <tr>
-                                                                                <th data-field="code1">Compte Général</th>
-                                                                                <th data-field="code2">Compte auxiliaire</th>
-                                                                                <th data-field="code3">Compte ou Raison Sociale</th>
-                                                                                <th data-field="code4">Nom Contact</th>
-                                                                                <th data-field="code5">1 ère ligne d'adresse</th>
-                                                                                <th data-field="code6">2 ème ligne d'adresse</th>
-                                                                                <th data-field="code7">Pays</th>
-                                                                                <th data-field="code8">Ville</th>
-                                                                                <th data-field="code9">Téléphone</th>
-                                                                                <th data-field="code10">Fax</th>
-                                                                                <th data-field="code11">Email</th>
-                                                                                <th data-field="code12">Rib1</th>
-                                                                                <th data-field="code13">Rib2</th>
-                                                                                <th data-field="code14">Domiciliation</th>
-                                                                                <th data-field="code15">Echéance de paiement</th>
-                                                                                <th data-field="code16">jours le</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="compteGene">Compte Général</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select id="compteGene" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="compteAuxi">Compte auxiliaire</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <select id="compteAuxi" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label" for="checkActif" style="cursor:pointer">Actif</label>
+                                                                <input class="form-check-input" type="checkbox" value="" id="checkActif" style="cursor:pointer">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="row" style="padding-top:10px">
+                                                <div class="col-md-12">
+                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="ficheSign-tab" data-bs-toggle="tab" href="#tab-ficheSign" role="tab" aria-controls="tab-ficheSign" aria-selected="true">Fiche Signalétique</a></li>
+                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="ListeTiers-tab" data-bs-toggle="tab" href="#tab-ListeTiers" role="tab" aria-controls="tab-ListeTiers" aria-selected="false" tabindex="-1">Liste des Tiers</a></li>
+                                                    </ul>
+                                                    <div class="tab-content mt-3" id="myTab2Content">
+                                                        <div class="tab-pane fade active show" id="tab-ficheSign" role="tabpanel" aria-labelledby="ficheSign-tab">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <h6 style="color:#ff6a00"><u>Identification</u></h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="nomRaisonSociale">Nom ou Raison Sociale</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="nomRaisonSociale" value="" id="nomRaisonSociale" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="nomContact">Nom Contact</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="nomContact" value="" id="nomContact" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <div class="col-md-12">
+                                                                            <h6 style="color:#ff6a00"><u>Adresse</u></h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="Ligne_1_Adresse">1ère ligne d'adresse</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="Ligne_1_Adresse" value="" id="Ligne_1_Adresse" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="Ligne_2_Adresse">2ème ligne d'adresse</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="Ligne_2_Adresse" value="" id="Ligne_2_Adresse" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="ville">Ville</label>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <input type="text" name="ville" value="" id="ville" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                        <div class="col-md-2">
+                                                                            <label for="pays">Pays</label>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <select id="pays" class="input_focus choixSelect" style="width:100%">
+                                                                            </select>
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="telephone">Téléphone</label>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <input type="text" name="telephone" value="" id="telephone" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                        <div class="col-md-2">
+                                                                            <label for="fax">Fax</label>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <input type="text" name="fax" value="" id="fax" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="email">Email</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="email" value="" id="email" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <div class="col-md-12">
+                                                                            <h6 style="color:#ff6a00"><u>Coordonnées Bancaires</u></h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="numCompteBanque">No de compte bancaire</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="numCompteBanque" value="" id="numCompteBanque" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="numCompteBanque_next" value="" id="numCompteBanque_next" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label for="domiciliation">Domiciliation</label>
+                                                                        </div>
+                                                                        <div class="col-md-9">
+                                                                            <input type="text" name="domiciliation" value="" id="domiciliation" class="input_focus" />
+                                                                            <span class="erreur"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="tab-ListeTiers" role="tabpanel" aria-labelledby="ListeTiers-tab">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="col-md-12" style="max-height: 400px; overflow-y: auto">
+                                                                        <table class="table-bordered tabList" id="tab_Tiers" width="100%" tabindex="0">
+                                                                            <thead class="sticky-top bg-white">
+                                                                                <tr>
+                                                                                    <th data-field="code1">Compte Général</th>
+                                                                                    <th data-field="code2">Compte auxiliaire</th>
+                                                                                    <th data-field="code3">Compte ou Raison Sociale</th>
+                                                                                    <th data-field="code4">Nom Contact</th>
+                                                                                    <th data-field="code5">1 ère ligne d'adresse</th>
+                                                                                    <th data-field="code6">2 ème ligne d'adresse</th>
+                                                                                    <th data-field="code7">Pays</th>
+                                                                                    <th data-field="code8">Ville</th>
+                                                                                    <th data-field="code9">Téléphone</th>
+                                                                                    <th data-field="code10">Fax</th>
+                                                                                    <th data-field="code11">Email</th>
+                                                                                    <th data-field="code12">Rib1</th>
+                                                                                    <th data-field="code13">Rib2</th>
+                                                                                    <th data-field="code14">Domiciliation</th>
+                                                                                    <th data-field="code15">Echéance de paiement</th>
+                                                                                    <th data-field="code16">jours le</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
-                                    
+                                    </div>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            `;
+                        </div>
+                        `;
             break;
         case "StructPlanJournaux":
             formHTML = `
@@ -819,180 +825,181 @@ function formPopup() {
                                         <div class="float-start">
                                             <strong id="titleStruct"></strong>
                                         </div>
-                                        <div class="float-end">
-                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code">Code</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="code" value="" id="code" class="input_focus" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="libelle">Libellé</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-2">
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
-                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="typeJournal-tab" data-bs-toggle="tab" href="#tab-typeJournal" role="tab" aria-controls="tab-typeJournal" aria-selected="true">Type du Journal</a></li>
-                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="GestionDevise-tab" data-bs-toggle="tab" href="#tab-GestionDevise" role="tab" aria-controls="tab-GestionDevise" aria-selected="false" tabindex="-1">Gestion des devises</a></li>
-                                                    </ul>
-                                                    <div class="tab-content mt-3" id="myTab3Content">
-                                                        <div class="row justify-content-right" style="text-align:right">
-                                                            <div class="col-md-12">
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                            </div>
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="code">Code</label>
                                                         </div>
-                                                        <div class="tab-pane fade active show" id="tab-typeJournal" role="tabpanel" aria-labelledby="typeJournal-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-6">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="form-check">
-                                                                                <label class="form-check-label" for="CheckJournal" style="cursor:pointer">
-                                                                                    Journal de Trésorerie
-                                                                                </label>
-                                                                                <input class="form-check-input" type="checkbox" value="" id="CheckJournal" style="cursor:pointer">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-5">
-                                                                            <label for="compteGene">Compte Général Associé</label>
-                                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="code" value="" id="code" class="input_focus" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="libelle">Libellé</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-12">
+                                                            <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                                <li class="nav-item" role="presentation"><a class="nav-link active" id="typeJournal-tab" data-bs-toggle="tab" href="#tab-typeJournal" role="tab" aria-controls="tab-typeJournal" aria-selected="true">Type du Journal</a></li>
+                                                                <li class="nav-item" role="presentation"><a class="nav-link" id="GestionDevise-tab" data-bs-toggle="tab" href="#tab-GestionDevise" role="tab" aria-controls="tab-GestionDevise" aria-selected="false" tabindex="-1">Gestion des devises</a></li>
+                                                            </ul>
+                                                            <div class="tab-content mt-3" id="myTab3Content">
+                                                                <div class="tab-pane fade active show" id="tab-typeJournal" role="tabpanel" aria-labelledby="typeJournal-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
                                                                         <div class="col-md-7">
-                                                                            <select id="compteGene" class="input_focus choixSelect" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-5">
-                                                                            <label for="signataire">Signataire</label>
-                                                                        </div>
-                                                                        <div class="col-md-7">
-                                                                            <select id="signataire" class="input_focus choixSelect" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="form-check">
-                                                                                <label class="form-check-label" for="excluDRF" style="cursor:pointer">
-                                                                                    Exclu des DRF
-                                                                                </label>
-                                                                                <input class="form-check-input" type="checkbox" value="" id="excluDRF" style="cursor:pointer">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="form-check">
-                                                                                <label class="form-check-label" for="checkActif" style="cursor:pointer">
-                                                                                    Actif
-                                                                                </label>
-                                                                                <input class="form-check-input" type="checkbox" value="" id="checkActif" style="cursor:pointer">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6" style="border-left:1px solid #e4dbdb">                                            
-                                                                    <div class="row">
-                                                                        <div class="col-md-12">
-                                                                            <h6 style="color:#ff6a00">Automatisation des numéros de pièce compatible</h6>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-12">
                                                                             <div class="row">
-                                                                                <div class="col-md-5">
+                                                                                <div class="col-md-12">
                                                                                     <div class="form-check">
-                                                                                        <label class="form-check-label" for="checkInclu_Pref" style="cursor:pointer">
-                                                                                            Inclure un préfixe
+                                                                                        <label class="form-check-label" for="CheckJournal" style="cursor:pointer">
+                                                                                            Journal de Trésorerie
                                                                                         </label>
-                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_Pref" style="cursor:pointer">
+                                                                                        <input class="form-check-input" type="checkbox" value="" id="CheckJournal" style="cursor:pointer">
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="col-md-4">
-                                                                                    <input type="text" name="valInclu_Pref" value="" id="valInclu_Pref" class="input_focus disabledCheck" />
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-5">
+                                                                                    <label for="compteGene">Compte Général Associé</label>
+                                                                                </div>
+                                                                                <div class="col-md-7">
+                                                                                    <select id="compteGene" class="input_focus choixSelect" style="width:100%">
+                                                                                    </select>
                                                                                     <span class="erreur"></span>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
                                                                                 <div class="col-md-5">
-                                                                                    <div class="form-check">
-                                                                                        <label class="form-check-label" for="checkInclu_year" style="cursor:pointer">
-                                                                                            Inclure l'année
-                                                                                        </label>
-                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_year" style="cursor:pointer">
-                                                                                    </div>
+                                                                                    <label for="signataire">Signataire</label>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-5">
-                                                                                    <div class="form-check">
-                                                                                        <label class="form-check-label" for="checkInclu_month" style="cursor:pointer">
-                                                                                            Inclure le mois
-                                                                                        </label>
-                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_month" style="cursor:pointer">
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-5">
-                                                                                    <label for="increm_num">Incrémentation (Numérique)</label>
-                                                                                </div>
-                                                                                <div class="col-md-4">
-                                                                                    <input type="number" name="increm_num" value="" id="increm_num" class="input_focus disabledCheck" />
+                                                                                <div class="col-md-7">
+                                                                                    <select id="signataire" class="input_focus choixSelect" style="width:100%">
+                                                                                    </select>
                                                                                     <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="form-check">
+                                                                                        <label class="form-check-label" for="excluDRF" style="cursor:pointer">
+                                                                                            Exclu des DRF
+                                                                                        </label>
+                                                                                        <input class="form-check-input" type="checkbox" value="" id="excluDRF" style="cursor:pointer">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="form-check">
+                                                                                        <label class="form-check-label" for="checkActif" style="cursor:pointer">
+                                                                                            Actif
+                                                                                        </label>
+                                                                                        <input class="form-check-input" type="checkbox" value="" id="checkActif" style="cursor:pointer">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-5" style="border-left:1px solid #e4dbdb">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <h6 style="color:#ff6a00">Automatisation des numéros de pièce compatible</h6>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-7">
+                                                                                            <div class="form-check">
+                                                                                                <label class="form-check-label" for="checkInclu_Pref" style="cursor:pointer">
+                                                                                                    Inclure un préfixe
+                                                                                                </label>
+                                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_Pref" style="cursor:pointer">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-5">
+                                                                                            <input type="text" name="valInclu_Pref" value="" id="valInclu_Pref" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <div class="form-check">
+                                                                                                <label class="form-check-label" for="checkInclu_year" style="cursor:pointer">
+                                                                                                    Inclure l'année
+                                                                                                </label>
+                                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_year" style="cursor:pointer">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <div class="form-check">
+                                                                                                <label class="form-check-label" for="checkInclu_month" style="cursor:pointer">
+                                                                                                    Inclure le mois
+                                                                                                </label>
+                                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkInclu_month" style="cursor:pointer">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-8">
+                                                                                            <label for="increm_num">Incrémentation (Numérique)</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-4">
+                                                                                            <input type="number" name="increm_num" value="" id="increm_num" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="tab-GestionDevise" role="tabpanel" aria-labelledby="GestionDevise-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-8">
-                                                                    <div class="row justify-content-center" style="text-align:center">
-                                                                        <div class="col-md-3">
-                                                                            <div class="form-check">
-                                                                                <label class="form-check-label" for="JournalGerDevise" style="cursor:pointer">
-                                                                                    Journal Géré en devises
-                                                                                </label>
-                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="JournalGerDevise" style="cursor:pointer">
+                                                                <div class="tab-pane fade" id="tab-GestionDevise" role="tabpanel" aria-labelledby="GestionDevise-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-8">
+                                                                            <div class="row justify-content-center" style="text-align:center">
+                                                                                <div class="col-md-3">
+                                                                                    <div class="form-check">
+                                                                                        <label class="form-check-label" for="JournalGerDevise" style="cursor:pointer">
+                                                                                            Journal Géré en devises
+                                                                                        </label>
+                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="JournalGerDevise" style="cursor:pointer">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <label for="codeDevise">Code de devises (si fixe)</label>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                    <input type="number" name="codeDevise" value="" id="codeDevise" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <label for="codeDevise">Code de devises (si fixe)</label>
-                                                                        </div>
-                                                                        <div class="col-md-2">
-                                                                            <input type="number" name="codeDevise" value="" id="codeDevise" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1001,14 +1008,19 @@ function formPopup() {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div id="partieTab">
+
+                                            </div>
                                         </div>
                                     </div>
-                                    <div id="partieTab">
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
                         `;
             break;
         case "StructBailleurFond":
@@ -1020,132 +1032,133 @@ function formPopup() {
                                         <div class="float-start">
                                             <strong id="titleStruct"></strong>
                                         </div>
-                                        <div class="float-end">
-                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code">Code</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="code" value="" id="code" class="input_focus" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="libelle">Libellé</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-2">
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
-                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="adressePostal-tab" data-bs-toggle="tab" href="#tab-adressePostal" role="tab" aria-controls="tab-adressePostal" aria-selected="true">Adresse Postale</a></li>
-                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="TelFaxEmail-tab" data-bs-toggle="tab" href="#tab-TelFaxEmail" role="tab" aria-controls="tab-TelFaxEmail" aria-selected="false" tabindex="-1">Tél - Fax - Email</a></li>
-                                                    </ul>
-                                                    <div class="tab-content mt-3" id="myTab4Content">
-                                                        <div class="row justify-content-right" style="text-align:right">
-                                                            <div class="col-md-12">
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                            </div>
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="code">Code</label>
                                                         </div>
-                                                        <div class="tab-pane fade active show" id="tab-adressePostal" role="tabpanel" aria-labelledby="adressePostal-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="1_LigneAdresse">1 ère ligne d'adresse</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" name="1_LigneAdresse" value="" id="1_LigneAdresse" class="input_focus disabledCheck"/>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="2_LigneAdresse">2 ème ligne d'adresse</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" name="2_LigneAdresse" value="" id="2_LigneAdresse" class="input_focus disabledCheck"/>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="ville">Ville</label>
-                                                                        </div>
-                                                                        <div class="col-md-3">
-                                                                            <input type="text" name="ville" value="" id="ville" class="input_focus disabledCheck"/>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                        <div class="col-md-2">
-                                                                            <label for="pays">Pays</label>
-                                                                        </div>
-                                                                        <div class="col-md-4">
-                                                                            <select id="pays" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="procedureFinance">Procédure financière</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <select id="procedureFinance" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="code" value="" id="code" class="input_focus" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="libelle">Libellé</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-12">
+                                                            <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                                <li class="nav-item" role="presentation"><a class="nav-link active" id="adressePostal-tab" data-bs-toggle="tab" href="#tab-adressePostal" role="tab" aria-controls="tab-adressePostal" aria-selected="true">Adresse Postale</a></li>
+                                                                <li class="nav-item" role="presentation"><a class="nav-link" id="TelFaxEmail-tab" data-bs-toggle="tab" href="#tab-TelFaxEmail" role="tab" aria-controls="tab-TelFaxEmail" aria-selected="false" tabindex="-1">Tél - Fax - Email</a></li>
+                                                            </ul>
+                                                            <div class="tab-content mt-3" id="myTab4Content">
+                                                                <div class="tab-pane fade active show" id="tab-adressePostal" role="tabpanel" aria-labelledby="adressePostal-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="1_LigneAdresse">1 ère ligne d'adresse</label>
+                                                                                </div>
+                                                                                <div class="col-md-9">
+                                                                                    <input type="text" name="1_LigneAdresse" value="" id="1_LigneAdresse" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="2_LigneAdresse">2 ème ligne d'adresse</label>
+                                                                                </div>
+                                                                                <div class="col-md-9">
+                                                                                    <input type="text" name="2_LigneAdresse" value="" id="2_LigneAdresse" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="ville">Ville</label>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <input type="text" name="ville" value="" id="ville" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                    <label for="pays">Pays</label>
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <select id="pays" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="procedureFinance">Procédure financière</label>
+                                                                                </div>
+                                                                                <div class="col-md-9">
+                                                                                    <select id="procedureFinance" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
 
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="tab-TelFaxEmail" role="tabpanel" aria-labelledby="TelFaxEmail-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="telephone">Téléphone</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" name="telephone" value="" id="telephone" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="fax">Fax</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" name="fax" value="" id="fax" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="email">Email</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" name="email" value="" id="email" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
+                                                                <div class="tab-pane fade" id="tab-TelFaxEmail" role="tabpanel" aria-labelledby="TelFaxEmail-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="telephone">Téléphone</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <input type="text" name="telephone" value="" id="telephone" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="fax">Fax</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <input type="text" name="fax" value="" id="fax" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="email">Email</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <input type="text" name="email" value="" id="email" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1154,10 +1167,15 @@ function formPopup() {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div id="partieTab">
+
+                                            </div>
                                         </div>
                                     </div>
-                                    <div id="partieTab">
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1173,248 +1191,254 @@ function formPopup() {
                                         <div class="float-start">
                                             <strong id="titleStruct"></strong>
                                         </div>
-                                        <div class="float-end">
-                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="BailleurFond">Bailleur de Fond</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="BailleurFond" class="input_focus choixSelect" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="code">Code</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="code" value="" id="code" class="input_focus disabledCheck" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="libelle">Libellé</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus disabledCheck" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
+                                                                <label class="form-check-label" for="checkActif" style="cursor:pointer">
+                                                                    Actif
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-12">
+                                                            <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                                <li class="nav-item" role="presentation"><a class="nav-link active" id="CommentaireDRF-tab" data-bs-toggle="tab" href="#tab-CommentaireDRF" role="tab" aria-controls="tab-CommentaireDRF" aria-selected="true">Commentaires DRF</a></li>
+                                                                <li class="nav-item" role="presentation"><a class="nav-link" id="signataires-tab" data-bs-toggle="tab" href="#tab-signataires" role="tab" aria-controls="tab-signataires" aria-selected="false" tabindex="-1">Signataires</a></li>
+                                                                <li class="nav-item" role="presentation"><a class="nav-link" id="Devise-tab" data-bs-toggle="tab" href="#tab-Devise" role="tab" aria-controls="tab-Devise" aria-selected="false" tabindex="-1">Devise</a></li>
+                                                            </ul>
+                                                            <div class="tab-content mt-3" id="myTab5Content">
+                                                                <div class="tab-pane fade active show" id="tab-CommentaireDRF" role="tabpanel" aria-labelledby="CommentaireDRF-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-1">
+                                                                                    <label for="1_LigneAdresse">1</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text" name="num_1" value="" id="num_1" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-1">
+                                                                                    <label for="num_2">2</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text" name="num_2" value="" id="num_2" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-1">
+                                                                                    <label for="num_3">3</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text" name="num_3" value="" id="num_3" class="input_focus disabledCheck" />
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tab-pane fade" id="tab-signataires" role="tabpanel" aria-labelledby="signataires-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-2">
+                                                                                    <label for="codesignat">Code</label>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <select id="codesignat" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="row justify-content-center" style="text-align:center">
+                                                                                        <div class="col-md-12">
+                                                                                            <h5>Nom</h5>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-1">
+                                                                                            <label for="signature_1">1</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-11">
+                                                                                            <input type="text" name="signature_1" value="" id="signature_1" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-1">
+                                                                                            <label for="signature_2">2</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-11">
+                                                                                            <input type="text" name="signature_2" value="" id="signature_2" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-1">
+                                                                                            <label for="signature_3">3</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-11">
+                                                                                            <input type="text" name="signature_3" value="" id="signature_3" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-1">
+                                                                                            <label for="signature_4">4</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-11">
+                                                                                            <input type="text" name="signature_4" value="" id="signature_4" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <div class="row justify-content-center" style="text-align:center">
+                                                                                        <div class="col-md-12">
+                                                                                            <h5>Poste Occupé</h5>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <input type="text" name="signature_1_" value="" id="signature_1_" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <input type="text" name="signature_2_" value="" id="signature_2_" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <input type="text" name="signature_3_" value="" id="signature_3_" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12">
+                                                                                            <input type="text" name="signature_4_" value="" id="signature_4_" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tab-pane fade" id="tab-Devise" role="tabpanel" aria-labelledby="Devise-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <h5 style="color:#ff6a00"><u>Monnnaie</u></h5>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="suivi1_">Suivi (1ère)</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <select id="suivi1_" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="suivi2_">Suivi (2ème)</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <select id="suivi2_" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="emissionMe">Emission Mémoire</label>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <select id="emissionMe" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                    </select>
+                                                                                    <span class="erreur"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
+
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="BailleurFond">Bailleur de Fond</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <select id="BailleurFond" class="input_focus choixSelect" style="width:100%">
-                                                    </select>
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code">Code</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="code" value="" id="code" class="input_focus disabledCheck" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="libelle">Libellé</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus disabledCheck" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
-                                                        <label class="form-check-label" for="checkActif" style="cursor:pointer">
-                                                            Actif
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-2">
-                                                <div class="col-md-12">
-                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="CommentaireDRF-tab" data-bs-toggle="tab" href="#tab-CommentaireDRF" role="tab" aria-controls="tab-CommentaireDRF" aria-selected="true">Commentaires DRF</a></li>
-                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="signataires-tab" data-bs-toggle="tab" href="#tab-signataires" role="tab" aria-controls="tab-signataires" aria-selected="false" tabindex="-1">Signataires</a></li>
-                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="Devise-tab" data-bs-toggle="tab" href="#tab-Devise" role="tab" aria-controls="tab-Devise" aria-selected="false" tabindex="-1">Devise</a></li>
-                                                    </ul>
-                                                    <div class="tab-content mt-3" id="myTab5Content">
-                                                        <div class="row justify-content-right" style="text-align:right">
-                                                            <div class="col-md-12">
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                                <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                                <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade active show" id="tab-CommentaireDRF" role="tabpanel" aria-labelledby="CommentaireDRF-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-1">
-                                                                            <label for="1_LigneAdresse">1</label>
-                                                                        </div>
-                                                                        <div class="col-md-8">
-                                                                            <input type="text" name="num_1" value="" id="num_1" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-1">
-                                                                            <label for="num_2">2</label>
-                                                                        </div>
-                                                                        <div class="col-md-8">
-                                                                            <input type="text" name="num_2" value="" id="num_2" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-1">
-                                                                            <label for="num_3">3</label>
-                                                                        </div>
-                                                                        <div class="col-md-8">
-                                                                            <input type="text" name="num_3" value="" id="num_3" class="input_focus disabledCheck" />
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
+                                <div id="partieTab">
 
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="tab-signataires" role="tabpanel" aria-labelledby="signataires-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-2">
-                                                                            <label for="codesignat">Code</label>
-                                                                        </div>
-                                                                        <div class="col-md-8">
-                                                                            <select id="codesignat" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="row justify-content-center" style="text-align:center">
-                                                                                <div class="col-md-12">
-                                                                                    <h5>Nom</h5>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-1">
-                                                                                    <label for="signature_1">1</label>
-                                                                                </div>
-                                                                                <div class="col-md-11">
-                                                                                    <input type="text" name="signature_1" value="" id="signature_1" class="input_focus disabledCheck"/>
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-1">
-                                                                                    <label for="signature_2">2</label>
-                                                                                </div>
-                                                                                <div class="col-md-11">
-                                                                                    <input type="text" name="signature_2" value="" id="signature_2" class="input_focus disabledCheck"/>
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-1">
-                                                                                    <label for="signature_3">3</label>
-                                                                                </div>
-                                                                                <div class="col-md-11">
-                                                                                    <input type="text" name="signature_3" value="" id="signature_3" class="input_focus disabledCheck"/>
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-1">
-                                                                                    <label for="signature_4">4</label>
-                                                                                </div>
-                                                                                <div class="col-md-11">
-                                                                                    <input type="text" name="signature_4" value="" id="signature_4" class="input_focus disabledCheck"/>
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="row justify-content-center" style="text-align:center">
-                                                                                <div class="col-md-12">
-                                                                                    <h5>Poste Occupé</h5>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <input type="text" name="signature_1_" value="" id="signature_1_" class="input_focus disabledCheck" />
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <input type="text" name="signature_2_" value="" id="signature_2_" class="input_focus disabledCheck" />
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <input type="text" name="signature_3_" value="" id="signature_3_" class="input_focus disabledCheck" />
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <input type="text" name="signature_4_" value="" id="signature_4_" class="input_focus disabledCheck" />
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="tab-Devise" role="tabpanel" aria-labelledby="Devise-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-12">
-                                                                            <h5 style="color:#ff6a00"><u>Monnnaie</u></h5>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="suivi1_">Suivi (1ère)</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <select id="suivi1_" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="suivi2_">Suivi (2ème)</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <select id="suivi2_" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <label for="emissionMe">Emission Mémoire</label>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <select id="emissionMe" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                            </select>
-                                                                            <span class="erreur"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="partieTab">
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1423,7 +1447,7 @@ function formPopup() {
         case "StructSignataires":
             formHTML = `
                         <div class="row justify-content-center" style="padding-top:4%">
-                            <div class="col-md-8 pageView">
+                            <div class="col-md-10 pageView">
                                 <div class="row">
                                     <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
                                         <div class="float-start">
@@ -1431,114 +1455,121 @@ function formPopup() {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code">Code</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="code" value="" id="code" class="input_focus disabledCheck" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="libelle">Libellé</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <input type="text" name="libelle" value="" id="libelle" class="input_focus disabledCheck" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="row justify-content-center" style="text-align:center">
-                                                        <div class="col-md-12">
-                                                            <strong>Nom</strong>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="nom_1" value="" id="nom_1" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="nom_2" value="" id="nom_2" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="nom_3" value="" id="nom_3" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="nom_4" value="" id="nom_4" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row justify-content-center" style="text-align:center">
-                                                        <div class="col-md-12">
-                                                            <strong>Poste</strong>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="poste_1" value="" id="poste_1" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="poste_2" value="" id="poste_2" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="poste_3" value="" id="poste_3" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="text" name="poste_4" value="" id="poste_4" class="input_focus disabledCheck" />
-                                                            <span class="erreur"></span>
-                                                        </div>
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;;text-align:right">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                            <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
-                                        </div>
-                                    </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="code">Code</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="code" value="" id="code" class="input_focus disabledCheck" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label for="libelle">Libellé</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <input type="text" name="libelle" value="" id="libelle" class="input_focus disabledCheck" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="row justify-content-center" style="text-align:center">
+                                                                <div class="col-md-12">
+                                                                    <strong>Nom</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="nom_1" value="" id="nom_1" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="nom_2" value="" id="nom_2" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="nom_3" value="" id="nom_3" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="nom_4" value="" id="nom_4" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="row justify-content-center" style="text-align:center">
+                                                                <div class="col-md-12">
+                                                                    <strong>Poste</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="poste_1" value="" id="poste_1" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="poste_2" value="" id="poste_2" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="poste_3" value="" id="poste_3" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <input type="text" name="poste_4" value="" id="poste_4" class="input_focus disabledCheck" />
+                                                                    <span class="erreur"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="partieTab">
 
-                                    <div id="partieTab">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                       
                         `;
             break;
         case "StructVentilation":
@@ -1552,101 +1583,108 @@ function formPopup() {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <label for="categorieFinan">Catégorie Financière</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <select id="categorieFinan" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                    </select>
-                                                    <span class="erreur"></span>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
-                                                        <label class="form-check-label" for="checkActif" style="cursor:pointer">
-                                                            Actif
-                                                        </label>
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <table class="tabList" style="width:100%" id="tabCategorieFirst">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Catégorie</th>
-                                                                <th>Code</th>
-                                                                <th>Taux - Local</th>
-                                                                <th>Taux - Devis</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>1ère catégorie</td>
-                                                                <td style="width:60%"><select id="catego_1" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2ème catégorie</td>
-                                                                <td style="width:60%"><select id="catego_2" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>3ème catégorie</td>
-                                                                <td style="width:60%"><select id="catego_3" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>4ème catégorie</td>
-                                                                <td style="width:60%"><select id="catego_4" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>5ème catégorie</td>
-                                                                <td style="width:60%"><select id="catego_5" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                                <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
-                                                            </tr>
-                                                            <tr style="background-color: #77B5FE;color:#fff">
-                                                                <td class="totaux" colspan="2" style="text-align:center"><strong>Totaux</strong></td>
-                                                                <td style="width:8%" class="totaux"><input type="text" disabled value="0,000" readonly></td>
-                                                                <td style="width:8%" class="totaux"><input type="text" disabled value="0,000" readonly></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="categorieFinan">Catégorie Financière</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <select id="categorieFinan" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
+                                                                <label class="form-check-label" for="checkActif" style="cursor:pointer">
+                                                                    Actif
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <table class="tabList" style="width:100%" id="tabCategorieFirst">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Catégorie</th>
+                                                                        <th>Code</th>
+                                                                        <th>Taux - Local</th>
+                                                                        <th>Taux - Devis</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>1ère catégorie</td>
+                                                                        <td style="width:60%"><select id="catego_1" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>2ème catégorie</td>
+                                                                        <td style="width:60%"><select id="catego_2" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>3ème catégorie</td>
+                                                                        <td style="width:60%"><select id="catego_3" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>4ème catégorie</td>
+                                                                        <td style="width:60%"><select id="catego_4" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>5ème catégorie</td>
+                                                                        <td style="width:60%"><select id="catego_5" class="input_focus choixSelect disabledCheck" style="width:100%"></select></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                        <td style="width:8%"><input type="text" value="0,000" class="input_focus disabledCheck"></td>
+                                                                    </tr>
+                                                                    <tr style="background-color: #77B5FE;color:#fff">
+                                                                        <td class="totaux" colspan="2" style="text-align:center"><strong>Totaux</strong></td>
+                                                                        <td style="width:8%" class="totaux"><input type="text" disabled value="0,000" readonly></td>
+                                                                        <td style="width:8%" class="totaux"><input type="text" disabled value="0,000" readonly></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                            <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
+
                                         </div>
                                     </div>
+                                </div><hr/>
+                                <div id="partieTab">
 
-                                    <div id="partieTab">
-
-                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
                         `;
             break;
         case "StructCategorieFinance":
@@ -1658,169 +1696,175 @@ function formPopup() {
                                         <div class="float-start">
                                             <strong id="titleStruct"></strong>
                                         </div>
-                                        <div class="float-end">
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="form_padd">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h5 style="color:#ff6a00">Saisie</h5>
+                                <div class="row">
+                                    <div class="col-md-10" style="width:89%">
+                                        <div class="form_padd">
+                                            <div class="row justify-content-center" style="text-align:center">
+                                                <div class="col-md-12">
+                                                    <div class="alert_Param hide">
+                                                        <span class="fas fa-exclamation-circle"></span>
+                                                        <span class="result_Param"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="color:#ff6a00">Saisie</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="codeConventionF">Code de la convention</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="codeConventionF" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label for="codeCategorie">Code de la catégorie</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input type="text" name="codeCategorie" value="" id="codeCategorie" class="input_focus disabledCheck" />
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-12">
+                                                            <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                                                                <li class="nav-item" role="presentation"><a class="nav-link active" id="Detail-tab" data-bs-toggle="tab" href="#tab-Detail" role="tab" aria-controls="tab-Detail" aria-selected="true">Détails</a></li>
+                                                                <li class="nav-item" role="presentation"><a class="nav-link" id="Liste-tab" data-bs-toggle="tab" href="#tab-Liste" role="tab" aria-controls="tab-Liste" aria-selected="false" tabindex="-1">Liste</a></li>
+                                                            </ul>
+                                                            <div class="tab-content mt-3" id="myTab6Content">
+                                                                <div class="tab-pane fade active show" id="tab-Detail" role="tabpanel" aria-labelledby="Detail-tab">
+                                                                    <div class="row" style="padding-bottom:10px">
+                                                                        <div class="col-md-12">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <h5 style="color:#ff6a00"><u>Caractéristiques</u></h5>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-4">
+                                                                                            <label for="libelleCat">Libellé de la catégorie</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-8">
+                                                                                            <input type="text" name="libelleCat" value="" id="libelleCat" class="input_focus disabledCheck" />
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="form-check">
+                                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="categorieTaxe" style="cursor:pointer">
+                                                                                                <label class="form-check-label" for="categorieTaxe" style="cursor:pointer">
+                                                                                                    Catégorie représentant une TAXE
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-6" style="border-left:1px solid #d0cccc;">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-4">
+                                                                                            <label for="modeleEtat">Modèle d'état</label>
+                                                                                        </div>
+                                                                                        <div class="col-md-8">
+                                                                                            <select id="modeleEtat" class="input_focus choixSelect disabledCheck" style="width:100%">
+                                                                                            </select>
+                                                                                            <span class="erreur"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="form-check">
+                                                                                                <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
+                                                                                                <label class="form-check-label" for="checkActif" style="cursor:pointer">
+                                                                                                    Actif
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row mb-2">
+                                                                                <div class="col-md-12">
+                                                                                    <h5 style="color:#ff6a00"><u>LIGNES rattaché(e)s</u></h5>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-5">
+                                                                                    <div class="list-container">
+                                                                                        <label><strong>LIGNE (Liste Entière)</strong></label><br>
+                                                                                        <select id="listeEntiere" multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
+                                                                                            <option>62211 Acquisition terrains</option>
+                                                                                            <option>62212 Viabilisation et Aménagement des terres</option>
+                                                                                            <option>62219 Autres terrains</option>
+                                                                                            <option>62241 BASSINS</option>
+                                                                                            <option>62311 Bâtiments Administratifs à usage de bureaux</option>
+                                                                                            <option>62312 Construction de d’Angars pour le Stockage d</option>
+                                                                                            <option>62319 Autres bâtiments à usage technique</option>
+                                                                                            <option>62341 OUVRAGES DE TRANSPORTS</option>
+                                                                                            <option>62343 Forage</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-1">
+                                                                                    <div class="list-buttons">
+                                                                                        <button id="btnAnalyt" onclick="moveSelected('listeEntiere', 'listeSelection')">-&gt;</button>
+                                                                                        <button id="btnBudget" onclick="moveSelected('listeSelection', 'listeEntiere')">&lt;-</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <div class="list-container">
+                                                                                        <label><strong>LIGNE Sélectionné(e)s</strong></label><br>
+                                                                                        <select id="listeSelection" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tab-pane fade" id="tab-Liste" role="tabpanel" aria-labelledby="Liste-tab">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
+                                                                            <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                                                                                <thead class="sticky-top bg-white">
+                                                                                    <tr>
+                                                                                        <th data-field="code1">Code de la catégorie</th>
+                                                                                        <th data-field="code2">Libellé de la catégorie</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <label for="codeConventionF">Code de la convention</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <select id="codeConventionF" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                    </select>
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <label for="codeCategorie">Code de la catégorie</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" name="codeCategorie" value="" id="codeCategorie" class="input_focus disabledCheck" />
-                                                    <span class="erreur"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-2">
-                                                <div class="col-md-12">
-                                                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                                                        <li class="nav-item" role="presentation"><a class="nav-link active" id="Detail-tab" data-bs-toggle="tab" href="#tab-Detail" role="tab" aria-controls="tab-Detail" aria-selected="true">Détails</a></li>
-                                                        <li class="nav-item" role="presentation"><a class="nav-link" id="Liste-tab" data-bs-toggle="tab" href="#tab-Liste" role="tab" aria-controls="tab-Liste" aria-selected="false" tabindex="-1">Liste</a></li>
-                                                    </ul>
-                                                    <div class="row justify-content-right" style="text-align:right">
-                                                        <div class="col-md-12">
-                                                            <button class="btn btn-secondary btn-sm" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
-                                                            <button class="btn btn-secondary btn-sm" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
-                                                            <button class="btn btn-danger btn-sm" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
-                                                            <button class="btn btn-danger btn-sm" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
-                                                            <button class="btn btn-danger btn-sm" type="button" id="closeSt">Fermer</button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="tab-content mt-3" id="myTab6Content">
-                                                        <div class="tab-pane fade active show" id="tab-Detail" role="tabpanel" aria-labelledby="Detail-tab">
-                                                            <div class="row" style="padding-bottom:10px">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-md-12">
-                                                                            <h5 style="color:#ff6a00"><u>Caractéristiques</u></h5>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="row">
-                                                                                <div class="col-md-4">
-                                                                                    <label for="libelleCat">Libellé de la catégorie</label>
-                                                                                </div>
-                                                                                <div class="col-md-8">
-                                                                                    <input type="text" name="libelleCat" value="" id="libelleCat" class="input_focus disabledCheck" />
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <div class="form-check">
-                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="categorieTaxe" style="cursor:pointer">
-                                                                                        <label class="form-check-label" for="categorieTaxe" style="cursor:pointer">
-                                                                                            Catégorie représentant une TAXE
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6" style="border-left:1px solid #d0cccc;">
-                                                                            <div class="row">
-                                                                                <div class="col-md-4">
-                                                                                    <label for="modeleEtat">Modèle d'état</label>
-                                                                                </div>
-                                                                                <div class="col-md-8">
-                                                                                    <select id="modeleEtat" class="input_focus choixSelect disabledCheck" style="width:100%">
-                                                                                    </select>
-                                                                                    <span class="erreur"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <div class="form-check">
-                                                                                        <input class="form-check-input disabledCheck" type="checkbox" value="" id="checkActif" style="cursor:pointer">
-                                                                                        <label class="form-check-label" for="checkActif" style="cursor:pointer">
-                                                                                            Actif
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row mb-2">
-                                                                        <div class="col-md-12">
-                                                                            <h5 style="color:#ff6a00"><u>LIGNES rattaché(e)s</u></h5>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-5">
-                                                                            <div class="list-container">
-                                                                                <label><strong>LIGNE (Liste Entière)</strong></label><br>
-                                                                                <select id="listeEntiere" multiple style="width:100%;height:150px;border:1px solid #d0cccc;">
-                                                                                    <option>62211 Acquisition terrains</option>
-                                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
-                                                                                    <option>62219 Autres terrains</option>
-                                                                                    <option>62241 BASSINS</option>
-                                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
-                                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
-                                                                                    <option>62319 Autres bâtiments à usage technique</option>
-                                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
-                                                                                    <option>62343 Forage</option>
-                                                                                </select>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-1">
-                                                                            <div class="list-buttons">
-                                                                                <button onclick="moveSelected('listeEntiere', 'listeSelection')">-&gt;</button>
-                                                                                <button onclick="moveSelected('listeSelection', 'listeEntiere')">&lt;-</button>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-5">
-                                                                            <div class="list-container">
-                                                                                <label><strong>LIGNE Sélectionné(e)s</strong></label><br>
-                                                                                <select id="listeSelection" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="tab-Liste" role="tabpanel" aria-labelledby="Liste-tab">
-                                                            <div class="row">
-                                                                <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                                                                    <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
-                                                                        <thead class="sticky-top bg-white">
-                                                                            <tr>
-                                                                                <th data-field="code1">Code de la catégorie</th>
-                                                                                <th data-field="code2">Libellé de la catégorie</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
 
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
                         `;
             break;
         case "StructSousCategorie":
@@ -1835,7 +1879,7 @@ function formPopup() {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-10">
+                                    <div class="col-md-10" style="width:89%">
                                         <div class="form_padd">
                                             <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
@@ -1896,7 +1940,7 @@ function formPopup() {
 
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
                                         <div id="buttonUser">
 
                                         </div>
@@ -1955,6 +1999,10 @@ function formPopup() {
             //controleInput();
             DataNiveau();
             break;
+        case "StructPlanTier":
+        case "StructCategorieFinance":
+            controleInput();
+            break;
     }
 
 }
@@ -1986,17 +2034,69 @@ function buttonAction() {
                         </div>                               
                         `;
             break;
+        case "StructBailleurFond":
+        case "StructConventions":
+            formHTML = `
+                        <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                            <div class="col-md-12">
+                                <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                                <button class="btn_action" type="button" id="Voir" onclick="Voir()">Voir</button>
+                                <button class="btn_action" type="button" id="Fiche" onclick="Fiche()">Fiche</button>
+                                <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                <button class="btn_action" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                <button class="btn_action" type="button" id="closeSt">Fermer</button>
+                            </div>
+                        </div>                               
+                        `;
+            break;
         case "StructPlanExtP1":
         case "StructPlanExtP2":
         case "StructPlanExtP3":
         case "StructPlanExtP4":
         case "StructCorrespondPlan":
         case "StructSousCategorie":
+        case "StructPlanJournaux":
+        case "StructCategorieFinance":
             formHTML = `
                         <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
                             <div class="col-md-12">
                                 <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
                                 <button class="btn_action" type="button" id="Voir" onclick="Imprimer()">Voir</button>
+                                <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                <button class="btn_action" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                <button class="btn_action" type="button" id="closeSt">Fermer</button>
+                            </div>
+                        </div>                               
+                        `;
+            break;
+        case "StructPlanTier":
+            formHTML = `
+                        <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                            <div class="col-md-12">
+                                <button class="btn_action" type="button" id="Imprimer" onclick="Imprimer()">Imprimer</button>
+                                <button class="btn_action" type="button" id="Voir" onclick="Voir()">Voir</button>
+                                <button class="btn_action" type="button" id="Duplication" onclick="Duplication()">Duplication</button>
+                                <button class="btn_action" type="button" id="Recherche" onclick="Recherche()">Recherche</button>
+                                <button class="btn_action" type="button" id="Importation" onclick="Importation()">Importation</button>
+                                <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
+                                <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
+                                <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
+                                <button class="btn_action" type="button" id="Annuler" onclick="Annuler()">Annuler</button>
+                                <button class="btn_action" type="button" id="closeSt">Fermer</button>
+                            </div>
+                        </div>                               
+                        `;
+            break;
+        case "StructVentilation":
+        case "StructSignataires":
+            formHTML = `
+                        <div class="row justify-content-right" style="padding-top:10px;padding-bottom:10px;text-align:right">
+                            <div class="col-md-12">
+                                <button class="btn_action" type="button" id="Liste" onclick="Liste()">Liste</button>
                                 <button class="btn_action" type="button" id="Ajouter" onclick="Ajouter()">Ajouter</button>
                                 <button class="btn_action" type="button" id="Modifier" onclick="Modifier()">Modifier</button>
                                 <button class="btn_action" type="button" id="Supprimer" onclick="Supprimer()">Supprimer</button>
@@ -2399,23 +2499,23 @@ function vueLastNiveau() {
                                                             <div style="display: flex; gap: 10px; margin-top: 10px;">
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Budget</div>
-                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Budget" class="groupe-check cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Analyt.</div>
-                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Analyt" class="groupe-check cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Géo.</div>
-                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Geo" class="groupe-check cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Financ.</div>
-                                                                    <input type="checkbox" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Financ" class="groupe-check cursorPointer">
                                                                 </div>
                                                             </div>
 
-                                                            <button id="btnToggle" class="btn_action" onclick="toggleCheckboxes()">Cocher Tout</button>
+                                                            <button style="margin-top:10px" id="btnToggle" class="btn_action" onclick="toggleCheckboxes()">Cocher Tout</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2424,21 +2524,131 @@ function vueLastNiveau() {
                                         <div class="tab-pane fade" id="tab-ActiviteRatt" role="tabpanel" aria-labelledby="ActiviteRatt-tab">
                                             <div class="row" style="padding-bottom:10px">
                                                 <div class="col-md-12">
-                                                    <h1>ActiviteRatt</h1>
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                            <div class="list-container">
+                                                                <select id="listeEntiereAnal" multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
+                                                                    <option>62211 Acquisition terrains</option>
+                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
+                                                                    <option>62219 Autres terrains</option>
+                                                                    <option>62241 BASSINS</option>
+                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
+                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
+                                                                    <option>62319 Autres bâtiments à usage technique</option>
+                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
+                                                                    <option>62343 Forage</option>
+                                                                    <option>623251 orange</option>
+                                                                    <option>623443 pomme</option>
+                                                                    <option>27343 menthe</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <div class="list-buttons">
+                                                                <button id="btnAnalyt1" onclick="moveSelected('listeEntiereAnal', 'listeSelectionAnal')">-&gt;</button>
+                                                                <button id="btnAnalyt2" onclick="moveSelected('listeSelectionAnal', 'listeEntiereAnal')">&lt;-</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <div class="list-container">
+                                                                <select id="listeSelectionAnal" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="tab-BudgetRatt" role="tabpanel" aria-labelledby="BudgetRatt-tab">
                                             <div class="row" style="padding-bottom:10px">
                                                 <div class="col-md-12">
-                                                    <h1>BudgetRatt</h1>
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                            <div class="list-container">
+                                                                <select id="listeEntiereBudget" multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
+                                                                    <option>62211 Acquisition terrains</option>
+                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
+                                                                    <option>62219 Autres terrains</option>
+                                                                    <option>62241 BASSINS</option>
+                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
+                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
+                                                                    <option>62319 Autres bâtiments à usage technique</option>
+                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
+                                                                    <option>62343 Forage</option>
+                                                                    <option>623251 orange</option>
+                                                                    <option>623443 pomme</option>
+                                                                    <option>27343 menthe</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <div class="list-buttons">
+                                                                <button id="btnBudget1" onclick="moveSelected('listeEntiereBudget', 'listeSelectionBudget')">-&gt;</button>
+                                                                <button id="btnBudget2" onclick="moveSelected('listeSelectionBudget', 'listeEntiereBudget')">&lt;-</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <div class="list-container">
+                                                                <select id="listeSelectionBudget" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="tab-ComportDefaut" role="tabpanel" aria-labelledby="ComportDefaut-tab">
                                             <div class="row" style="padding-bottom:10px">
                                                 <div class="col-md-12">
-                                                    <h1>ComportDefaut</h1>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="journalOD">Journaux de type O.D.</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="journalOD" class="input_focus choixSelect" style="width:100%">
+                                                                <option value="0"></option>
+                                                                <option value="D">Débit</option>
+                                                                <option value="C">Crédit</option>
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="journalTresor">Journaux de Trésorerie</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="journalTresor" class="input_focus choixSelect" style="width:100%">
+                                                                <option value="0"></option>
+                                                                <option value="D">Débit</option>
+                                                                <option value="C">Crédit</option>
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="ComportementOblig">Comportement Obligatoire</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="ComportementOblig" class="input_focus choixSelect" style="width:100%">
+                                                                <option value="0"></option>
+                                                                <option value="D">Débiteur</option>
+                                                                <option value="C">Créditeur</option>
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="compteLett">Compte Lettrable</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <select id="compteLett" class="input_focus choixSelect" style="width:100%">
+                                                                <option value="N">Non</option>
+                                                                <option value="O">Oui</option>
+                                                            </select>
+                                                            <span class="erreur"></span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2603,7 +2813,25 @@ function updateToggleButtonText() {
     const checkboxes = document.querySelectorAll(".groupe-check");
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     document.getElementById("btnToggle").textContent = allChecked ? "Décocher Tout" : "Cocher Tout";
+
+    // Gestion dynamique des boutons liés à des cases spécifiques
+    const boutonsParValeur = {
+        Analyt: ["btnAnalyt1", "btnAnalyt2"],  //Analyt value du checkbox
+        Budget: ["btnBudget1", "btnBudget2"]
+        // Tu peux ajouter ici d'autres couples si besoin
+    };
+
+    for (const [valeur, boutons] of Object.entries(boutonsParValeur)) {
+        const cb = Array.from(checkboxes).find(cb => cb.value === valeur);
+        const isChecked = cb && cb.checked;
+
+        boutons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.disabled = !isChecked;
+        });
+    }
 }
+
 
 function toggleCheckboxes() {
     const checkboxes = document.querySelectorAll(".groupe-check");
@@ -2617,7 +2845,8 @@ function initializeCheckboxListeners() {
     checkboxes.forEach(cb => {
         cb.addEventListener("change", updateToggleButtonText);
     });
-    updateToggleButtonText(); // met à jour au chargement
+    updateToggleButtonText(); // mise à jour initiale
+    $('.choixSelect').select2();
 }
 function DataNiveau() {
     $.ajax({

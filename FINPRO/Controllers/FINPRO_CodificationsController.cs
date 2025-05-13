@@ -178,172 +178,132 @@ namespace FINPRO.Controllers
             return jsonResult;
         }
 
-
-        public JsonResult GetListDataNiveau2(string niveau,string code1,string code2)
+        public JsonResult GetListDataNiveau2(string niveau, string code1, string code2)
         {
             var listNiveau2 = new List<parametre>();
             var listtab = new List<parametre>();
-            var filtre = string.Empty;
-            var filtreTab = string.Empty;
             DataTable objNiveau2 = new DataTable();
             DataTable objTab = new DataTable();
-            // Mapping ID -> instances des tables
+
             var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
-                {
-                    { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) }, //Budget
-                    { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) }, //Plan Compte
-                    { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },  //Activite
-                    { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },        //Zone
-                    { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },  //Emplacements
-                    { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },  //Plan 6
-                    
-                    { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },  //Plan 1
-                    { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },  //Plan 2
-                    { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },  //Plan 3
-                    { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },  //Plan 4
-                    { "StructSousCategorie", (new Tables.rCategorie(), new Tables.rSousCategorie()) },  //Sous Categorie
-                    // Ajoute d'autres mappings ici si nécessaire
-                };
+    {
+        { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) },
+        { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) },
+        { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },
+        { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },
+        { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },
+        { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },
+        { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },
+        { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },
+        { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },
+        { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },
+        { "StructSousCategorie", (new Tables.rCategorie(), new Tables.rSousCategorie()) },
+    };
 
             if (!tableMapping.TryGetValue(niveau, out var instances))
-            {
                 return Json(new { error = "ID non supporté" }, JsonRequestBehavior.AllowGet);
+
+            DataTable RemplirDataTable(object instance, string filtre = "")
+            {
+                var method = instance.GetType().GetMethod("RemplirDataTable", new[] { typeof(string) });
+                return method?.Invoke(instance, new object[] { filtre }) as DataTable ?? new DataTable();
             }
 
-            // Utilitaire pour remplir les DataTables via réflexion
-            DataTable RemplirDataTable(object instance, string param = "")
+            // Gestion du cas StructSousCategorie
+            if (niveau == "StructSousCategorie")
             {
-                if (instance == null) return new DataTable();
+                var filtre = $"CONVENTION = '{code1}'";
+                objNiveau2 = RemplirDataTable(instances.tableInstance, filtre);
 
-                var type = instance.GetType();
-                var method = type.GetMethod("RemplirDataTable", new[] { typeof(string) });
+                listNiveau2 = objNiveau2.AsEnumerable().Select(row => new parametre
+                {
+                    code = row["code"]?.ToString(),
+                    libelle = row["Libelle"]?.ToString()
+                }).ToList();
 
-                return method != null ? (DataTable)method.Invoke(instance, new object[] { param }) : new DataTable();
+                if (!string.IsNullOrWhiteSpace(code1) && objNiveau2.Rows.Count > 0)
+                {
+                    var firstCode = objNiveau2.Rows[0]["CODE"].ToString();
+                    if (string.IsNullOrEmpty(code2))
+                        code2 = firstCode;
+
+                    var filtreTab = $"CONVENTION = '{code1}' and CATEGORIE = '{code2}'";
+                    objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
+
+                    listtab = objTab.AsEnumerable().Select(row => new parametre
+                    {
+                        convention = row["convention"]?.ToString(),
+                        categorie = row["categorie"]?.ToString(),
+                        code = row["code"]?.ToString(),
+                        libelle = row["libelle"]?.ToString(),
+                        status = row["statut"]?.ToString()
+                    }).ToList();
+                }
             }
-            switch (niveau)
+            else
             {
-                case "StructSousCategorie":
-                    filtre = $"CONVENTION = '{code1}'";
-                    objNiveau2 = RemplirDataTable(instances.tableInstance, filtre);
-                    foreach (DataRow row in objNiveau2.Rows)
+                var prevNiveau = Convert.ToInt64(code1) - 1;
+                var filtre = $"NIVEAU = '{prevNiveau}'";
+                objNiveau2 = RemplirDataTable(instances.tablePostInstance, filtre);
+
+                listNiveau2 = objNiveau2.AsEnumerable().Select(row => new parametre
+                {
+                    code = row["code"]?.ToString(),
+                    libelle = row["Libelle"]?.ToString(),
+                    niveau = row["niveau"]?.ToString()
+                }).ToList();
+
+                if (!string.IsNullOrWhiteSpace(code1))
+                {
+                    string filtreTab;
+                    if (objNiveau2.Rows.Count > 0)
                     {
-                        listNiveau2.Add(new parametre
-                        {
-                            code = row["code"]?.ToString(),
-                            libelle = row["Libelle"]?.ToString(),
-                        });
+                        var firstCode = objNiveau2.Rows[0]["CODE"].ToString();
+                        if (string.IsNullOrEmpty(code2))
+                            code2 = firstCode;
+
+                        filtreTab = $"NIVEAU = '{code1}' and CODE like '{code2}%'";
                     }
-                    if (code1 != null || code1 != "" || code1 != "0")
+                    else
                     {
-                        if (objNiveau2.Rows.Count > 0)
-                        {
-                            DataRow firstRow_2_niveau = objNiveau2.Rows[0];
-                            var FisrtCode = firstRow_2_niveau["CODE"].ToString();
-                            if (string.IsNullOrEmpty(code2))
-                            {
-                                code2 = FisrtCode;
-                            }
-                            filtreTab = $"CONVENTION = '{code1}' and CATEGORIE = '{code2}'";
-                            objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
-                            foreach (DataRow row in objTab.Rows)
-                            {
-                                listtab.Add(new parametre()
-                                {
-                                    convention = row["convention"].ToString(),
-                                    categorie = row["categorie"].ToString(),
-                                    code = row["code"].ToString(),
-                                    libelle = row["libelle"].ToString(),
-                                    status = row["statut"].ToString()
-                                });
-                            }
-                        }
+                        code2 = null;
+                        filtreTab = $"NIVEAU = '{code1}'";
                     }
-                    break;
-                default:
-                    var nextNiveau = Convert.ToInt64(code1) - 1;
-                    filtre = $"NIVEAU = '{nextNiveau}'";
-                    // Remplissage des DataTables
-                    objNiveau2 = RemplirDataTable(instances.tablePostInstance, filtre);
-                    foreach (DataRow row in objNiveau2.Rows)
+
+                    objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
+
+                    try
                     {
-                        listNiveau2.Add(new parametre
+                        listtab = objTab.AsEnumerable().Select(row => new parametre
                         {
                             code = row["code"]?.ToString(),
                             libelle = row["Libelle"]?.ToString(),
                             niveau = row["niveau"]?.ToString(),
-                        });
+                            status = row["STATUT"]?.ToString(),
+                            collectif = niveau == "StructPlanCompt" ? row["collectif"]?.ToString() : null,
+                            gestionImmo = niveau == "StructPlanCompt" ? row["GESTIONIMMO"]?.ToString() : null,
+                            budget = niveau == "StructPlanCompt" ? row["budget"]?.ToString() : null,
+                            acti = niveau == "StructPlanCompt" ? row["acti"]?.ToString() : null,
+                            geo = niveau == "StructPlanCompt" ? row["geo"]?.ToString() : null,
+                            fin = niveau == "StructPlanCompt" ? row["fin"]?.ToString() : null,
+                            superClasse = niveau == "StructPlanCompt" ? row["superClasse"]?.ToString() : null
+                        }).ToList();
                     }
-                    if (code1 != null || code1 != "" || code1 != "0")
+                    catch (Exception ex)
                     {
-                        if (objNiveau2.Rows.Count > 0)
-                        {
-                            DataRow firstRow_2_niveau = objNiveau2.Rows[0];
-                            var FisrtCode = firstRow_2_niveau["CODE"].ToString();
-                            if (string.IsNullOrEmpty(code2))
-                            {
-                                code2 = FisrtCode;
-                            }
-                            filtreTab = $"NIVEAU = '{code1}' and CODE like '{code2}%'";
-                        }
-                        else
-                        {
-                            code2 = null;
-                            filtreTab = $"NIVEAU = '{code1}'";
-                        }
-                        objTab = RemplirDataTable(instances.tablePostInstance, filtreTab);
-                        try
-                        {
-                            switch (niveau)
-                            {
-                                case "StructPlanCompt":
-                                    foreach (DataRow row in objTab.Rows)
-                                    {
-                                        listtab.Add(new parametre
-                                        {
-                                            code = row["code"]?.ToString(),
-                                            libelle = row["Libelle"]?.ToString(),
-                                            niveau = row["niveau"]?.ToString(),
-                                            status = row["STATUT"]?.ToString(),
-                                            collectif = row["collectif"].ToString(),
-                                            gestionImmo = row["GESTIONIMMO"].ToString(),
-                                            budget = row["budget"].ToString(),
-                                            acti = row["acti"].ToString(),
-                                            geo = row["geo"].ToString(),
-                                            fin = row["fin"].ToString(),
-                                            superClasse = row["superClasse"].ToString(),
-                                        });
-                                    }
-                                    break;
-                                default:
-                                    foreach (DataRow row in objTab.Rows)
-                                    {
-                                        listtab.Add(new parametre
-                                        {
-                                            code = row["code"]?.ToString(),
-                                            libelle = row["Libelle"]?.ToString(),
-                                            niveau = row["niveau"]?.ToString(),
-                                            status = row["STATUT"]?.ToString(),
-                                        });
-                                    }
-                                    break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-
-                            throw;
-                        }
+                        // Log ex if needed
+                        throw;
                     }
-                    break;
+                }
             }
-            var data = new
+
+            return Json(new
             {
                 listniveau = listNiveau2,
                 listData = listtab
-            };
-            return Json(data, JsonRequestBehavior.AllowGet);
-
+            }, JsonRequestBehavior.AllowGet);
         }
+
 
         public JsonResult GetListDataStruct(string id)
         {
