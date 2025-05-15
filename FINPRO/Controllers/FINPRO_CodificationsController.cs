@@ -177,7 +177,205 @@ namespace FINPRO.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
+        [HttpPost]
+        public JsonResult CRUDPlanCompta(parametre objData)
+        {
+            string result = "";
+            bool isAllValid = true;
+            var niveau = objData.instance;
+            var v = objData.cocherActif;
+            bool statut = objData.statut;
+            DataTable table = new DataTable();
+            DataRow row;
+            var extraFields = SetExtraFields(niveau, objData);
+            var filtre = GetFiltre(objData);
+            var tableInstance = GetTableInstance(niveau);
+            // Vérification et enregistrement
+            if (tableInstance != null)
+            {
+                var tableType = tableInstance.GetType();
+                var remplirDataTableMethod = tableType.GetMethod("RemplirDataTable", new Type[] { typeof(string) });
+                var enregistrerMethod = tableType.GetMethod("Enregistrer", new Type[] { typeof(DataTable) });
+                if (remplirDataTableMethod != null)
+                {
 
+                    table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { filtre });
+                    switch (statut)
+                    {
+                        //Ajout
+                        case false:
+                            if (table.Rows.Count > 0)
+                            {
+                                isAllValid = false;
+                            }
+                            else
+                            {
+                                table = (DataTable)remplirDataTableMethod.Invoke(tableInstance, new object[] { "" });
+                                row = table.NewRow();
+                                // Ajout des champs supplémentaires s'ils existent
+                                if (extraFields != null)
+                                {
+                                    try
+                                    {
+                                        foreach (var field in extraFields)
+                                        {
+                                            row[field.Key] = field.Value;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                        throw;
+                                    }
+                                }
+                                table.Rows.Add(row);
+                            }
+                            break;
+                        //Edition
+                        default:
+                            row = table.Rows[0];
+                            row.BeginEdit();
+                            foreach (var field in extraFields)
+                            {
+                                row[field.Key] = field.Value;
+                            }
+                            row.EndEdit();
+                            break;
+                    }
+                    try
+                    {
+                        if (isAllValid)
+                        {
+                            // Enregistrer si la méthode existe
+                            enregistrerMethod?.Invoke(tableInstance, new object[] { table });
+                        }
+                        result = statut ? "Enregistrement modifié avec succès" : (isAllValid ? "Enregistrement ajouté avec succès" : "Code existe déjà");
+                    }
+                    catch (Exception ex)
+                    {
+                        result = ex.Message;
+                    }
+                }
+            }
+
+            return Json(new { statut = isAllValid, message = result }, JsonRequestBehavior.AllowGet);
+        }
+        private object GetTableInstance(string niveau)
+        {
+            var tableMappings = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "StructPlanBudget", (new Tables.rPost1()) },
+                { "StructPlanCompt", (new Tables.rCoge1()) },
+                { "StructActivite", (new Tables.rActi1()) },
+                { "StructZone", (new Tables.rGeo1()) },
+                { "StructEmplacements", (new Tables.rEmplacement()) },
+                { "StructPlan6", (new Tables.rPlan6()) },
+                { "StructPlanExtP1", (new Tables.RPLAN1EXT()) },
+                { "StructPlanExtP2", (new Tables.RPLAN2EXT()) },
+                { "StructPlanExtP3", (new Tables.RPLAN3EXT()) },
+                { "StructPlanExtP4", (new Tables.RPLAN4EXT()) },
+                { "StructSousCategorie", (new Tables.rSousCategorie()) }
+            };
+            if (tableMappings.TryGetValue(niveau, out var instance))
+            {
+                return instance;
+            }
+
+            // No mapping found
+            return null;
+        }
+        private string GetFiltre(parametre objData)
+        {
+            string niveau = objData.instance;
+            Func<parametre, string> codeFilter = param => $"CODE = '{param.code}'";
+
+            var filterTypeMapping = new Dictionary<string, Func<parametre, string>>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "StructPlanBudget", codeFilter },
+                { "StructPlanCompt", codeFilter },
+                { "StructActivite", codeFilter },
+                { "StructZone", codeFilter },
+                { "StructEmplacements", codeFilter },
+                { "StructPlan6", codeFilter },
+                { "StructPlanExtP1", codeFilter },
+                { "StructPlanExtP2", codeFilter },
+                { "StructPlanExtP3", codeFilter },
+                { "StructPlanExtP4", codeFilter },
+
+            };
+
+            if (filterTypeMapping.TryGetValue(niveau, out var filterFunc))
+            {
+                return filterFunc(objData);
+            }
+
+            // Default case (no matching niveau found)
+            return "";
+        }
+        private Dictionary<string, object> SetExtraFields(string niveau, parametre objData)
+        {
+            // Define common field mappings
+            var standardFields = new Dictionary<string, Func<parametre, object>>
+            {
+                { "code", param => param.code },
+                { "libelle", param => param.libelle },
+                { "niveau", param => param.niveau },
+                { "statut", param => Convert.ToInt32(param.cocherActif) },
+            };
+
+            //var caisseFields = new Dictionary<string, Func<parametre, object>>
+            //{
+            //    { "code", param => param.code },
+            //    { "libelle", param => param.Designation }
+            //};
+
+            //var tabBordFields = new Dictionary<string, Func<parametre, object>>(standardFields)
+            //{
+            //    { "observation", param => param.observation }
+            //};
+
+            var sharedStandardMapping = new Dictionary<string, Func<parametre, object>>(standardFields)
+            {
+                 { "SUIVIQTE", param => 1 }
+            };
+            var sharedFamilyPlan = new Dictionary<string, Func<parametre, object>>(standardFields);
+
+            var fieldMappings = new Dictionary<string, Dictionary<string, Func<parametre, object>>>(StringComparer.OrdinalIgnoreCase);
+
+            string[] standardTypes = 
+                { 
+                    "StructPlanBudget", "StructActivite",
+                    "StructZone", "StructPlan6"                    
+                };
+
+            foreach (var type in standardTypes)
+            {
+                fieldMappings[type] = sharedStandardMapping;
+            }
+            string[] FamilyPlanType =
+            {
+                "StructEmplacements","StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"
+            };
+            foreach (var type in FamilyPlanType)
+            {
+                fieldMappings[type] = sharedFamilyPlan;
+            }
+            //fieldMappings["Caisse"] = caisseFields;
+            //fieldMappings["TabBord"] = tabBordFields;
+
+            var fields = new Dictionary<string, object>();
+
+            if (fieldMappings.TryGetValue(niveau, out var fieldMapping))
+            {
+                // Apply each field mapping
+                foreach (var field in fieldMapping)
+                {
+                    fields[field.Key] = field.Value(objData);
+                }
+            }
+
+            return fields;
+        }
         public JsonResult GetListDataNiveau2(string niveau, string code1, string code2)
         {
             var listNiveau2 = new List<parametre>();
@@ -186,19 +384,19 @@ namespace FINPRO.Controllers
             DataTable objTab = new DataTable();
 
             var tableMapping = new Dictionary<string, (object tableInstance, object tablePostInstance)>
-    {
-        { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) },
-        { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) },
-        { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },
-        { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },
-        { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },
-        { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },
-        { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },
-        { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },
-        { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },
-        { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },
-        { "StructSousCategorie", (new Tables.rCategorie(), new Tables.rSousCategorie()) },
-    };
+            {
+                { "StructPlanBudget", (new Tables.rStruPost(), new Tables.rPost1()) },
+                { "StructPlanCompt", (new Tables.rStruCoge(), new Tables.rCoge1()) },
+                { "StructActivite", (new Tables.rStruActi(), new Tables.rActi1()) },
+                { "StructZone", (new Tables.rStruGeo(), new Tables.rGeo1()) },
+                { "StructEmplacements", (new Tables.rStruEmplacement(), new Tables.rEmplacement()) },
+                { "StructPlan6", (new Tables.rStruPlan6(), new Tables.rPlan6()) },
+                { "StructPlanExtP1", (new Tables.RSTRUPLAN1EXT(), new Tables.RPLAN1EXT()) },
+                { "StructPlanExtP2", (new Tables.RSTRUPLAN2EXT(), new Tables.RPLAN2EXT()) },
+                { "StructPlanExtP3", (new Tables.RSTRUPLAN3EXT(), new Tables.RPLAN3EXT()) },
+                { "StructPlanExtP4", (new Tables.RSTRUPLAN4EXT(), new Tables.RPLAN4EXT()) },
+                { "StructSousCategorie", (new Tables.rCategorie(), new Tables.rSousCategorie()) },
+            };
 
             if (!tableMapping.TryGetValue(niveau, out var instances))
                 return Json(new { error = "ID non supporté" }, JsonRequestBehavior.AllowGet);

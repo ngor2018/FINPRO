@@ -1,4 +1,4 @@
-﻿var pageName = $("#pageName").val();
+var pageName = $("#pageName").val();
 var IDButton = null; //clique button parent
 var IDbuttonCorresp = null;  //valeur par default
 var isEditing = false  // Désactiver si en mode édition ou Ajout
@@ -10,7 +10,7 @@ $(function () {
 })
 var Ajouter = function () {
     nameButton = "Ajout";
-    isEditing = true;
+    isEditing = true;  
     bloquerZoneTable();
     const btnAjouter = document.getElementById('Ajouter');
     if (btnAjouter.textContent === "Ajouter") {
@@ -44,7 +44,19 @@ var Ajouter = function () {
                     GetDataniveau2(niveau1, niveau2);
                     setTimeout(() => Annuler(), 1000);
                 } else {
-                    handleAddError(data.message);
+                    switch (IDButton) {
+                        case "StructPlanBudget":
+                        case "StructActivite":
+                        case "StructZone":
+                        case "StructEmplacements":
+                        case "StructPlan6":
+                        case "StructPlanExtP1":
+                        case "StructPlanExtP2":
+                        case "StructPlanExtP3":
+                        case "StructPlanExtP4":
+                            $("#code").siblings('span.erreur').html(data.message).css('display', 'block');
+                            break;
+                    }
                 }
             }
         },
@@ -58,7 +70,6 @@ var Modifier = function () {
     isEditing = true;
     etatCRUD = true;  //Defini statut modifier
     bloquerInteractionsDataTable();
-
 }
 var Annuler = function () {
     nameButton = null;
@@ -75,7 +86,17 @@ var Annuler = function () {
     document.getElementById('Annuler').disabled = true;
 
     if (table.tBodies[0].rows.length == 0) {
-        disableButtons();
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                $("#TXT, #excel, #Importation").prop("disabled", true);
+                break;
+        }
         reset();
     } else {
         $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
@@ -122,7 +143,7 @@ var Annuler = function () {
                     $("#libelle").val(libelle);
 
                     if ($('#superClass').length > 0) {
-                        $('#superClass').val(superClass).trigger('change');
+                        $('#superClass').val(superClass).trigger('change');                        
                     }
                 }
                 break;
@@ -180,25 +201,6 @@ var Annuler = function () {
             break;
     }
 }
-function disableButtons() {
-    $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
-
-    if (["StructPlanBudget", "StructActivite", "StructZone",
-        "StructEmplacements", "StructPlan6", "StructPlanCompt"].includes(IDButton)) {
-        $("#TXT, #excel, #Importation").prop("disabled", true);
-    }
-}
-function handleAddError(message) {
-    const structureTypes = [
-        "StructPlanBudget", "StructActivite", "StructZone",
-        "StructEmplacements", "StructPlan6", "StructPlanExtP1",
-        "StructPlanExtP2", "StructPlanExtP3", "StructPlanExtP4"
-    ];
-
-    if (structureTypes.includes(IDButton)) {
-        $("#code").siblings('span.erreur').html(message).css('display', 'block');
-    }
-}
 function reset() {
     switch (IDButton) {
         case "StructPlanBudget":
@@ -212,7 +214,7 @@ function reset() {
         case "StructPlanExtP4":
             if ($('#divLastniveau').children().length > 0) {
                 document.getElementById('checkActif').checked = false;
-            }
+            } 
             $("#code").val('');
             $("#libelle").val('');
             break;
@@ -221,7 +223,7 @@ function reset() {
             $("#libelle").val('');
             if ($('#divLastniveau').children().length > 0) {
                 //document.getElementById('checkActif').checked = false;
-            }
+            } 
             break;
         case "StructCorrespondPlan":
             $("#code").val(0).trigger('change');
@@ -289,6 +291,7 @@ function bloquerZoneTable() {
     $wrapper.css('position', 'relative');
     $wrapper.append(overlay);
 }
+
 function debloquerZoneTable() {
     const $wrapper = $('#tab_' + IDButton + '_wrapper');
     $wrapper.find('.datatable-overlay').remove(); // Supprimer l'overlay
@@ -313,7 +316,7 @@ function initialiserFormulaire() {
             break;
     }
     document.getElementById('Ajouter').textContent = "Enregistrer";
-    $("#Modifier, #Supprimer, #closeSt").prop("disabled", true);
+    $("#Modifier, #Supprimer, #closeSt, #Imprimer, #Voir").prop("disabled", true);
     document.getElementById('Annuler').disabled = false;
     switch (IDButton) {
         case "StructPlanBudget":
@@ -322,38 +325,16 @@ function initialiserFormulaire() {
         case "StructEmplacements":
         case "StructPlan6":
         case "StructPlanCompt":
-            $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
-            break;
-        case "StructBailleurFond":
-        case "StructConventions":
-            $("#Imprimer,#Voir, #Fiche").prop("disabled", true);
-            break;
-        case "StructPlanExtP1":
-        case "StructPlanExtP2":
-        case "StructPlanExtP3":
-        case "StructPlanExtP4":
-        case "StructCorrespondPlan":
-        case "StructPlanJournaux":
-        case "StructCategorieFinance":
-            $("#Imprimer,#Voir").prop("disabled", true);
-            break;
-        case "StructPlanTier":
-            $("#Imprimer,#Voir,#Duplication,#Recherche,#Importation").prop("disabled", true);
+            $("#TXT, #excel, #Importation").prop("disabled", true);
             break;
         case "StructSousCategorie":
-            $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", true);
+            document.getElementById('codeConvention').disabled = true;
+            document.getElementById('codeCategorie').disabled = true;
             setTimeout(function () {
                 $("#codeSousCat").focus();
-            }, 500)
-            break;
-        case "StructVentilation":
-        case "StructSignataires":
-            $("#Liste").prop("disabled", true);
+            },500)
             break;
     }
-}
-function initialiserFormulaireEdit() {
-
 }
 function validerChamps() {
     let isValid = true;
@@ -2024,20 +2005,13 @@ function formPopup() {
                             <div class="col-md-11 pageView">
                                 <div class="row">
                                     <div class="col-md-12" style="padding-bottom: 10px;border-bottom:1px solid #bdb8b8">
-                                        <div class="container-fluid_top">
-                                            <div class="header-row_top">
-                                                <div class="title-container_top">
-                                                    <strong id="titleStruct">BECK</strong>
-                                                </div>
-                                                <div id="buttonUser">
-
-                                                </div>
-                                            </div>
+                                        <div class="float-start">
+                                            <strong id="titleStruct"></strong>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-10" style="width:85%">
                                         <div class="form_padd">
                                             <div class="row justify-content-center" style="text-align:center">
                                                 <div class="col-md-12">
@@ -2095,6 +2069,11 @@ function formPopup() {
                                             </div>
                                         </div>
                                         <div id="partieTab" style="padding-top:10px">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" style="margin-left:-70px;margin-right: 0 !important;padding-right: 0 !important;">
+                                        <div id="buttonUser">
 
                                         </div>
                                     </div>
@@ -2466,7 +2445,7 @@ function vueTable() {
                 `;
             break;
 
-    }
+    }        
     container.insertAdjacentHTML("beforeend", formHTML);
 }
 function formDel() {
@@ -2800,7 +2779,7 @@ function controleInput() {
         document.getElementById('fullscreen_popup').style.display = "none";
     })
     $('#Choixniveau').on('change', function () {
-
+        
         let selectedIndex = this.selectedIndex;
         let total = this.options.length;
         const select = this;
@@ -2890,7 +2869,7 @@ function controleInput() {
         $(this).siblings('span.erreur').hide();
     })
     $('.choixSelect').select2();
-
+    
 }
 function chargerValeursDepuisLigne(row, IDButton) {
     var code = null, libelle = null, etatActif = null;
@@ -3016,8 +2995,6 @@ function DataNiveau() {
                     $select.empty();
                     list = data.listData;
                     if (list.length === 0) {
-                        $(".btn_action").prop("disabled", true);
-                        document.getElementById('closeSt').disabled = false;
                         $('#divTo_niveau').hide();
                         return;
                     }
@@ -3045,11 +3022,7 @@ function DataNiveau() {
                     $select = $('#codeConvention');
                     $select.empty();
                     list = data.listData;
-                    if (!list || list.length === 0) {
-                        $(".btn_action").prop("disabled", true);
-                        document.getElementById('closeSt').disabled = false;
-                        return;
-                    }
+                    if (!list || list.length === 0) return;
 
                     $.each(list, function (index, row) {
                         $select.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
@@ -3057,15 +3030,13 @@ function DataNiveau() {
 
                     var niveau1 = $("#codeConvention").val();
                     var niveau2 = $("#codeCategorie").val();
-                    GetDataniveau2(niveau1, niveau2);
+                    GetDataniveau2(niveau1, niveau2); 
                     break;
                 case "StructPlanCompt":
                     $select = $('#Choixniveau');
                     //$select.empty();
                     list = data.listData;
                     if (list.length === 0) {
-                        $(".btn_action").prop("disabled", true);
-                        document.getElementById('closeSt').disabled = false;
                         $('#divTo_niveau').hide();
                         return;
                     }
@@ -3087,7 +3058,7 @@ function DataNiveau() {
 
                     var niveau1 = $("#Choixniveau").val();
                     var niveau2 = $("#next_niveau").val();
-                    GetDataniveau2(niveau1, niveau2);
+                    GetDataniveau2(niveau1, niveau2); 
                     if ($('#divLastniveau').length > 0 && $('#superClass').length > 0) {
                         const $selectCl = $('#superClass');
                         $selectCl.empty();
@@ -3102,7 +3073,7 @@ function DataNiveau() {
     });
     $('.input_focus').siblings('span.erreur').hide();
 }
-function GetDataniveau2(niveau1, niveau2) {
+function GetDataniveau2(niveau1,niveau2) {
     $.ajax({
         async: true,
         type: 'GET',
@@ -3164,23 +3135,18 @@ function GetDataCorrespondance() {
         success: function (data) {
             const $selectCode = $('#code');
             let dataCode = data.listCode;
-            if (dataCode.length === 0) {
-                $(".btn_action").prop("disabled", true);
-                document.getElementById('closeSt').disabled = false;
-                return;
-            }
             $selectCode.empty();
             $selectCode.append("<option value='0'></option>")
-            $.each(dataCode, function (index, row) {
-                $selectCode.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
-            });
+                $.each(dataCode, function (index, row) {
+                    $selectCode.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
             const $selectCorresp = $('#correspondance');
             let dataCorresp = data.listCoresspond;
             $selectCorresp.empty();
             $selectCorresp.append("<option value='0'></option>")
-            $.each(dataCorresp, function (index, row) {
-                $selectCorresp.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
-            });
+                $.each(dataCorresp, function (index, row) {
+                    $selectCorresp.append("<option value='" + row.code + "'>" + row.code + " " + row.libelle + "</option>");
+                });
             LoadTableCorrespondance(data.listData);
         }
     });
@@ -3202,7 +3168,7 @@ function LoadTableCorrespondance(data) {
         const table = document.getElementById("tab_StructCorrespondPlan");
         if (table.tBodies[0].rows.length > 0) {
             fillFirstRowFormCorresp(table.tBodies[0].rows[0]);
-        }
+        } 
         $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
     }
     $(".disabled_me").prop("disabled", true);
@@ -3216,7 +3182,7 @@ function LoadTable(niveau, data) {
     if (data.length == 0) {
         isEditing = true;
         $("#tab_" + niveau + " tbody").empty();
-        $("#Modifier, #Supprimer").prop("disabled", true);
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", true);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -3224,11 +3190,8 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+                $("#TXT, #excel, #Importation").prop("disabled", true);
                 break;
-            case "StructSousCategorie":
-                $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", true);
-                break; 
         }
         reset();
     }
@@ -3238,8 +3201,8 @@ function LoadTable(niveau, data) {
         const table = document.getElementById("tab_" + niveau);
         if (table.tBodies[0].rows.length > 0) {
             fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
-        }
-        $("#Modifier, #Supprimer").prop("disabled", false);
+        } 
+        $("#Modifier, #Supprimer, #Imprimer, #Voir").prop("disabled", false);
         switch (IDButton) {
             case "StructPlanBudget":
             case "StructActivite":
@@ -3247,7 +3210,7 @@ function LoadTable(niveau, data) {
             case "StructEmplacements":
             case "StructPlan6":
             case "StructPlanCompt":
-                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", false);
+                $("#TXT, #excel, #Importation").prop("disabled", false);
                 break;
         }
     }

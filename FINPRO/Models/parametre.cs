@@ -21,6 +21,7 @@ namespace FINPRO.Models
         public string libelle { get; set; }
         public string libelleM { get; set; }
         public string nbreDecimale { get; set; }
+        public string instance { get; set; }
         public string niveau { get; set; }
         public string niveauVal { get; set; }
         public string abreviation { get; set; }
@@ -37,6 +38,8 @@ namespace FINPRO.Models
         public string motDePasse { get; set; }
         public string versionSql { get; set; }
         public string status { get; set; }
+        public string checkActif { get; set; }
+        public bool cocherActif { get; set; }
         public string collectif { get; set; }
         public string gestionImmo { get; set; }
         public string budget { get; set; }
