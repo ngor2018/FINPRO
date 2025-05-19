@@ -57,7 +57,8 @@ var Modifier = function () {
     nameButton = "Modification";
     isEditing = true;
     etatCRUD = true;  //Defini statut modifier
-    bloquerInteractionsDataTable();
+    bloquerZoneTable();
+    initialiserFormulaireEdit();
 
 }
 var Annuler = function () {
@@ -116,13 +117,130 @@ var Annuler = function () {
                 if (selectedRow) {
                     code = selectedRow.cells[0].innerHTML.trim();
                     libelle = selectedRow.cells[1].innerHTML.trim();
-                    superClass = selectedRow.cells[10].innerHTML.trim();
+                    var superClass = null;
+                    const btnText = document.getElementById("StructPlan6");
+                    if (btnText) {
+                        const text = btnText.textContent.trim();
+
+                        if (text) {
+                            if (isElementVisible(btnText)) {
+                                superClass = selectedRow.cells[11].innerHTML.trim();
+                                $(".disabledBtnPl").prop("disabled", true);
+                                //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                            } else {
+                                superClass = selectedRow.cells[10].innerHTML.trim();
+                                //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                            }
+                        } else {
+                            superClass = selectedRow.cells[10].innerHTML.trim();
+                            //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                        }
+                    } else {
+                        superClass = selectedRow.cells[10].innerHTML.trim();
+                        //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                    }
 
                     $("#code").val(code);
                     $("#libelle").val(libelle);
 
                     if ($('#superClass').length > 0) {
                         $('#superClass').val(superClass).trigger('change');
+                    }
+
+                    if ($("#formLast").children().length > 0) {
+                        $(".disabledBtnPl").prop("disabled", true);
+                        const checkCollectif = selectedRow.cells[3].querySelector("input[type='checkbox']");
+                        const checkSuivi = selectedRow.cells[4].querySelector("input[type='checkbox']");
+                        const checkActif = selectedRow.cells[9].querySelector("input[type='checkbox']");
+                        var checkPlan6 = null, checkImputation = null;
+
+                        if (checkCollectif && checkCollectif.checked) {
+                            $("#checkCpteCollectif").prop("checked", true);
+                        } else {
+                            $("#checkCpteCollectif").prop("checked", false);
+                        }
+                        if (checkSuivi && checkSuivi.checked) {
+                            $("#checkCpteSuivi").prop("checked", true);
+                        } else {
+                            $("#checkCpteSuivi").prop("checked", false);
+                        }
+                        if (checkActif && checkActif.checked) {
+                            $("#checkActif").prop("checked", true);
+                        } else {
+                            $("#checkActif").prop("checked", false);
+                        }
+                        const btn_Text = document.getElementById("StructPlan6");
+                        if (btn_Text) {
+                            const text_ = btn_Text.textContent.trim();
+                            if (text_) {
+                                if (isElementVisible(btnText)) {
+                                    checkPlan6 = selectedRow.cells[9].querySelector("input[type='checkbox']");
+                                    checkImputation = selectedRow.cells[12].querySelector("input[type='checkbox']");
+
+                                    if (checkPlan6 && checkPlan6.checked) {
+                                        $("#checkPlan6").prop("checked", true);
+                                    } else {
+                                        $("#checkPlan6").prop("checked", false);
+                                    }
+                                    if (checkImputation && checkImputation.checked) {
+                                        $("#checkImputation").prop("checked", true);
+                                    } else {
+                                        $("#checkImputation").prop("checked", false);
+                                    }
+                                    //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                                } else {
+                                    checkImputation = selectedRow.cells[11].querySelector("input[type='checkbox']");
+                                    if (checkImputation && checkImputation.checked) {
+                                        $("#checkImputation").prop("checked", true);
+                                    } else {
+                                        $("#checkImputation").prop("checked", false);
+                                    }
+                                    //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                                }
+                            } else {
+                                checkImputation = selectedRow.cells[11].querySelector("input[type='checkbox']");
+                                if (checkImputation && checkImputation.checked) {
+                                    $("#checkImputation").prop("checked", true);
+                                } else {
+                                    $("#checkImputation").prop("checked", false);
+                                }
+                                //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                            }
+                        } else {
+                            checkImputation = selectedRow.cells[11].querySelector("input[type='checkbox']");
+                            if (checkImputation && checkImputation.checked) {
+                                $("#checkImputation").prop("checked", true);
+                            } else {
+                                $("#checkImputation").prop("checked", false);
+                            }
+                            //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                        }
+                        const checkBudget = selectedRow.cells[5].querySelector("input[type='checkbox']");
+                        const checkAnalyt = selectedRow.cells[6].querySelector("input[type='checkbox']");
+                        const checkGeo = selectedRow.cells[7].querySelector("input[type='checkbox']");
+                        const checkFinance = selectedRow.cells[8].querySelector("input[type='checkbox']");
+
+                        if (checkBudget && checkBudget.checked) {
+                            $("#checkBudget").prop("checked", true);
+                        } else {
+                            $("#checkBudget").prop("checked", false);
+                        }
+                        if (checkAnalyt && checkAnalyt.checked) {
+                            $("#checkAnalyt").prop("checked", true);
+                        } else {
+                            $("#checkAnalyt").prop("checked", false);
+                        }
+                        if (checkGeo && checkGeo.checked) {
+                            $("#checkGeo").prop("checked", true);
+                        } else {
+                            $("#checkGeo").prop("checked", false);
+                        }
+                        if (checkFinance && checkFinance.checked) {
+                            $("#checkFinanc").prop("checked", true);
+                        } else {
+                            $("#checkFinanc").prop("checked", false);
+                        }
+                        updateToggleButtonText();
                     }
                 }
                 break;
@@ -351,9 +469,93 @@ function initialiserFormulaire() {
             $("#Liste").prop("disabled", true);
             break;
     }
+    switch (IDButton) {
+        case "StructPlanCompt":
+            const btnText = document.getElementById("StructPlan6");
+            if (btnText) {
+                const text = btnText.textContent.trim();
+                if (text) {
+                    if (isElementVisible(btnText)) {
+                        $(".disabledBtnPl").prop("disabled", false);
+                        //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                    } 
+                } 
+            }
+            break;
+    }
 }
 function initialiserFormulaireEdit() {
+    document.getElementById('Ajouter').textContent = "Enregistrer";
+    $("#Modifier, #Supprimer, #closeSt").prop("disabled", true);
+    document.getElementById('Annuler').disabled = false;
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+            document.getElementById('libelle').disabled = false;
+            if ($('#checkActif').length > 0) {
+                document.getElementById('checkActif').disabled = false;
+            }
+            break;
+        case "StructPlanCompt":
+            document.getElementById('libelle').disabled = false;
+            if ($('#divLastniveau').length > 0 && $('#superClass').length > 0) {
+                document.getElementById('superClass').disabled = false;
+            }
+            const btnText = document.getElementById("StructPlan6");
+            if (btnText) {
+                const text = btnText.textContent.trim();
+                if (text) {
+                    if (isElementVisible(btnText)) {
+                        $(".disabledBtnPl").prop("disabled", true);
+                        //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                    }
+                }
+            }
+            break;
+    }
 
+    switch (IDButton) {
+        case "StructPlanBudget":
+        case "StructActivite":
+        case "StructZone":
+        case "StructEmplacements":
+        case "StructPlan6":
+            $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+            break;
+        case "StructPlanCompt":
+            $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+            break;
+        case "StructBailleurFond":
+        case "StructConventions":
+            $("#Imprimer,#Voir, #Fiche").prop("disabled", true);
+            break;
+        case "StructPlanExtP1":
+        case "StructPlanExtP2":
+        case "StructPlanExtP3":
+        case "StructPlanExtP4":
+        case "StructCorrespondPlan":
+        case "StructPlanJournaux":
+        case "StructCategorieFinance":
+            $("#Imprimer,#Voir").prop("disabled", true);
+            break;
+        case "StructPlanTier":
+            $("#Imprimer,#Voir,#Duplication,#Recherche,#Importation").prop("disabled", true);
+            break;
+        case "StructSousCategorie":
+            $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", true);
+            break;
+        case "StructVentilation":
+        case "StructSignataires":
+            $("#Liste").prop("disabled", true);
+            break;
+    }
 }
 function validerChamps() {
     let isValid = true;
@@ -2279,8 +2481,8 @@ function vueTable() {
         case "StructPlanCompt":
             formHTML = `
                     <div class="row">
-                        <div class="col-md-12">
-                            <table style="position: sticky;top: 0;z-index: 1;" class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                        <div class="col-md-12 table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                            <table class="table-bordered table-hover table-sm tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="code">code</th>
@@ -2292,8 +2494,10 @@ function vueTable() {
                                         <th data-field="acti">Analyt.</th>
                                         <th data-field="geo">Géo.</th>
                                         <th data-field="fin">Finance</th>
+                                        <th data-field="plan6" id="thChapitre" style="visiblity:hidden">Chapitre</th>
                                         <th data-field="status">Status</th>
                                         <th data-field="superClasse" hidden>superClasse</th>
+                                        <th data-field="NOIMPUTJLTRESOR" hidden>NOIMPUTJLTRESOR</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2436,8 +2640,8 @@ function vueTable() {
         case "StructVentilation":
             formHTML = `
                     <div class="row">
-                        <div class="col-md-12" style="max-height: 200px; overflow-y: auto">
-                            <table class="table-bordered tabList" id="tab_${IDButton}" width="100%" tabindex="0">
+                        <div class="col-md-12 table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                            <table class="table-bordered table-hover table-sm tabList" id="tab_${IDButton}" width="100%" tabindex="0">
                                 <thead class="sticky-top bg-white">
                                     <tr>
                                         <th data-field="code1">Convention</th>
@@ -2602,54 +2806,60 @@ function vueLastNiveau() {
                                                     <div class="row">
                                                         <div class="col-md-6" style="border-right:1px solid #c7c3c3">
                                                             <div class="form-check">
-                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkCpteCollectif">
+                                                                <input class="form-check-input cursorPointer disabledBtnPl" type="checkbox" value="" id="checkCpteCollectif">
                                                                 <label class="form-check-label cursorPointer" for="checkCpteCollectif">
                                                                     Compte Collectif Tiers
                                                                 </label>
                                                             </div>
                                                             <div class="form-check">
-                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkCpteSuivi">
+                                                                <input class="form-check-input cursorPointer disabledBtnPl" type="checkbox" value="" id="checkCpteSuivi">
                                                                 <label class="form-check-label cursorPointer" for="checkCpteSuivi">
                                                                     Compte Suivi en Immobilisation
                                                                 </label>
                                                             </div>
                                                             <div class="form-check">
-                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkActif">
+                                                                <input class="form-check-input cursorPointer disabledBtnPl" type="checkbox" value="" id="checkActif">
                                                                 <label class="form-check-label cursorPointer" for="checkActif">
                                                                     Actif
                                                                 </label>
                                                             </div>
                                                             <div class="form-check">
-                                                                <input class="form-check-input cursorPointer" type="checkbox" value="" id="checkImputation">
+                                                                <input class="form-check-input cursorPointer disabledBtnPl" type="checkbox" value="" id="checkImputation">
                                                                 <label class="form-check-label cursorPointer" for="checkImputation">
                                                                     Pas d'imputation/JL Trésor
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-1">
-                                                        </div>
-                                                        <div class="col-md-5">
+                                                        <div class="col-md-6">
                                                             <!-- Groupe des checkbox concernées -->
                                                             <div style="display: flex; gap: 10px; margin-top: 10px;">
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Budget</div>
-                                                                    <input type="checkbox" value="Budget" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Budget" id="checkBudget" class="groupe-check disabledBtnPl cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Analyt.</div>
-                                                                    <input type="checkbox" value="Analyt" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Analyt" id="checkAnalyt" class="groupe-check disabledBtnPl cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Géo.</div>
-                                                                    <input type="checkbox" value="Geo" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Geo" id="checkGeo" class="groupe-check disabledBtnPl cursorPointer">
                                                                 </div>
                                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                                     <div style="background-color: #fbe5b6; padding: 4px 8px;">Financ.</div>
-                                                                    <input type="checkbox" value="Financ" class="groupe-check cursorPointer">
+                                                                    <input type="checkbox" value="Financ" id="checkFinanc" class="groupe-check disabledBtnPl cursorPointer">
+                                                                </div>
+                                                                <div style="display: flex; flex-direction: column; align-items: center;visibility:hidden" id="niveauChap">
+                                                                    <div style="background-color: #fbe5b6; padding: 4px 8px;">Chapit.</div>
+                                                                    <input type="checkbox" value="Chapit" id="checkPlan6" class="groupe-check disabledBtnPl cursorPointer">
                                                                 </div>
                                                             </div>
 
-                                                            <button style="margin-top:10px" id="btnToggle" class="btn_action" onclick="toggleCheckboxes()">Cocher Tout</button>
+                                                            <div class="row justify-content-center" style="text-align:center">
+                                                                <div class="col-md-12">
+                                                                    <button style="margin-top:10px" id="btnToggle" class="btn_action disabledBtnPl" onclick="toggleCheckboxes()">Cocher Tout</button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2661,7 +2871,7 @@ function vueLastNiveau() {
                                                     <div class="row">
                                                         <div class="col-md-5">
                                                             <div class="list-container">
-                                                                <select id="listeEntiereAnal" multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
+                                                                <select id="listeEntiereAnal" class='disabledBtnPl' multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
                                                                     <option>62211 Acquisition terrains</option>
                                                                     <option>62212 Viabilisation et Aménagement des terres</option>
                                                                     <option>62219 Autres terrains</option>
@@ -2685,7 +2895,7 @@ function vueLastNiveau() {
                                                         </div>
                                                         <div class="col-md-5">
                                                             <div class="list-container">
-                                                                <select id="listeSelectionAnal" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                                <select id="listeSelectionAnal" class="disabledBtnPl" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2698,7 +2908,7 @@ function vueLastNiveau() {
                                                     <div class="row">
                                                         <div class="col-md-5">
                                                             <div class="list-container">
-                                                                <select id="listeEntiereBudget" multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
+                                                                <select id="listeEntiereBudget" class='disabledBtnPl' multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
                                                                     <option>62211 Acquisition terrains</option>
                                                                     <option>62212 Viabilisation et Aménagement des terres</option>
                                                                     <option>62219 Autres terrains</option>
@@ -2722,7 +2932,7 @@ function vueLastNiveau() {
                                                         </div>
                                                         <div class="col-md-5">
                                                             <div class="list-container">
-                                                                <select id="listeSelectionBudget" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
+                                                                <select class="disabledBtnPl" id="listeSelectionBudget" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2737,7 +2947,7 @@ function vueLastNiveau() {
                                                             <label for="journalOD">Journaux de type O.D.</label>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <select id="journalOD" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="journalOD" class="input_focus choixSelect comportement disabledBtnPl" style="width:100%">
                                                                 <option value="0"></option>
                                                                 <option value="D">Débit</option>
                                                                 <option value="C">Crédit</option>
@@ -2750,7 +2960,7 @@ function vueLastNiveau() {
                                                             <label for="journalTresor">Journaux de Trésorerie</label>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <select id="journalTresor" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="journalTresor" class="input_focus choixSelect comportement disabledBtnPl" style="width:100%">
                                                                 <option value="0"></option>
                                                                 <option value="D">Débit</option>
                                                                 <option value="C">Crédit</option>
@@ -2763,7 +2973,7 @@ function vueLastNiveau() {
                                                             <label for="ComportementOblig">Comportement Obligatoire</label>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <select id="ComportementOblig" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="ComportementOblig" class="input_focus choixSelect comportement disabledBtnPl" style="width:100%">
                                                                 <option value="0"></option>
                                                                 <option value="D">Débiteur</option>
                                                                 <option value="C">Créditeur</option>
@@ -2776,7 +2986,7 @@ function vueLastNiveau() {
                                                             <label for="compteLett">Compte Lettrable</label>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <select id="compteLett" class="input_focus choixSelect" style="width:100%">
+                                                            <select id="compteLett" class="input_focus choixSelect comportement disabledBtnPl" style="width:100%">
                                                                 <option value="N">Non</option>
                                                                 <option value="O">Oui</option>
                                                             </select>
@@ -2794,6 +3004,21 @@ function vueLastNiveau() {
             break;
     }
     container.insertAdjacentHTML("beforeend", formHTML);
+    
+}
+function isElementVisible(el) {
+    if (!el) return false;
+
+    const style = window.getComputedStyle(el);
+    const isDisplayed = style.display !== "none";
+    const isVisible = style.visibility !== "hidden";
+    const isOpacityVisible = parseFloat(style.opacity) > 0;
+    const isInDocument = el.offsetParent !== null;
+    //return isDisplayed && isVisible && isOpacityVisible && isInDocument;
+    return isDisplayed && isVisible && isOpacityVisible;
+}
+function isVisible(elem) {
+    return !!(elem && elem.offsetParent !== null && getComputedStyle(elem).visibility !== 'hidden' && getComputedStyle(elem).display !== 'none');
 }
 function controleInput() {
     $("#closeSt").click(function () {
@@ -2840,6 +3065,53 @@ function controleInput() {
 
         if ($('#divLastniveau').length > 0 && $('#formLast').length > 0) {
             initializeCheckboxListeners();
+            switch (IDButton) {
+                case "StructPlanCompt":
+                    const btnText = document.getElementById("StructPlan6");
+                    if (btnText) {
+                        const text = btnText.textContent.trim();
+
+                        if (text) {
+                            if (isElementVisible(btnText)) {
+                                document.getElementById('niveauChap').style.visibility = "visible";
+                                //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                            } else {
+                                document.getElementById('niveauChap').style.visibility = "hidden";
+                                //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                            }
+                        } else {
+                            document.getElementById('niveauChap').style.visibility = "hidden";
+                            //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                        }
+                    } else {
+                        document.getElementById('niveauChap').style.visibility = "hidden";
+                        //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                    }
+                    break;
+            }
+        }
+        switch (IDButton) {
+            case "StructPlanCompt":
+                const btnText = document.getElementById("StructPlan6");
+                if (btnText) {
+                    const text = btnText.textContent.trim();
+                    if (text) {
+                        if (isElementVisible(btnText)) {
+                            setColumnVisibilityWithDataTable("tab_" + IDButton, 9, true);
+                            //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                        } else {
+                            setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                            //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                        }
+                    } else {
+                        setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                        //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                    }
+                } else {
+                    setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                    //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                }
+                break;
         }
     });
     $("#next_niveau").change(function () {
@@ -2892,6 +3164,32 @@ function controleInput() {
     $('.choixSelect').select2();
 
 }
+function setColumnVisibilityWithDataTable(tableId, colIndex, visible) {
+    const table = $('#' + tableId).DataTable();
+    table.column(colIndex).visible(visible);
+}
+
+// Fonction pour masquer ou afficher la colonne 8 (index 8) du tableau #tabPlan
+function setColumnVisibility(tableId, colIndex, visible) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    // Masquer ou afficher les <th>
+    const ths = table.querySelectorAll("thead th");
+    if (ths[colIndex]) {
+        ths[colIndex].style.display = visible ? "" : "none";
+    }
+
+    // Masquer ou afficher les <td> du tbody
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+        const cells = row.cells;
+        if (cells[colIndex]) {
+            cells[colIndex].style.display = visible ? "" : "none";
+        }
+    });
+}
+
 function chargerValeursDepuisLigne(row, IDButton) {
     var code = null, libelle = null, etatActif = null;
     switch (IDButton) {
@@ -2922,7 +3220,123 @@ function chargerValeursDepuisLigne(row, IDButton) {
             $("#code").val(code);
             $("#libelle").val(libelle);
             if ($('#superClass').length > 0) {
-                $("#superClass").val(row.cells[10].innerHTML).trigger('change');
+                var superClass = null;
+                const btnText = document.getElementById("StructPlan6");
+                if (btnText) {
+                    const text = btnText.textContent.trim();
+
+                    if (text) {
+                        if (isElementVisible(btnText)) {
+                            superClass = row.cells[11].innerHTML;
+                            //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                        } else {
+                            superClass = row.cells[10].innerHTML;
+                            //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                        }
+                    } else {
+                        superClass = row.cells[10].innerHTML;
+                        //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                    }
+                } else {
+                    superClass = row.cells[10].innerHTML;
+                    //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                }
+                $("#superClass").val(superClass).trigger('change');
+            }
+            if ($("#formLast").children().length > 0) {
+                $(".disabledBtnPl").prop("disabled", true);
+                const checkCollectif = row.cells[3].querySelector("input[type='checkbox']");
+                const checkSuivi = row.cells[4].querySelector("input[type='checkbox']");
+                const checkActif = row.cells[9].querySelector("input[type='checkbox']");
+                var checkPlan6 = null, checkImputation = null;
+
+                if (checkCollectif && checkCollectif.checked) {
+                    $("#checkCpteCollectif").prop("checked", true);
+                } else {
+                    $("#checkCpteCollectif").prop("checked", false);
+                }
+                if (checkSuivi && checkSuivi.checked) {
+                    $("#checkCpteSuivi").prop("checked", true);
+                } else {
+                    $("#checkCpteSuivi").prop("checked", false);
+                }
+                if (checkActif && checkActif.checked) {
+                    $("#checkActif").prop("checked", true);
+                } else {
+                    $("#checkActif").prop("checked", false);
+                }
+                const btnText = document.getElementById("StructPlan6");
+                if (btnText) {
+                    const text = btnText.textContent.trim();
+                    if (text) {
+                        if (isElementVisible(btnText)) {
+                            checkPlan6 = row.cells[9].querySelector("input[type='checkbox']");
+                            checkImputation = row.cells[12].querySelector("input[type='checkbox']");
+
+                            if (checkPlan6 && checkPlan6.checked) {
+                                $("#checkPlan6").prop("checked", true);
+                            } else {
+                                $("#checkPlan6").prop("checked", false);
+                            }
+                            if (checkImputation && checkImputation.checked) {
+                                $("#checkImputation").prop("checked", true);
+                            } else {
+                                $("#checkImputation").prop("checked", false);
+                            }
+                            //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                        } else {
+                            checkImputation = row.cells[11].querySelector("input[type='checkbox']");
+                            if (checkImputation && checkImputation.checked) {
+                                $("#checkImputation").prop("checked", true);
+                            } else {
+                                $("#checkImputation").prop("checked", false);
+                            }
+                            //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                        }
+                    } else {
+                        checkImputation = row.cells[11].querySelector("input[type='checkbox']");
+                        if (checkImputation && checkImputation.checked) {
+                            $("#checkImputation").prop("checked", true);
+                        } else {
+                            $("#checkImputation").prop("checked", false);
+                        }
+                        //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                    }
+                } else {
+                    checkImputation = row.cells[11].querySelector("input[type='checkbox']");
+                    if (checkImputation && checkImputation.checked) {
+                        $("#checkImputation").prop("checked", true);
+                    } else {
+                        $("#checkImputation").prop("checked", false);
+                    }
+                    //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                }
+                const checkBudget = row.cells[5].querySelector("input[type='checkbox']");
+                const checkAnalyt = row.cells[6].querySelector("input[type='checkbox']");
+                const checkGeo = row.cells[7].querySelector("input[type='checkbox']");
+                const checkFinance = row.cells[8].querySelector("input[type='checkbox']");
+
+                if (checkBudget && checkBudget.checked) {
+                    $("#checkBudget").prop("checked", true);
+                } else {
+                    $("#checkBudget").prop("checked", false);
+                }
+                if (checkAnalyt && checkAnalyt.checked) {
+                    $("#checkAnalyt").prop("checked", true);
+                } else {
+                    $("#checkAnalyt").prop("checked", false);
+                }
+                if (checkGeo && checkGeo.checked) {
+                    $("#checkGeo").prop("checked", true);
+                } else {
+                    $("#checkGeo").prop("checked", false);
+                }
+                if (checkFinance && checkFinance.checked) {
+                    $("#checkFinanc").prop("checked", true);
+                } else {
+                    $("#checkFinanc").prop("checked", false);
+                }
+                updateToggleButtonText();
             }
             break;
         case "StructCorrespondPlan":
@@ -2980,7 +3394,10 @@ function initializeCheckboxListeners() {
         cb.addEventListener("change", updateToggleButtonText);
     });
     updateToggleButtonText(); // mise à jour initiale
-    $('.choixSelect').select2();
+
+    if ($('.comportement').length > 0) {
+        $('.comportement').select2();
+    }
 }
 function DataNiveau() {
     $.ajax({
@@ -3151,6 +3568,118 @@ function GetDataniveau2(niveau1, niveau2) {
         }
     });
 }
+function LoadTable(niveau, data) {
+    document.getElementById('Ajouter').disabled = false;
+
+    document.getElementById('Ajouter').textContent = "Ajouter";
+    document.getElementById('closeSt').disabled = false;
+    document.getElementById('Annuler').disabled = true;
+    if (data.length == 0) {
+        isEditing = true;
+        $("#tab_" + niveau + " tbody").empty();
+        $("#Modifier, #Supprimer").prop("disabled", true);
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
+                break;
+            case "StructBailleurFond":
+            case "StructConventions":
+                $("#Imprimer,#Voir, #Fiche").prop("disabled", true);
+                break;
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+            case "StructCorrespondPlan":
+            case "StructPlanJournaux":
+            case "StructCategorieFinance":
+                $("#Imprimer,#Voir").prop("disabled", true);
+                break;
+            case "StructPlanTier":
+                $("#Imprimer,#Voir,#Duplication,#Recherche,#Importation").prop("disabled", true);
+                break;
+            case "StructSousCategorie":
+                $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", true);
+                break;
+            case "StructVentilation":
+            case "StructSignataires":
+                $("#Liste").prop("disabled", true);
+                break;
+        }
+        reset();
+    }
+    else {
+        isEditing = false;
+        updateTableWithData(niveau, data);
+        const table = document.getElementById("tab_" + niveau);
+        if (table.tBodies[0].rows.length > 0) {
+            fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
+        }
+        $("#Modifier, #Supprimer").prop("disabled", false);
+        switch (IDButton) {
+            case "StructPlanBudget":
+            case "StructActivite":
+            case "StructZone":
+            case "StructEmplacements":
+            case "StructPlan6":
+            case "StructPlanCompt":
+                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", false);
+                break;
+            case "StructBailleurFond":
+            case "StructConventions":
+                $("#Imprimer,#Voir, #Fiche").prop("disabled", false);
+                break;
+            case "StructPlanExtP1":
+            case "StructPlanExtP2":
+            case "StructPlanExtP3":
+            case "StructPlanExtP4":
+            case "StructCorrespondPlan":
+            case "StructPlanJournaux":
+            case "StructCategorieFinance":
+                $("#Imprimer,#Voir").prop("disabled", false);
+                break;
+            case "StructPlanTier":
+                $("#Imprimer,#Voir,#Duplication,#Recherche,#Importation").prop("disabled", false);
+                break;
+            case "StructSousCategorie":
+                $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", false);
+                break;
+            case "StructVentilation":
+            case "StructSignataires":
+                $("#Liste").prop("disabled", false);
+                break;
+        }
+        switch (IDButton) {
+            case "StructPlanCompt":
+                const btnText = document.getElementById("StructPlan6");
+                if (btnText) {
+                    const text = btnText.textContent.trim();
+                    if (text) {
+                        if (isElementVisible(btnText)) {
+                            setColumnVisibilityWithDataTable("tab_" + IDButton, 9, true);
+                            //console.log("✅ Le bouton #plan6 contient du texte visible :", text);
+                        } else {
+                            setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                            //console.log("⚠️ Le bouton #plan6 contient du texte mais il n'est pas visible.");
+                        }
+                    } else {
+                        setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                        //console.log("❌ Le bouton #plan6 ne contient pas de texte.");
+                    }
+                } else {
+                    setColumnVisibilityWithDataTable("tab_" + IDButton, 9, false);
+                    //console.log("❌ Le bouton #plan6 n'existe pas dans le DOM.");
+                }
+                break;
+        }
+    }
+    $(".disabled_me").prop("disabled", true);
+}
 function GetDataCorrespondance() {
     $.ajax({
         async: true,
@@ -3207,52 +3736,7 @@ function LoadTableCorrespondance(data) {
     }
     $(".disabled_me").prop("disabled", true);
 }
-function LoadTable(niveau, data) {
-    document.getElementById('Ajouter').disabled = false;
 
-    document.getElementById('Ajouter').textContent = "Ajouter";
-    document.getElementById('closeSt').disabled = false;
-    document.getElementById('Annuler').disabled = true;
-    if (data.length == 0) {
-        isEditing = true;
-        $("#tab_" + niveau + " tbody").empty();
-        $("#Modifier, #Supprimer").prop("disabled", true);
-        switch (IDButton) {
-            case "StructPlanBudget":
-            case "StructActivite":
-            case "StructZone":
-            case "StructEmplacements":
-            case "StructPlan6":
-            case "StructPlanCompt":
-                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", true);
-                break;
-            case "StructSousCategorie":
-                $("#Imprimer,#Voir,#codeConvention,#codeCategorie").prop("disabled", true);
-                break; 
-        }
-        reset();
-    }
-    else {
-        isEditing = false;
-        updateTableWithData(niveau, data);
-        const table = document.getElementById("tab_" + niveau);
-        if (table.tBodies[0].rows.length > 0) {
-            fillFirstRowForm(niveau, table.tBodies[0].rows[0]);
-        }
-        $("#Modifier, #Supprimer").prop("disabled", false);
-        switch (IDButton) {
-            case "StructPlanBudget":
-            case "StructActivite":
-            case "StructZone":
-            case "StructEmplacements":
-            case "StructPlan6":
-            case "StructPlanCompt":
-                $("#Imprimer,#Voir, #TXT, #excel, #Importation").prop("disabled", false);
-                break;
-        }
-    }
-    $(".disabled_me").prop("disabled", true);
-}
 function updateTableWithData(niveau, data) {
     const tableId = "#tab_" + niveau;
     const $table = $(tableId);
@@ -3284,7 +3768,7 @@ function updateTableWithData(niveau, data) {
             // Champs spéciaux affichés en checkbox désactivée
             switch (IDButton) {
                 case "StructPlanCompt":
-                    const checkboxFields = ["collectif", "gestionImmo", "budget", "acti", "geo", "fin", "status"];
+                    const checkboxFields = ["collectif", "gestionImmo", "budget", "acti", "geo", "fin", "plan6","NOIMPUTJLTRESOR", "status"];
                     const checkedAttr = (value === true || value === "1" || value === 1 || value === "True") ? "checked" : "";
                     if (checkboxFields.includes(col.name)) {
                         row += `<td ${alignRight} ${hiddenAttr} style="text-align:center"><input type="checkbox" disabled ${checkedAttr}></td>`;

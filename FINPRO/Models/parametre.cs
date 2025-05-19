@@ -46,6 +46,8 @@ namespace FINPRO.Models
         public string acti { get; set; }
         public string geo { get; set; }
         public string fin { get; set; }
+        public string plan6 { get; set; }
+        public string NOIMPUTJLTRESOR { get; set; }
         public string superClasse { get; set; }
         public bool statut { get; set; }
         public bool Encours { get; set; }

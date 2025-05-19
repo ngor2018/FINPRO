@@ -3,6 +3,25 @@
         background-color: transparent !important;
         cursor: default;
     }
+    /* Rendre la table responsive */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Empêcher les colonnes de se compresser trop */
+    .table th, .table td {
+        white-space: nowrap;
+    }
+
+    /* S'assurer que les en-têtes restent en haut même avec scroll */
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: white;
+    }
+
 </style>
 <div class="row">
     <div class="col-md-12">

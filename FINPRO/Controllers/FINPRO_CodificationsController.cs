@@ -484,6 +484,8 @@ namespace FINPRO.Controllers
                             acti = niveau == "StructPlanCompt" ? row["acti"]?.ToString() : null,
                             geo = niveau == "StructPlanCompt" ? row["geo"]?.ToString() : null,
                             fin = niveau == "StructPlanCompt" ? row["fin"]?.ToString() : null,
+                            plan6 = niveau == "StructPlanCompt" ? row["plan6"]?.ToString() : null,
+                            NOIMPUTJLTRESOR = niveau == "StructPlanCompt" ? row["NOIMPUTJLTRESOR"]?.ToString() : null,
                             superClasse = niveau == "StructPlanCompt" ? row["superClasse"]?.ToString() : null
                         }).ToList();
                     }
