@@ -2310,55 +2310,43 @@ function formPopup() {
     buttonAction();
     let button = document.getElementById(IDButton);
     document.getElementById('titleStruct').textContent = button.textContent;
-    switch (IDButton) {
-        case "StructPlanBudget":
-        case "StructActivite":
-        case "StructZone":
-        case "StructEmplacements":
-        case "StructPlan6":
-        case "StructPlanExtP1":
-        case "StructPlanExtP2":
-        case "StructPlanExtP3":
-        case "StructPlanExtP4":
-        case "StructPlanCompt":
-        case "StructCorrespondPlan":
-        case "StructPlanJournaux":
-        case "StructBailleurFond":
-        case "StructConventions":
-        case "StructSignataires":
-        case "StructVentilation":
-        case "StructSousCategorie":
-            vueTable();
-            controleInput();
-            break;
+    const groupeBase = [
+        "StructPlanBudget", "StructActivite", "StructZone", "StructEmplacements",
+        "StructPlan6", "StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3",
+        "StructPlanExtP4", "StructPlanCompt", "StructCorrespondPlan",
+        "StructPlanJournaux", "StructBailleurFond", "StructConventions",
+        "StructSignataires", "StructVentilation", "StructSousCategorie"
+    ];
+
+    const groupeAvecNiveaux = [
+        "StructPlanBudget", "StructActivite", "StructZone", "StructEmplacements",
+        "StructPlan6", "StructPlanExtP1", "StructPlanExtP2", "StructPlanExtP3",
+        "StructPlanExtP4", "StructPlanCompt"
+    ];
+
+    const groupeJusteDataNiveau = ["StructSousCategorie"];
+    const groupeControleOnly = ["StructPlanTier", "StructCategorieFinance"];
+
+    // Exécution
+    if (groupeBase.includes(IDButton)) {
+        vueTable();
+        controleInput();
     }
-    switch (IDButton) {
-        case "StructPlanBudget":
-        case "StructActivite":
-        case "StructZone":
-        case "StructEmplacements":
-        case "StructPlan6":
-        case "StructPlanExtP1":
-        case "StructPlanExtP2":
-        case "StructPlanExtP3":
-        case "StructPlanExtP4":
-        case "StructPlanCompt":
-            vueTable();
-            vueFirstNiveau();
-            vueLastNiveau();
-            controleInput();
-            DataNiveau();
-            break;
-        case "StructSousCategorie":
-            //vueTable();
-            //controleInput();
-            DataNiveau();
-            break;
-        case "StructPlanTier":
-        case "StructCategorieFinance":
-            controleInput();
-            break;
+
+    if (groupeAvecNiveaux.includes(IDButton)) {
+        vueFirstNiveau();
+        vueLastNiveau();
+        DataNiveau();
     }
+
+    if (groupeJusteDataNiveau.includes(IDButton)) {
+        DataNiveau();
+    }
+
+    if (groupeControleOnly.includes(IDButton)) {
+        controleInput();
+    }
+
 
 }
 function buttonAction() {
@@ -2869,34 +2857,22 @@ function vueLastNiveau() {
                                             <div class="row" style="padding-bottom:10px">
                                                 <div class="col-md-12">
                                                     <div class="row">
-                                                        <div class="col-md-5">
-                                                            <div class="list-container">
-                                                                <select id="listeEntiereAnal" class='disabledBtnPl' multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
-                                                                    <option>62211 Acquisition terrains</option>
-                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
-                                                                    <option>62219 Autres terrains</option>
-                                                                    <option>62241 BASSINS</option>
-                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
-                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
-                                                                    <option>62319 Autres bâtiments à usage technique</option>
-                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
-                                                                    <option>62343 Forage</option>
-                                                                    <option>623251 orange</option>
-                                                                    <option>623443 pomme</option>
-                                                                    <option>27343 menthe</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-1">
-                                                            <div class="list-buttons">
-                                                                <button id="btnAnalyt1" onclick="moveSelected('listeEntiereAnal', 'listeSelectionAnal')">-&gt;</button>
-                                                                <button id="btnAnalyt2" onclick="moveSelected('listeSelectionAnal', 'listeEntiereAnal')">&lt;-</button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-5">
-                                                            <div class="list-container">
-                                                                <select id="listeSelectionAnal" class="disabledBtnPl" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
-                                                            </div>
+                                                        <div class="col-md-12">
+                                                            <table class="tabList" style="width:100%" id="tabAffect_ActiviteRatt">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="text-align:center;width:4%" class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
+                                                                            <div class="form-check mb-0 fs-8">
+                                                                                <input class="form-check-input" id="bulk-select-example" type="checkbox">
+                                                                            </div>
+                                                                        </th>
+                                                                        <th style="text-align:center;width:10%">Code</th>
+                                                                        <th style="text-align:center">Libellé</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2906,34 +2882,22 @@ function vueLastNiveau() {
                                             <div class="row" style="padding-bottom:10px">
                                                 <div class="col-md-12">
                                                     <div class="row">
-                                                        <div class="col-md-5">
-                                                            <div class="list-container">
-                                                                <select id="listeEntiereBudget" class='disabledBtnPl' multiple style="width:100%;height:150px;overflow-y: auto;border:1px solid #d0cccc;">
-                                                                    <option>62211 Acquisition terrains</option>
-                                                                    <option>62212 Viabilisation et Aménagement des terres</option>
-                                                                    <option>62219 Autres terrains</option>
-                                                                    <option>62241 BASSINS</option>
-                                                                    <option>62311 Bâtiments Administratifs à usage de bureaux</option>
-                                                                    <option>62312 Construction de d’Angars pour le Stockage d</option>
-                                                                    <option>62319 Autres bâtiments à usage technique</option>
-                                                                    <option>62341 OUVRAGES DE TRANSPORTS</option>
-                                                                    <option>62343 Forage</option>
-                                                                    <option>623251 orange</option>
-                                                                    <option>623443 pomme</option>
-                                                                    <option>27343 menthe</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-1">
-                                                            <div class="list-buttons">
-                                                                <button id="btnBudget1" onclick="moveSelected('listeEntiereBudget', 'listeSelectionBudget')">-&gt;</button>
-                                                                <button id="btnBudget2" onclick="moveSelected('listeSelectionBudget', 'listeEntiereBudget')">&lt;-</button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-5">
-                                                            <div class="list-container">
-                                                                <select class="disabledBtnPl" id="listeSelectionBudget" multiple style="width:100%;height:150px;border:1px solid #d0cccc;"></select>
-                                                            </div>
+                                                        <div class="col-md-12">
+                                                            <table class="tabList" style="width:100%" id="tabAffect_BudgetRatt">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="text-align:center;width:4%" class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
+                                                                            <div class="form-check mb-0 fs-8">
+                                                                                <input class="form-check-input" id="bulk-select-example" type="checkbox">
+                                                                            </div>
+                                                                        </th>
+                                                                        <th style="text-align:center;width:10%">Code</th>
+                                                                        <th style="text-align:center">Libellé</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3064,6 +3028,7 @@ function controleInput() {
         GetDataniveau2(niveau1, niveau2);
 
         if ($('#divLastniveau').length > 0 && $('#formLast').length > 0) {
+            GetListLastNiveauAct_Budget();
             initializeCheckboxListeners();
             switch (IDButton) {
                 case "StructPlanCompt":
@@ -3399,6 +3364,102 @@ function initializeCheckboxListeners() {
         $('.comportement').select2();
     }
 }
+function GetListLastNiveauAct_Budget() {
+    $.ajax({
+        type: 'GET',
+        dataType: 'JSON',
+        contentType: 'application/json; charset=utf-8',
+        url: '/FINPRO_Codifications/GetListLastNiveauAct_Budget',
+        success: function (data) {
+            // Remplir les deux tableaux avec une fonction réutilisable
+            renderTable('#tabAffect_ActiviteRatt', data.listAct);
+            renderTable('#tabAffect_BudgetRatt', data.listBudget);
+
+        }
+    });
+}
+
+// Fonction réutilisable pour construire et initialiser un tableau DataTable
+function renderTable(tableId, dataList) {
+    if (!Array.isArray(dataList)) return;
+
+    const $table = $(tableId);
+
+    // Détruire et nettoyer l'ancien DataTable
+    if ($.fn.DataTable.isDataTable(tableId)) {
+        $table.DataTable().destroy();
+    }
+    $(`${tableId} tbody`).empty();
+
+    // Construire les lignes HTML
+    const rows = dataList.map(item => {
+        const isChecked = item.status === "1" ? "checked" : "";
+        return `<tr>
+            <td style="text-align:center" class="fs-9 align-middle">
+                <div class="form-check mb-0 fs-8">
+                    <input ${isChecked} class="form-check-input" type="checkbox">
+                </div>
+            </td>
+            <td>${item.code}</td>
+            <td>${tronquer(item.libelle || "", 50)}</td>
+        </tr>`;
+    });
+
+    // Injecter toutes les lignes d'un coup (meilleure performance)
+    $(`${tableId} tbody`).html(rows.join(""));
+
+    // Initialiser DataTable
+    $table.DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 50, 100, 150, 200, -1], [10, 50, 100, 150, 200, "Tous"]],
+        responsive: true,
+        lengthChange: true,
+        scrollCollapse: true,
+        paging: false,
+        ordering: false,
+        //autoWidth: false,        // 🚫 Important pour éviter <colgroup>
+        scrollY: '150px',          // 🚫 Enlever scrollY désactive aussi colgroup
+        scrollX: false,          // 🚫 Idem
+        initComplete: function () {
+            $table.removeClass('dataTable');
+
+            // Supprimer manuellement <colgroup> si généré
+            $table.find("colgroup").remove();
+        },
+        language: {
+            lengthMenu: "Afficher _MENU_ entrées",
+            emptyTable: "Aucun élément trouvé",
+            info: "Affichage _START_ à _END_ de _TOTAL_ entrées",
+            loadingRecords: "Chargement...",
+            processing: "En cours...",
+            search: '<i class="fa fa-search" aria-hidden="true"></i>',
+            searchPlaceholder: "Rechercher...",
+            zeroRecords: "Aucun élément correspondant trouvé",
+            paginate: {
+                first: "Premier",
+                last: "Dernier",
+                next: "Suivant",
+                previous: "Précédent"
+            }
+        }
+    });
+
+
+    // Activer les tooltips
+    //$('[data-toggle="tooltip"]').tooltip();
+
+}
+
+function tronquer(text, maxLength) {
+    if (!text) return "";
+    if (text.length <= maxLength) {
+        return text; // Si le texte est court, on l'affiche normalement
+    } else {
+        const truncated = text.substring(0, maxLength) + "...";
+        // On retourne du HTML : texte coupé avec l'original dans l'attribut title pour le survol
+        return `<span title="${text}" data-toggle="tooltip" data-placement="top">${truncated}</span>`;
+    }
+}
 function DataNiveau() {
     $.ajax({
         async: true,
@@ -3447,6 +3508,7 @@ function DataNiveau() {
 
                     if (list.length === 1) { //Une seule option : considérée comme dernière.");
                         vueLastNiveau();
+                        
                         $('#divTo_niveau').hide();
                         $select.attr('data-position', 'last');
                     } else {  // Première option sélectionnée par défaut.");
@@ -3495,6 +3557,8 @@ function DataNiveau() {
 
                     if (list.length === 1) { //Une seule option : considérée comme dernière.");
                         vueLastNiveau();
+                        //Pour le dernier 
+                        //GetListLastNiveauAct_Budget();
                         $('#divTo_niveau').hide();
                         $select.attr('data-position', 'last');
                     } else {  // Première option sélectionnée par défaut.");

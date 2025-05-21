@@ -376,6 +376,93 @@ namespace FINPRO.Controllers
 
             return fields;
         }
+        public JsonResult GetListLastNiveauAct_Budget()
+        {
+            if (Session["LOGIN"] == null)
+            {
+                return Json(new { success = false, redirectUrl = Url.Action("Index", "Home") });
+            }
+
+            var listAct = new List<parametre>();
+            var listBudget = new List<parametre>();
+
+            using (SqlConnection conn = new SqlConnection(GetConnexion.GetConnectionString()))
+            {
+                conn.Open();
+
+                // Récupérer max niveaux
+                int maxNiveauAct = 0;
+                int maxNiveauBudget = 0;
+
+                using (SqlCommand cmd = new SqlCommand("SELECT " +
+                    "(SELECT MAX(NIVEAU) FROM RSTRUACTI) AS MaxAct, " +
+                    "(SELECT MAX(NIVEAU) FROM RSTRUpost) AS MaxBudget", conn))
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        maxNiveauAct = reader["MaxAct"] != DBNull.Value ? Convert.ToInt32(reader["MaxAct"]) : 0;
+                        maxNiveauBudget = reader["MaxBudget"] != DBNull.Value ? Convert.ToInt32(reader["MaxBudget"]) : 0;
+                    }
+                }
+
+                // ACTIVITES - jointure avec RCOGEANA
+                using (SqlCommand cmd = new SqlCommand(@"
+                    SELECT A.code, A.libelle,
+                        CASE WHEN C.ANA IS NOT NULL AND LEFT(C.ANA, CHARINDEX(' ', C.ANA + ' ') - 1) = A.code THEN 1 ELSE 0 END AS etat
+                    FROM RACTI1 A
+                    LEFT JOIN RCOGEANA C ON C.ANA = A.code + ' ' + A.libelle
+                    WHERE A.NIVEAU = @niveauAct", conn))
+                {
+                    cmd.Parameters.AddWithValue("@niveauAct", maxNiveauAct);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            listAct.Add(new parametre
+                            {
+                                code = reader["code"].ToString(),
+                                libelle = reader["libelle"].ToString(),
+                                status = reader["etat"].ToString()
+                            });
+                        }
+                    }
+                }
+
+                // BUDGETS - jointure avec RCOGEPOSTE
+                using (SqlCommand cmd = new SqlCommand(@"
+                    SELECT P.code, P.libelle,
+                        CASE WHEN C.POSTE IS NOT NULL AND LEFT(C.POSTE, CHARINDEX(' ', C.POSTE + ' ') - 1) = P.code THEN 1 ELSE 0 END AS etat
+                    FROM RPOST1 P
+                    LEFT JOIN RCOGEPOSTE C ON C.POSTE = P.code + ' ' + P.libelle
+                    WHERE P.NIVEAU = @niveauBudget", conn))
+                {
+                    cmd.Parameters.AddWithValue("@niveauBudget", maxNiveauBudget);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            listBudget.Add(new parametre
+                            {
+                                code = reader["code"].ToString(),
+                                libelle = reader["libelle"].ToString(),
+                                status = reader["etat"].ToString()
+                            });
+                        }
+                    }
+                }
+
+                conn.Close();
+            }
+
+            var jsonResult = Json(new { listAct, listBudget }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
+
+
         public JsonResult GetListDataNiveau2(string niveau, string code1, string code2)
         {
             var listNiveau2 = new List<parametre>();
